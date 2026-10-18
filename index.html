@@ -272,6 +272,55 @@ table.data .num { text-align: right; }
 .inp, .sel { border: 1px solid var(--border); background: var(--surface); padding: 6px 10px; border-radius: 8px; font-size: 13.5px; min-width: 0; }
 .inp:focus, .sel:focus { outline: none; border-color: var(--accent); }
 .empty { text-align: center; color: var(--muted); padding: 24px 0; }
+
+/* ---------- móvil: todo cabe en el ancho de la pantalla ---------- */
+@media (max-width: 680px) {
+  .nav-in { padding: 10px 12px; gap: 6px; }
+  .period > button { width: 26px; height: 28px; }
+  .period select { font-size: 13.5px; padding: 4px 4px; }
+  .nav-right { gap: 0; }
+  .ghost { padding: 7px 7px; gap: 6px; }
+  /* barra de añadir: sin la franja separadora entre los dos grupos */
+  .actions-bar .divider { display: none; }
+}
+@media (max-width: 960px) {
+  /* 5 tarjetas en 2 columnas: la última ocupa la fila entera */
+  .kpis > .kpi:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+/* tablas → fichas: sin desplazamiento lateral */
+@media (max-width: 600px) {
+  #movTbl, #debtTbl, #movTbl tbody, #debtTbl tbody, #movTbl tfoot, #debtTbl tfoot { display: block; }
+  #movTbl thead, #debtTbl thead { display: none; }
+  #movTbl tbody tr, #debtTbl tbody tr { display: grid; column-gap: 10px; row-gap: 4px; align-items: center; padding: 11px 4px; border-bottom: 1px solid var(--line); }
+  #movTbl tbody td, #debtTbl tbody td { padding: 0; border: 0; min-width: 0; background: none !important; }
+  #movTbl tbody tr:hover, #debtTbl tbody tr:hover { background: var(--soft); }
+  #movTbl td.empty, #debtTbl td.empty { grid-column: 1 / -1; padding: 16px 0; }
+  #movTbl tfoot tr, #debtTbl tfoot tr { display: flex; justify-content: space-between; padding: 11px 4px 2px; }
+  #movTbl tfoot td, #debtTbl tfoot td { padding: 0; }
+
+  /* movimiento: concepto e importe arriba; categoría · mes · acreedor debajo */
+  #movTbl tbody tr { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+  #movTbl tbody td:nth-child(3) { grid-row: 1; grid-column: 1 / 4; font-weight: 600; overflow-wrap: anywhere; }
+  #movTbl tbody td:nth-child(5) { grid-row: 1; grid-column: 4; font-weight: 650; white-space: nowrap; }
+  #movTbl tbody td:nth-child(2), #movTbl tbody td:nth-child(1), #movTbl tbody td:nth-child(4) { grid-row: 2; font-size: 12px; color: var(--muted); }
+  #movTbl tbody td:nth-child(2) { grid-column: 1; }
+  #movTbl tbody td:nth-child(1) { grid-column: 2; }
+  #movTbl tbody td:nth-child(4) { grid-column: 3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* deuda: descripción y restante; acreedor y estado; progreso y botón Pagar */
+  #debtTbl tbody tr { grid-template-columns: minmax(0, 1fr) auto; }
+  #debtTbl tbody td:nth-child(3), #debtTbl tbody td:nth-child(4), #debtTbl tbody td:nth-child(8) { display: none; }
+  #debtTbl tbody td:nth-child(2) { grid-row: 1; grid-column: 1; font-weight: 600; overflow-wrap: anywhere; }
+  #debtTbl tbody td:nth-child(5) { grid-row: 1; grid-column: 2; font-weight: 650; white-space: nowrap; }
+  #debtTbl tbody td:nth-child(5)::before, #debtTbl tfoot td:nth-child(4)::before { content: "Quedan "; font-weight: 400; font-size: 12px; color: var(--muted); }
+  #debtTbl tbody td:nth-child(1) { grid-row: 2; grid-column: 1; font-size: 12px; color: var(--muted); }
+  #debtTbl tbody td:nth-child(7) { grid-row: 2; grid-column: 2; justify-self: end; }
+  #debtTbl tbody td:nth-child(7) .state { font-size: 12px; }
+  #debtTbl tbody td:nth-child(6) { grid-row: 3; grid-column: 1; display: flex; align-items: center; gap: 8px; }
+  #debtTbl tbody td:nth-child(6) .prog { flex: 1; width: auto; }
+  #debtTbl tbody td:nth-child(9) { grid-row: 3; grid-column: 2; text-align: right; }
+  #debtTbl tfoot td:nth-child(2), #debtTbl tfoot td:nth-child(3), #debtTbl tfoot td:nth-child(5) { display: none; }
+}
 /* desplegable propio: sustituye la lista nativa del sistema, que no admite estilos */
 .dd { position: relative; display: inline-block; min-width: 0; }
 .dd-native { position: absolute !important; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
