@@ -85,7 +85,8 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .badge2.ok { background: color-mix(in srgb, var(--good) 16%, var(--surface)); color: var(--good); }
 .badge2.warn { background: color-mix(in srgb, var(--warning) 22%, var(--surface)); color: var(--ink); }
 .ds ol { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-2); line-height: 1.55; }
-.welcome { margin-top: 16px; }
+.welcome { margin: 16px 0; }
+main > .welcome:nth-child(2) { margin-top: 0; }
 .welcome .row-b { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 @media (max-width: 680px) { .logo span, .ghost .lbl { display: none; } .nav-in { grid-template-columns: auto 1fr auto; } .period { justify-self: center; } }
 
@@ -117,6 +118,12 @@ main > :first-child { margin-top: 0; }
   .side-nav { display: flex; overflow-x: auto; }
   .side-nav a { white-space: nowrap; }
   .news-list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+}
+/* móvil: el menú cabe entero (3 × 2), icono encima del texto, sin desplazamiento lateral */
+@media (max-width: 680px) {
+  .side-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; overflow: visible; }
+  .side-nav a { flex-direction: column; justify-content: center; gap: 4px; padding: 8px 4px; font-size: 12px; line-height: 1.2;
+                text-align: center; white-space: normal; }
 }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; min-width: 0; }
 section.card { margin-top: 16px; }
