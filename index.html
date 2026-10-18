@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-v/AI0NoNNrM4/bwNcdIjpegNfl3uYfzG20DxSO/swhU=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-t/qiQGEVWWa9GUMH1AKOImQGSCltF15GK8BXpsIy7Xw=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -348,6 +348,7 @@ table.data .num { text-align: right; }
 .dd-fld .dd-btn { width: 100%; height: 44px; padding: 0 12px 0 14px; font-size: 15px; font-weight: 400; }
 .dd-period .dd-btn { border: 0; background: none; padding: 4px 8px; font-size: 14.5px; font-weight: 650; color: var(--accent); box-shadow: none; }
 .dd-period .dd-chev { stroke: var(--accent); }
+.dd-menu .dd-opt > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .dd-menu { position: fixed; z-index: 200; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; max-height: 320px; overflow: auto; box-shadow: 0 10px 30px rgba(15, 30, 60, .14); }
 .dd-opt { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: none; padding: 8px 10px; border-radius: 6px; font-size: 13.5px; text-align: left; color: var(--ink); white-space: nowrap; }
 .dd-opt:hover, .dd-opt:focus-visible { background: var(--soft); outline: none; }
@@ -372,13 +373,35 @@ table.data .num { text-align: right; }
 #errorBox { display: none; margin-top: 16px; padding: 14px 18px; border-radius: 12px; background: color-mix(in srgb, var(--critical) 10%, var(--surface)); font-size: 14px; }
 
 /* diálogos */
-dialog { border: 0; outline: none; border-radius: 14px; padding: 0; background: var(--surface); color: var(--ink); width: min(680px, calc(100vw - 32px)); max-height: calc(100vh - 40px); overflow: auto; box-shadow: 0 20px 60px rgba(15,30,60,.25); }
+dialog { border: 0; outline: none; border-radius: 14px; padding: 0; background: var(--surface); color: var(--ink); width: min(680px, calc(100vw - 32px)); max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); overflow: hidden; box-shadow: 0 20px 60px rgba(15,30,60,.25); }
+/* el contenido se desplaza dentro; título (con la X) y botones quedan siempre a la vista */
+dialog[open] { display: flex; flex-direction: column; }
+dialog > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+dialog form > h3 { position: sticky; top: 0; z-index: 2; }
+dialog form > .actions { position: sticky; bottom: 0; z-index: 2; }
+.dlg-x { z-index: 3; }
 dialog::backdrop { background: var(--backdrop); }
 dialog:focus, dialog:focus-visible { outline: none; }
 dialog form { padding: 0; display: grid; gap: 18px; }
 dialog form > :not(h3) { margin: 0 32px; }
 dialog form > h3 + * { margin-top: 8px; }
-@media (max-width: 560px) { dialog form > :not(h3) { margin: 0 18px; } }
+@media (max-width: 560px) {
+  dialog form > :not(h3) { margin: 0 18px; }
+  /* móvil: hoja que sube desde abajo, a todo el ancho */
+  dialog { width: 100vw; max-width: 100vw; margin: auto 0 0; max-height: 92vh; max-height: 92dvh; border-radius: 16px 16px 0 0; }
+  dialog h3 { padding: 18px 60px 18px 18px; border-radius: 16px 16px 0 0; }
+  .dlg-x { top: 12px; right: 10px; }
+  dialog form > .actions { padding: 12px 18px calc(12px + env(safe-area-inset-bottom)); border-radius: 0; flex-wrap: wrap; }
+  dialog form > .actions .btn:not(.danger) { flex: 1; }
+  dialog form > .actions .sp { display: none; }
+  dialog form > .actions .btn.danger { flex-basis: 100%; text-align: left; padding: 2px 0; min-height: 0; }
+  /* iPhone: con letra < 16 px Safari amplía la página al escribir y el diálogo deja de encajar */
+  .fld input, .fld select, .fld textarea, #movSearch, .edit-num { font-size: 16px; }
+  /* campos de fecha/mes: en iOS tienen un ancho propio que se sale de la columna */
+  .fld input[type="month"], .fld input[type="date"] { -webkit-appearance: none; appearance: none; width: 100%; display: block; line-height: 44px; text-align: left; }
+  .types { gap: 6px; }
+  .types button { padding: 0 6px; gap: 6px; font-size: 13px; }
+}
 dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; padding: 20px 64px 20px 32px; background: linear-gradient(135deg, var(--navy-1), var(--navy-2)); color: #fff; border-radius: 14px 14px 0 0; }
 .fld { display: grid; gap: 7px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
 .fld input, .fld select, .fld textarea { border: 1px solid var(--border); background: var(--surface); padding: 0 14px; height: 44px; border-radius: 8px; font-size: 15px; color: var(--ink); min-width: 0; font-weight: 400; transition: border-color .12s, box-shadow .12s; }
@@ -1078,7 +1101,7 @@ function openDialog(kind, opts = {}) {
   }
   if (kind === "per") { syncPerForm(f); if (rec) updateRecurEdit(opts.id); }
   syncSelects();
-  dlg.showModal();
+  dlg.showModal(); dlg.querySelector("form").scrollTop = 0;
 }
 function prepareNewPeriod(f, mes) {
   const ps = S.data.periodos.map(p => p.Periodo).sort(), last = ps.at(-1);
@@ -1297,7 +1320,7 @@ async function renderDatos() {
     if (a === "off") { if (!confirm("Se desconectará Google Drive. Los datos seguirán en este dispositivo. ¿Continuar?")) return; return datosAction(() => FinanzasDrive.disconnect(), "Google Drive desconectado"); }
   });
 }
-async function openDatos() { $("datosErr").textContent = ""; $("datosBody").innerHTML = '<p class="muted">Cargando…</p>'; $("dlg-datos").showModal(); await renderDatos(); }
+async function openDatos() { $("datosErr").textContent = ""; $("datosBody").innerHTML = '<p class="muted">Cargando…</p>'; $("dlg-datos").showModal(); $("dlg-datos").querySelector("form").scrollTop = 0; await renderDatos(); }
 $("btnDatos").onclick = openDatos;
 $("fileImport").onchange = async e => {
   const f = e.target.files[0]; e.target.value = "";
@@ -1381,7 +1404,8 @@ function enhanceSelect(sel, variant) {
     menu.innerHTML = [...sel.options].map(o => `<button type="button" class="dd-opt" role="option" data-v="${esc(o.value)}" aria-selected="${o.selected}">${dot(o)}<span>${esc(o.text)}</span><svg class="tk" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>`).join("");
     (sel.closest("dialog") || document.body).appendChild(menu);
     const r = btn.getBoundingClientRect();
-    menu.style.minWidth = `${Math.max(r.width, 170)}px`;
+    menu.style.maxWidth = `${innerWidth - 16}px`;
+    menu.style.minWidth = `${Math.min(Math.max(r.width, 170), innerWidth - 16)}px`;
     const mh = Math.min(menu.scrollHeight, 320), below = innerHeight - r.bottom - 12;
     menu.style.left = `${Math.max(8, Math.min(r.left, innerWidth - menu.offsetWidth - 8))}px`;
     menu.style.top = below >= mh || below >= r.top ? `${r.bottom + 4}px` : `${Math.max(8, r.top - mh - 4)}px`;
