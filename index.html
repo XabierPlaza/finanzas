@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-iaFUvBpnI+wLWFH91Fiv0yvcUYVMt9EQRNFEF9ZBjdA=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -641,7 +642,7 @@ function render() {
 }
 function renderPeriod() {
   const ps = periods(), i = ps.indexOf(S.period);
-  $("periodSel").innerHTML = ps.map(p => `<option value="${p}"${p === S.period ? " selected" : ""}>${esc(perName(p))}</option>`).join("");
+  $("periodSel").innerHTML = ps.map(p => `<option value="${esc(p)}"${p === S.period ? " selected" : ""}>${esc(perName(p))}</option>`).join("");
   $("prev").disabled = i <= 0; $("next").disabled = i < 0 || i >= ps.length - 1;
   $("btnEditMes").style.display = cfgOf(S.period) ? "" : "none";
 }
@@ -676,7 +677,7 @@ function renderIncome(m) {
     <p class="eyebrow">Ingresos del mes</p>
     <div class="p-val num">${eur(m.ingresos)}</div>
     <ul class="inc-list">
-      <li><span>Nómina</span>${m.cfg ? `<span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina" title="Haz clic para editar"><button class="icon-btn" type="button" onclick="document.getElementById('nominaInp').focus()" aria-label="Editar nómina" title="Editar">✎</button><span style="width:28px"></span></span>` : `<span class="muted">Mes sin configurar</span>`}</li>
+      <li><span>Nómina</span>${m.cfg ? `<span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina" title="Haz clic para editar"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button><span style="width:28px"></span></span>` : `<span class="muted">Mes sin configurar</span>`}</li>
       ${m.extras.map(i => `<li><span>${esc(i.Concepto)} <span class="muted" style="font-size:12px">· extra</span></span>
         <span class="r"><span class="num" style="margin-right:6px">${eur(i.Importe)}</span>
         <button class="icon-btn" type="button" data-edit="ingresos" data-id="${esc(i.ID)}" aria-label="Editar ${esc(i.Concepto)}" title="Editar">✎</button>
@@ -684,6 +685,7 @@ function renderIncome(m) {
     </ul>
     <button class="link" type="button" data-open="mov" data-cat="Ingreso extra">+ Añadir ingreso extra</button>`;
   const inp = $("nominaInp");
+  $("nominaBtn")?.addEventListener("click", () => inp.focus());
   if (inp) bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada"));
 }
 
@@ -822,7 +824,7 @@ function renderTrend() {
   by.forEach((o, i) => {
     const x = L + slot * i + (slot - bw) / 2, sel = o.p === S.period;
     const t = `<b>${esc(perName(o.p))}</b><br>` + CATS.map(k => `${esc(k)}: ${eur(o[k])}`).join("<br>") + `<br><b>Total: ${eur(o.tot)}</b>` + (o.ing ? `<br>Ingresos: ${eur(o.ing)}` : "");
-    bg += `<rect x="${L + slot * i}" y="${T}" width="${slot}" height="${ph}" fill="${sel ? "var(--tint)" : "transparent"}" style="cursor:pointer" data-p="${o.p}" data-tip="${esc(t)}"/>`;
+    bg += `<rect x="${L + slot * i}" y="${T}" width="${slot}" height="${ph}" fill="${sel ? "var(--tint)" : "transparent"}" style="cursor:pointer" data-p="${esc(o.p)}" data-tip="${esc(t)}"/>`;
     let acc = 0; const segs = CATS.filter(k => o[k] > 0);
     segs.forEach((k, si) => {
       const y0 = y(acc) - (si ? 2 : 0), h = Math.max(0, y(acc) - y(acc + o[k]) - (si ? 2 : 0)), rr = si === segs.length - 1 ? Math.min(4, h, bw / 2) : 0;
@@ -831,7 +833,7 @@ function renderTrend() {
     });
     if (o.ing) g += `<line x1="${x - 6}" x2="${x + bw + 6}" y1="${y(o.ing)}" y2="${y(o.ing)}" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" style="pointer-events:none"/>`;
     const [yy, mo] = o.p.split("-");
-    g += `<text x="${L + slot * i + slot / 2}" y="${H - 10}" text-anchor="middle" style="${sel ? "fill:var(--ink);font-weight:650" : ""}">${MESES[+mo - 1].slice(0, 3)} ${yy.slice(2)}</text>`;
+    g += `<text x="${L + slot * i + slot / 2}" y="${H - 10}" text-anchor="middle" style="${sel ? "fill:var(--ink);font-weight:650" : ""}">${esc(/^\d{4}-\d{2}$/.test(o.p) ? `${MESES[+mo - 1].slice(0, 3)} ${yy.slice(2)}` : o.p)}</text>`;
   });
   $("trend").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Evolución mensual" style="display:block;max-width:100%">${bg}${g}</svg>`;
   $("trend").querySelectorAll("[data-p]").forEach(rc => rc.addEventListener("click", () => { S.period = rc.dataset.p; hideTip(); render(); }));
