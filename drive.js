@@ -15,7 +15,14 @@
   const API = "https://www.googleapis.com/drive/v3/files";
   const UPLOAD = "https://www.googleapis.com/upload/drive/v3/files";
 
-  let cfg = null;                            // { clientId, apiKey, appId } (los pone el usuario una vez)
+  // Proyecto «Finanzas» de Google Cloud. No son secretos: el ID de cliente solo admite el origen
+  // https://xabierplaza.github.io y la clave solo sirve para Google Picker desde ese sitio.
+  const DEFAULT_CFG = location.hostname === "xabierplaza.github.io" ? {
+    clientId: "73774599492-08m9ak2susj02mrhs0fo1bis8sfcm2t1.apps.googleusercontent.com",
+    apiKey: "AIzaSyBYqxncRj0APWWigN5ESr7GMhKJAWtgAUA",
+    appId: "73774599492",
+  } : null;
+  let cfg = null;                            // { clientId, apiKey, appId } (DEFAULT_CFG o los del usuario)
   let state = { connected: false };          // { connected, fileId, name, version, lastSync, error }
   let token = null, tokenExp = 0, tokenClient = null, syncing = null, timer = null;
   const listeners = new Set();
@@ -168,7 +175,8 @@
       error: state.error || null, needsAuth: !!state.needsAuth, syncing: !!syncing, pending: F.pending.length, online: navigator.onLine };
   }
   async function init() {
-    cfg = (await F.kvGet("driveConfig").catch(() => null)) || null;
+    const saved = await F.kvGet("driveConfig").catch(() => null);
+    cfg = saved?.clientId ? saved : DEFAULT_CFG;
     state = (await F.kvGet("driveState").catch(() => null)) || { connected: false };
     try { const t = JSON.parse(sessionStorage.getItem("gdToken") || "null"); if (t && Date.now() < t.tokenExp) ({ token, tokenExp } = t); } catch (e) { /* opcional */ }
     F.onChange(() => { if (state.connected) schedule(1500); });
