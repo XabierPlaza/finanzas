@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-t/qiQGEVWWa9GUMH1AKOImQGSCltF15GK8BXpsIy7Xw=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jdDfX0a8YBqCfv2LovvPkUqlLHm1yr+1mDPo8LKcxo4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -373,7 +373,7 @@ table.data .num { text-align: right; }
 #errorBox { display: none; margin-top: 16px; padding: 14px 18px; border-radius: 12px; background: color-mix(in srgb, var(--critical) 10%, var(--surface)); font-size: 14px; }
 
 /* diálogos */
-dialog { border: 0; outline: none; border-radius: 14px; padding: 0; background: var(--surface); color: var(--ink); width: min(680px, calc(100vw - 32px)); max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); overflow: hidden; box-shadow: 0 20px 60px rgba(15,30,60,.25); }
+dialog { border: 0; outline: none; border-radius: 14px; padding: 0; background: var(--surface); color: var(--ink); width: min(680px, calc(100% - 32px)); max-width: none; max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); overflow: hidden; box-shadow: 0 20px 60px rgba(15,30,60,.25); }
 /* el contenido se desplaza dentro; título (con la X) y botones quedan siempre a la vista */
 dialog[open] { display: flex; flex-direction: column; }
 dialog > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
@@ -381,6 +381,7 @@ dialog form > h3 { position: sticky; top: 0; z-index: 2; }
 dialog form > .actions { position: sticky; bottom: 0; z-index: 2; }
 .dlg-x { z-index: 3; }
 dialog::backdrop { background: var(--backdrop); }
+html:has(dialog[open]) { overflow: hidden; }
 dialog:focus, dialog:focus-visible { outline: none; }
 dialog form { padding: 0; display: grid; gap: 18px; }
 dialog form > :not(h3) { margin: 0 32px; }
@@ -388,7 +389,7 @@ dialog form > h3 + * { margin-top: 8px; }
 @media (max-width: 560px) {
   dialog form > :not(h3) { margin: 0 18px; }
   /* móvil: hoja que sube desde abajo, a todo el ancho */
-  dialog { width: 100vw; max-width: 100vw; margin: auto 0 0; max-height: 92vh; max-height: 92dvh; border-radius: 16px 16px 0 0; }
+  dialog { width: 100%; max-width: 100%; margin: auto 0 0; max-height: 92vh; max-height: 92dvh; border-radius: 16px 16px 0 0; }
   dialog h3 { padding: 18px 60px 18px 18px; border-radius: 16px 16px 0 0; }
   .dlg-x { top: 12px; right: 10px; }
   dialog form > .actions { padding: 12px 18px calc(12px + env(safe-area-inset-bottom)); border-radius: 0; flex-wrap: wrap; }
@@ -419,6 +420,8 @@ dialog .btn { min-height: 40px; padding: 9px 20px; font-weight: 600; }
 dialog .btn.danger { padding-left: 0; }
 .dlg-x { position: absolute; top: 14px; right: 16px; margin: 0 !important; width: 36px; height: 36px; border: 0; border-radius: 8px; background: transparent; color: #fff; display: grid; place-items: center; opacity: .85; }
 .dlg-x:hover { background: rgba(255,255,255,.14); opacity: 1; }
+.dlg-x:focus { outline: none; }
+.dlg-x:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
 .dlg-x svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .dlg-label { font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: -10px !important; }
 .actions .sp { flex: 1; }
@@ -558,7 +561,7 @@ dialog .btn.danger { padding-left: 0; }
 <div id="toast" role="status" aria-live="polite"></div>
 <datalist id="credList"></datalist>
 
-<dialog id="dlg-mov"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
+<dialog id="dlg-mov" tabindex="-1"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
   <h3 data-t-new="Nuevo movimiento" data-t-edit="Editar movimiento"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <p class="dlg-label">Tipo</p>
   <div class="types" role="group" aria-label="Tipo">
@@ -589,7 +592,7 @@ dialog .btn.danger { padding-left: 0; }
   <div class="actions"><button class="btn danger" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div>
 </form></dialog>
 
-<dialog id="dlg-datos"><form method="dialog" class="plain">
+<dialog id="dlg-datos" tabindex="-1"><form method="dialog" class="plain">
   <h3>Datos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div id="datosBody" style="display:grid;gap:14px"></div>
   <div class="err" id="datosErr"></div>
@@ -597,7 +600,7 @@ dialog .btn.danger { padding-left: 0; }
 </form></dialog>
 <input type="file" id="fileImport" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
 
-<dialog id="dlg-per"><form method="dialog" data-tabla="periodos" data-new="/api/periodo">
+<dialog id="dlg-per" tabindex="-1"><form method="dialog" data-tabla="periodos" data-new="/api/periodo">
   <h3 data-t-new="Nuevo mes" data-t-edit="Editar mes"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="f2">
     <label class="fld">Mes<input name="Periodo" type="month" required></label>
@@ -1101,7 +1104,7 @@ function openDialog(kind, opts = {}) {
   }
   if (kind === "per") { syncPerForm(f); if (rec) updateRecurEdit(opts.id); }
   syncSelects();
-  dlg.showModal(); dlg.querySelector("form").scrollTop = 0;
+  dlg.showModal(); dlg.focus(); dlg.querySelector("form").scrollTop = 0;
 }
 function prepareNewPeriod(f, mes) {
   const ps = S.data.periodos.map(p => p.Periodo).sort(), last = ps.at(-1);
@@ -1320,7 +1323,7 @@ async function renderDatos() {
     if (a === "off") { if (!confirm("Se desconectará Google Drive. Los datos seguirán en este dispositivo. ¿Continuar?")) return; return datosAction(() => FinanzasDrive.disconnect(), "Google Drive desconectado"); }
   });
 }
-async function openDatos() { $("datosErr").textContent = ""; $("datosBody").innerHTML = '<p class="muted">Cargando…</p>'; $("dlg-datos").showModal(); $("dlg-datos").querySelector("form").scrollTop = 0; await renderDatos(); }
+async function openDatos() { $("datosErr").textContent = ""; $("datosBody").innerHTML = '<p class="muted">Cargando…</p>'; $("dlg-datos").showModal(); $("dlg-datos").focus(); $("dlg-datos").querySelector("form").scrollTop = 0; await renderDatos(); }
 $("btnDatos").onclick = openDatos;
 $("fileImport").onchange = async e => {
   const f = e.target.files[0]; e.target.value = "";
