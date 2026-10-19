@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jdDfX0a8YBqCfv2LovvPkUqlLHm1yr+1mDPo8LKcxo4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-s8I09qEeVEsDdNwIZ1LXqmj0J1xDf170IibbIxLVzS8=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -140,6 +140,37 @@ main > :first-child { margin-top: 0; }
   .side-nav a { flex-direction: column; justify-content: center; gap: 4px; padding: 8px 4px; font-size: 12px; line-height: 1.2;
                 text-align: center; white-space: normal; }
 }
+/* resumen del mes: ingresos, reparto en una barra y las 4 cifras */
+.summary { padding: 20px 24px; }
+.sum-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.sum-total { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-top: 2px; }
+.sum-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+.sum-add { display: inline-flex; align-items: center; gap: 6px; flex: none; }
+.sum-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.sum-bar { display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden; background: var(--soft); margin: 16px 0 14px; }
+.sum-bar span { height: 100%; min-width: 3px; }
+.sum-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.sum-item { border: 1px solid transparent; background: none; text-align: left; padding: 8px 10px; border-radius: 9px; cursor: pointer; color: var(--ink); min-width: 0; display: block; }
+.sum-item:hover { background: var(--soft); }
+.sum-item.on { border-color: var(--accent); background: var(--tint); }
+.sum-item .l { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-2); }
+.sum-item .v { display: block; font-size: 17px; font-weight: 650; margin-top: 3px; white-space: nowrap; }
+.sum-item .v.neg { color: var(--critical); }
+.sum-item .p { font-size: 12px; color: var(--muted); }
+/* móvil: botón flotante para añadir, siempre a mano */
+.fab { display: none; }
+@media (max-width: 680px) {
+  .summary { padding: 16px; }
+  .sum-total { font-size: 24px; }
+  .sum-add { display: none; }
+  .sum-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .sum-item { padding: 6px 8px; }
+  .sum-item .v { font-size: 15.5px; }
+  .fab { display: grid; place-items: center; position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; width: 56px; height: 56px;
+         border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 18px rgba(0, 0, 0, .25); cursor: pointer; }
+  .fab svg { width: 22px; height: 22px; }
+  .shell { padding-bottom: 100px; }
+}
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; min-width: 0; }
 section.card { margin-top: 16px; }
 .row { display: grid; gap: 16px; margin-top: 16px; }
@@ -152,20 +183,6 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .lead { color: var(--ink-2); margin: 0; font-size: 13.5px; }
 .sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
 
-/* barra de acciones: un solo bloque, celdas iguales; las líneas son el hueco de 1px sobre el color del borde */
-.toolbar { padding: 0; overflow: hidden; }
-.actions-bar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) 6px repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--border); }
-.actions-bar button { border: 0; background: var(--surface); padding: 14px 10px; display: flex; align-items: center; justify-content: center; gap: 9px; font-size: 13.5px; color: var(--ink); white-space: nowrap; min-width: 0; }
-.actions-bar button:hover { background: var(--tint); color: var(--accent); }
-.actions-bar button:focus { outline: none; }
-.actions-bar button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.actions-bar .divider { background: var(--soft); }
-.actions-bar svg { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--accent); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-@media (max-width: 980px) {
-  .actions-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .actions-bar .divider { grid-column: 1 / -1; height: 6px; }
-  .actions-bar button:last-child { grid-column: 1 / -1; }
-}
 /* selector de tipo en el formulario */
 .types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 @media (max-width: 520px) { .types { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -203,17 +220,6 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .notice { display: inline-flex; gap: 8px; align-items: center; margin-top: 14px; font-size: 13.5px; color: var(--ink-2); background: var(--tint); padding: 7px 12px; border-radius: 8px; }
 
 /* KPIs en bloques azules (estilo de la plantilla) */
-.kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
-.kpi { border-radius: 10px; padding: 14px 16px; color: #fff; background: linear-gradient(135deg, var(--navy-1), var(--navy-2)); border: 1px solid var(--kpi-border); }
-.kpi[data-catkpi] { cursor: pointer; transition: transform .12s; }
-.kpi[data-catkpi]:hover { transform: translateY(-2px); }
-.kpi.on { box-shadow: 0 0 0 2px var(--accent); }
-.kpi.light { background: var(--surface); color: var(--ink); border: 1px solid var(--border); }
-.kpi .k-l { font-size: 12px; opacity: .92; display: flex; gap: 6px; align-items: center; }
-.kpi .k-v { font-size: 21px; font-weight: 650; letter-spacing: -.01em; margin-top: 4px; }
-.kpi .k-s { font-size: 11.5px; opacity: .85; margin-top: 1px; }
-.kpi .sw { box-shadow: 0 0 0 1.5px rgba(255,255,255,.85); }
-@media (max-width: 960px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* paneles de ingresos y ahorro */
 .p-label { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -293,12 +299,6 @@ table.data .num { text-align: right; }
   .nav-in { padding: 10px 20px; gap: 8px; }
   .period > button { width: 26px; height: 28px; }
   .period select { font-size: 13.5px; padding: 4px 4px; }
-  /* barra de añadir: sin la franja separadora entre los dos grupos */
-  .actions-bar .divider { display: none; }
-}
-@media (max-width: 960px) {
-  /* 5 tarjetas en 2 columnas: la última ocupa la fila entera */
-  .kpis > .kpi:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 /* tablas → fichas: sin desplazamiento lateral */
 @media (max-width: 600px) {
@@ -452,6 +452,7 @@ dialog .btn.danger { padding-left: 0; }
       <button class="menu-btn" id="btnMenu" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="topMenu" aria-label="Menú y ajustes" title="Menú y ajustes">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span class="dot" id="syncDot"></span></button>
       <div class="top-menu" id="topMenu" role="menu" hidden>
+        <button type="button" role="menuitem" data-open="per"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Crear mes nuevo</button>
         <button type="button" role="menuitem" id="btnEditMes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>Editar el mes</button>
         <button type="button" role="menuitem" id="btnExcel"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>Abrir el Excel</button>
         <button type="button" role="menuitem" id="btnDatos"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span id="btnDatosLbl">Ubicación de los datos</span></button>
@@ -489,20 +490,7 @@ dialog .btn.danger { padding-left: 0; }
     </div>
   </div>
 
-  <div class="card toolbar" id="sec-resumen">
-    <div class="actions-bar" role="toolbar" aria-label="Añadir">
-      <button type="button" data-open="mov" data-cat="Pago de Deudas"><span class="sw" style="background:var(--c3)"></span>Pago de deuda</button>
-      <button type="button" data-open="mov" data-cat="Ahorro e Inversión"><span class="sw" style="background:var(--c2)"></span>Ahorro / inversión</button>
-      <button type="button" data-open="mov" data-cat="Gastos Fijos"><span class="sw" style="background:var(--c1)"></span>Gasto fijo</button>
-      <button type="button" data-open="mov" data-cat="Gastos Variables"><span class="sw" style="background:var(--c4)"></span>Gasto variable</button>
-      <span class="divider" aria-hidden="true"></span>
-      <button type="button" data-open="mov" data-cat="Ingreso extra"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10"/></svg>Ingreso extra</button>
-      <button type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="10" height="12" rx="1.5"/><path d="M5.8 5.8h4.4M5.8 8.5h4.4M5.8 11.2h2.4"/></svg>Nueva deuda</button>
-      <button type="button" data-open="per"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="10" rx="1.5"/><path d="M2.5 6.8h11M5.5 2v3M10.5 2v3"/></svg>Nuevo mes</button>
-    </div>
-  </div>
-
-  <div class="kpis" id="kpis"></div>
+  <section class="card summary" id="sec-resumen" aria-label="Resumen del mes"></section>
 
   <div class="row row-3" id="sec-mes">
     <div class="card" id="income"></div>
@@ -618,6 +606,8 @@ dialog .btn.danger { padding-left: 0; }
   <div class="err"></div>
   <div class="actions"><button class="btn danger" type="button" data-del>Eliminar mes</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div>
 </form></dialog>
+
+<button class="fab" type="button" data-open="mov" aria-label="Añadir movimiento" title="Añadir"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
 
 <script>
 "use strict";
@@ -738,12 +728,13 @@ function debts() {
 function render() {
   if (!S.data) return;
   const m = month(S.period);
-  renderPeriod(); renderHero(m); renderKpis(m); renderIncome(m); renderSaving(m);
+  renderPeriod(); renderHero(m); renderSummary(m); renderIncome(m); renderSaving(m);
   renderDonut(m); renderTrend(); renderDebts(); renderMovs(); renderNotices(m); renderFooter(); fillForms(); syncSelects();
 }
 function renderPeriod() {
   const ps = periods(), i = ps.indexOf(S.period);
-  $("periodSel").innerHTML = ps.map(p => `<option value="${esc(p)}"${p === S.period ? " selected" : ""}>${esc(perName(p))}</option>`).join("");
+  $("periodSel").innerHTML = ps.map(p => `<option value="${esc(p)}"${p === S.period ? " selected" : ""}>${esc(perName(p))}</option>`).join("") +
+    `<option value="__nuevo">+ Crear mes nuevo</option>`;
   $("prev").disabled = i <= 0; $("next").disabled = i < 0 || i >= ps.length - 1;
   $("btnEditMes").hidden = !cfgOf(S.period);
 }
@@ -761,16 +752,23 @@ function renderHero(m) {
     <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
     <div class="hero-stats"><div>Presupuesto<b class="num">${eur(m.variable)}</b></div><div>Gastado<b class="num">${eur(m.gastado)}</b></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>${notice}`;
 }
-function renderKpis(m) {
-  const ds = debts(), pend = ds.filter(x => !x.paid);
-  const tiles = [
-    ["Ingresos", null, eur(m.ingresos), m.extra ? `Nómina + ${eur(m.extra)} extra` : "Nómina"],
-    ["Pagos de deudas", "Pago de Deudas", eur(m.deudas), `${pct(m.ingresos ? m.deudas / m.ingresos : 0)} de los ingresos`],
-    ["Ahorro objetivo", "Ahorro e Inversión", eur(m.ahorro), m.modo === "Importe" ? `Cantidad fija · invertido ${eur(m.ahorroReal)}` : `${pct(m.pctA)} · invertido ${eur(m.ahorroReal)}`],
-    ["Gastos fijos", "Gastos Fijos", eur(m.fijos), `${pct(m.ingresos ? m.fijos / m.ingresos : 0)} de los ingresos`],
-    ["Deuda pendiente", null, eur(pend.reduce((a, x) => a + x.rest, 0)), `${pend.length} de ${ds.length} deudas`],
-  ];
-  $("kpis").innerHTML = tiles.map(([l, c, v, s]) => `<div class="kpi${c && S.cat === c ? " on" : ""}"${c ? ` data-catkpi="${esc(c)}" title="Ver el detalle de ${esc(l.toLowerCase())}"` : ""}><div class="k-l">${c ? `<span class="sw" style="background:${col(c)}"></span>` : ""}${l}</div><div class="k-v num">${v}</div><div class="k-s">${s}</div></div>`).join("");
+const SUM_LABEL = { "Pago de Deudas": "Deudas", "Ahorro e Inversión": "Ahorro", "Gastos Fijos": "Fijos", "Gastos Variables": "Para variables" };
+function renderSummary(m) {
+  const base = Math.max(m.ingresos, CATS.reduce((a, k) => a + Math.max(0, m.budget[k]), 0));
+  const bar = base > 0 ? CATS.filter(k => m.budget[k] > 0).map(k =>
+    `<span style="flex:${m.budget[k] / base} 0 0;background:${col(k)}" title="${esc(SUM_LABEL[k])}: ${eur(m.budget[k])}"></span>`).join("") : "";
+  const sub = !m.cfg ? "Mes sin configurar" : m.extra ? `Nómina ${eur(m.nomina)} + ${eur(m.extra)} extra` : "Nómina";
+  $("sec-resumen").innerHTML = `
+    <div class="sum-head">
+      <div><p class="eyebrow" style="margin:0">Ingresos de ${esc(monthName(S.period))}</p>
+        <div class="sum-total num">${eur(m.ingresos)}</div><div class="sum-sub">${sub}</div></div>
+      <button class="btn primary sum-add" type="button" data-open="mov"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir</button>
+    </div>
+    <div class="sum-bar" role="img" aria-label="Reparto de los ingresos">${bar}</div>
+    <div class="sum-items">${CATS.map(k => `<button class="sum-item${S.cat === k ? " on" : ""}" type="button" data-catkpi="${esc(k)}" title="Ver los movimientos de ${esc(SUM_LABEL[k].toLowerCase())}">
+      <span class="l"><span class="sw" style="background:${col(k)}"></span>${esc(SUM_LABEL[k])}</span>
+      <span class="v num${m.budget[k] < 0 ? " neg" : ""}">${eur(m.budget[k])}</span>
+      <span class="p">${pct(m.ingresos ? m.budget[k] / m.ingresos : 0)}</span></button>`).join("")}</div>`;
 }
 
 function renderIncome(m) {
@@ -815,7 +813,7 @@ function renderSaving(m) {
   const preview = v => {
     const c = cfgOf(S.period); if (!c) return;
     c[field] = isPct ? v / 100 : v;
-    const mm = month(S.period); renderHero(mm); renderKpis(mm); renderDonut(mm); note(v);
+    const mm = month(S.period); renderHero(mm); renderSummary(mm); renderDonut(mm); note(v);
   };
   const range = $("savRange"), inp = $("savInp");
   // ancho a medida del texto real (tipografía, negrita y relleno incluidos)
@@ -886,7 +884,7 @@ function renderDonut(m) {
   document.querySelectorAll("#donut [data-cat], #legend [data-cat]").forEach(el => el.addEventListener("click", () => setCat(S.cat === el.dataset.cat ? "all" : el.dataset.cat)));
   bindTips($("donut"));
 }
-function setCat(c) { S.cat = c; S.movPage = 0; hideTip(); const m = month(S.period); renderDonut(m); renderMovs(); renderKpis(m); }
+function setCat(c) { S.cat = c; S.movPage = 0; hideTip(); const m = month(S.period); renderDonut(m); renderMovs(); renderSummary(m); }
 
 // vista Gráfico: barras por concepto del mes seleccionado
 function renderChart(m) {
@@ -1245,7 +1243,10 @@ $("detailView").querySelectorAll("button").forEach(b => b.addEventListener("clic
 }));
 { const v = store.get("detailView"); if (v === "chart" || v === "list") S.detailView = v; }
 $("btnEditMes").onclick = () => openDialog("per", { id: S.period });
-$("periodSel").onchange = e => { S.period = e.target.value; S.movPage = 0; render(); };
+$("periodSel").onchange = e => {
+  if (e.target.value === "__nuevo") { e.target.value = S.period || ""; e.target._ddSync?.(); openDialog("per", {}); return; }
+  S.period = e.target.value; S.movPage = 0; render();
+};
 $("prev").onclick = () => { const ps = periods(), i = ps.indexOf(S.period); if (i > 0) { S.period = ps[i - 1]; render(); } };
 $("next").onclick = () => { const ps = periods(), i = ps.indexOf(S.period); if (i < ps.length - 1) { S.period = ps[i + 1]; render(); } };
 $("debtCred").onchange = e => { S.debtCred = e.target.value; renderDebts(); };
