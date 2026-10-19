@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wRrD0RbQVaCoCmuLzCRxDcW5bL8R+RXs9rn6IkivrzY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3QWcEURBq2X7ZRjG4NhOnM+3DJZGueHm9vWtPoUnrXs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -400,6 +400,8 @@ dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; pad
 .f2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 560px) { .f2 { grid-template-columns: 1fr; } }
 .check { display: flex; gap: 10px; align-items: center; font-size: 13.5px; color: var(--ink-2); }
+.checks { display: grid; gap: 10px; }
+.check:has(input:disabled) { opacity: .55; }
 .check input { width: 17px; height: 17px; accent-color: var(--accent); }
 .actions { display: flex; gap: 10px; margin-top: 4px; align-items: center; }
 /* pie del formulario: franja separada con las acciones */
@@ -569,7 +571,10 @@ dialog .btn.danger { padding-left: 0; }
     <label class="fld" data-modo="Importe">Cantidad (€)<input name="Importe_Ahorro" inputmode="decimal"></label>
   </div>
   <label class="fld">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
-  <label class="check" data-new-only><input type="checkbox" name="copiar_recurrentes" checked><span>Copiar gastos fijos y ahorro / inversión del último mes <span class="muted" id="fijosHint"></span></span></label>
+  <div class="checks" data-new-only>
+    <label class="check"><input type="checkbox" name="copiar_fijos" checked><span>Copiar los gastos fijos del último mes <span class="muted" id="hintFijos"></span></span></label>
+    <label class="check"><input type="checkbox" name="copiar_ahorro" checked><span>Copiar el ahorro e inversión del último mes <span class="muted" id="hintAhorro"></span></span></label>
+  </div>
   <div class="recur" data-edit-only><span id="recurHint" class="muted"></span><button class="link" type="button" id="btnRecur" style="padding:0">Copiar del mes anterior</button></div>
   <p class="hint" data-edit-only>Eliminar el mes borra también sus movimientos e ingresos extra.</p>
   <div class="err"></div>
@@ -1066,9 +1071,14 @@ function recurHint(per) {
   const parts = [fijos && `${fijos} gasto${fijos === 1 ? "" : "s"} fijo${fijos === 1 ? "" : "s"}`, ahorro && `${ahorro} de ahorro / inversión`].filter(Boolean);
   return `${parts.join(" y ")}, ${eur(items.reduce((a, m) => a + n(m.Importe), 0))}`;
 }
+// nuevo mes: cada casilla indica cuántos apuntes copiaría; si no hay nada que copiar se desactiva
 function updateFijosHint(f) {
-  const h = recurHint(f.elements["Periodo"].value);
-  $("fijosHint").textContent = h ? `(${h})` : "(no hay nada que copiar)";
+  const items = recurrentesPara(f.elements["Periodo"].value);
+  for (const [cat, name, hint] of [["Gastos Fijos", "copiar_fijos", "hintFijos"], ["Ahorro e Inversión", "copiar_ahorro", "hintAhorro"]]) {
+    const its = items.filter(m => m.Categoría === cat), box = f.elements[name];
+    $(hint).textContent = its.length ? `(${its.length}, ${eur(its.reduce((a, m) => a + n(m.Importe), 0))})` : "(no hay nada que copiar)";
+    box.disabled = !its.length; box.checked = !!its.length;
+  }
 }
 function updateRecurEdit(per) {
   const h = recurHint(per);
@@ -1095,7 +1105,7 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
     if (e.submitter?.value === "cancel") return;
     e.preventDefault();
     if (!f.reportValidity()) return;
-    const body = Object.fromEntries([...new FormData(f).entries()].filter(([k]) => k !== "copiar_recurrentes"));
+    const body = Object.fromEntries([...new FormData(f).entries()].filter(([k]) => !k.startsWith("copiar_")));
     const tabla = f.dataset.tabla, id = f.dataset.id;
     if ("Pct_Ahorro" in body) { const v = parseNum(body.Pct_Ahorro); if (v === null) delete body.Pct_Ahorro; else body.Pct_Ahorro = v / 100; }
     if (tabla === "deudas") {
@@ -1109,9 +1119,9 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
         if (tabla === "periodos") delete body.Periodo;
         await api("/api/actualizar", { tabla, id, campos: body }); toast("Cambios guardados en el Excel");
       } else {
-        if (f.elements["copiar_recurrentes"]) body.copiar_recurrentes = f.elements["copiar_recurrentes"].checked;
+        if (f.elements["copiar_fijos"]) { body.copiar_fijos = f.elements["copiar_fijos"].checked; body.copiar_ahorro = f.elements["copiar_ahorro"].checked; }
         const r = await api(f.dataset.new, body);
-        if (tabla === "periodos") { S.period = r.registro.Periodo; toast(`Mes creado${r.registro.copiados ? ` con ${r.registro.copiados} gastos fijos y aportaciones copiados` : ""}`); }
+        if (tabla === "periodos") { S.period = r.registro.Periodo; toast(`Mes creado${r.registro.copiados ? ` con ${r.registro.copiados} apunte${r.registro.copiados === 1 ? "" : "s"} copiado${r.registro.copiados === 1 ? "" : "s"}` : ""}`); }
         else toast("Guardado en el Excel");
       }
       f.closest("dialog").close(); await load();

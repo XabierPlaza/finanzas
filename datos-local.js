@@ -154,7 +154,10 @@
       if (md === "Porcentaje" && rec.Pct_Ahorro === null) throw new UserError("Falta el % de ahorro.");
       if (m.periodos.some(r => r.Periodo === per)) throw new UserError(`El mes ${per} ya existe.`);
       m.periodos.push(rec);
-      const copia = (p.copiar_recurrentes ?? p.copiar_fijos ?? true) ? recurrentesPara(per, m.movimientos) : [];
+      // qué copiar del último mes: gastos fijos y/o ahorro e inversión («copiar_recurrentes» = ambos, por compatibilidad)
+      const todo = p.copiar_recurrentes ?? true;
+      const cats = [["Gastos Fijos", p.copiar_fijos], ["Ahorro e Inversión", p.copiar_ahorro]].filter(([, v]) => v ?? todo).map(([c]) => c);
+      const copia = cats.length ? recurrentesPara(per, m.movimientos, cats) : [];
       copia.forEach(c => add(m, "movimientos", { ID: null, ...c }));
       return { ...rec, copiados: copia.length };
     },
