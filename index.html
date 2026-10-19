@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3NOAoUnz3OwLimg6H4qCjKKlEt+xHqvDmT0lDq5mRxY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-UEJv91P9HmZOgB1Fma7fHrSfwDo+cxAc8smAQy45Dz8=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -158,13 +158,15 @@ main > :first-child { margin-top: 0; }
          font-size: 13.5px; font-weight: 650; color: var(--ink); }
 .sub-h > span { display: inline-flex; align-items: center; gap: 8px; }
 .sav-list, .var-list { margin-top: 14px; }
-.btn.add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; border-color: var(--accent); color: var(--accent); background: transparent; font-weight: 600; }
-.btn.add-btn:hover { background: var(--tint); }
+.btn.add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; border-color: var(--accent); color: var(--accent-ink); background: var(--accent); font-weight: 600; }
+.btn.add-btn:hover { background: var(--accent-2); }
+.icon-gap { display: inline-block; width: 28px; }
 .add-btn svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
   .btn.add-btn { width: 100%; justify-content: center; min-height: 44px; }
   .inc-list .icon-btn { width: 40px; height: 40px; font-size: 17px; }
+  .inc-list .icon-gap { width: 40px; }
 }
 @media (max-width: 680px) {
   .side .news, .side-foot { display: none !important; }
@@ -722,11 +724,15 @@ const lab = c => CAT_LABEL[c] || c;
 const byAmount = (a, b) => n(b.Importe) - n(a.Importe);
 const byNewest = (a, b) => String(b.ID).localeCompare(String(a.ID));
 // apuntes de una categoría dentro de su tarjeta: 5 a la vista y «Ver los N» para desplegar; al tocarlos se editan
+const itemRow = (tabla, id, concept, amount, extra = "") => `<li class="clk" data-edit="${tabla}" data-id="${esc(id)}"><span>${esc(concept || "—")}${extra}</span>
+  <span class="r"><span class="num" style="margin-right:6px">${eur(amount)}</span>
+  <button class="icon-btn" type="button" data-edit="${tabla}" data-id="${esc(id)}" aria-label="Editar ${esc(concept)}" title="Editar">✎</button>
+  <button class="icon-btn del" type="button" data-delete="${tabla}" data-id="${esc(id)}" data-name="${esc(concept)}" aria-label="Eliminar ${esc(concept)}" title="Eliminar">✕</button></span></li>`;
 const addBtn = (cat, label) => `<button class="btn add-btn" type="button" data-open="mov" data-cat="${esc(cat)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>${label}</button>`;
 function catList(m, cat, { sort, empty, add }) {
   const all = m.movs.filter(x => x.Categoría === cat).sort(sort), open = S.open[cat];
   const list = all.length
-    ? `<ul class="inc-list">${(open ? all : all.slice(0, 5)).map(x => `<li class="clk" data-edit="movimientos" data-id="${esc(x.ID)}" title="Ver o editar"><span>${esc(x.Concepto || "—")}</span><span class="num">${eur(x.Importe)}</span></li>`).join("")}</ul>`
+    ? `<ul class="inc-list">${(open ? all : all.slice(0, 5)).map(x => itemRow("movimientos", x.ID, x.Concepto, x.Importe)).join("")}</ul>`
     : (empty ? `<p class="muted c-empty">${empty}</p>` : "");
   const more = all.length > 5 ? `<div class="list-acts"><button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button></div>` : "";
   return list + more + (add ? addBtn(cat, add) : "");
@@ -769,8 +775,8 @@ function renderSummary(m) {
   // 1 · ingresos
   $("cIng").innerHTML = `${head(1, "Ingresos")}<div class="p-val num">${eur(m.ingresos)}</div>` + (m.cfg ? `
     <ul class="inc-list">
-      <li class="clk" id="nominaRow" title="Toca para editar"><span>Nómina</span><span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button></span></li>
-      ${m.extras.map(i => `<li class="clk" data-edit="ingresos" data-id="${esc(i.ID)}" title="Ver o editar"><span>${esc(i.Concepto)} <span class="muted" style="font-size:12px">· extra</span></span><span class="num">${eur(i.Importe)}</span></li>`).join("")}
+      <li class="clk" id="nominaRow" title="Toca para editar"><span>Nómina</span><span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button><span class="icon-gap"></span></span></li>
+      ${m.extras.map(i => itemRow("ingresos", i.ID, i.Concepto, i.Importe, ` <span class="muted" style="font-size:12px">· extra</span>`)).join("")}
     </ul>
     ${addBtn("Ingreso extra", "Añadir ingreso")}`
     : `<p class="muted" style="margin:0">Mes sin configurar · <button class="link" type="button" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></p>`);
@@ -1140,12 +1146,12 @@ document.addEventListener("click", e => {
   if (pay) { openDialog("mov", { cat: "Pago de Deudas", debtId: pay.dataset.pay }); return; }
   const more = e.target.closest("[data-more]");
   if (more) { S.open[more.dataset.more] = !S.open[more.dataset.more]; renderSummary(month(S.period)); return; }
+  const del = e.target.closest("[data-delete]");
+  if (del) { deleteRecord(del.dataset.delete, del.dataset.id, del.dataset.name); return; }
   const ed = e.target.closest("[data-edit]");
   if (ed) { hideTip(); openDialog(DLG[ed.dataset.edit], { id: ed.dataset.id, tabla: ed.dataset.edit }); return; }
   const rc = e.target.closest("[data-recur]");
   if (rc) { copyRecurrentes(rc.dataset.recur); return; }
-  const del = e.target.closest("[data-delete]");
-  if (del) { deleteRecord(del.dataset.delete, del.dataset.id, del.dataset.name); return; }
 });
 $("btnEditMes").onclick = () => openDialog("per", { id: S.period });
 // móvil: el botón flotante de añadir aparece cuando el del resumen ya no se ve
