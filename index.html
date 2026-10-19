@@ -432,6 +432,10 @@ dialog .btn.danger { padding-left: 0; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
 .hint { font-size: 12.5px; color: var(--muted); margin-top: -8px !important; }
+/* radios anidados: un botón dentro de un contenedor lleva la mitad de su radio
+   (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
+.card .btn, .card .dd-btn, .card .chip, .card .sel, .card .inp, .card .seg, .side-nav a, .top-menu button, .top-menu .seg { border-radius: 6px; }
+.card .seg button, .top-menu .seg button { border-radius: 3px; }
 </style>
 </head>
 <body>
