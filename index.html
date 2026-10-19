@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-s8I09qEeVEsDdNwIZ1LXqmj0J1xDf170IibbIxLVzS8=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-kjuO16i6O3vksXrEsABYpSIVX42ClUeEOTC7dqrCOkM=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -141,7 +141,7 @@ main > :first-child { margin-top: 0; }
                 text-align: center; white-space: normal; }
 }
 /* resumen del mes: ingresos, reparto en una barra y las 4 cifras */
-.summary { padding: 20px 24px; }
+.summary { padding: 20px 24px; margin-top: 0 !important; }
 .sum-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .sum-total { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-top: 2px; }
 .sum-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
@@ -162,13 +162,14 @@ main > :first-child { margin-top: 0; }
 @media (max-width: 680px) {
   .summary { padding: 16px; }
   .sum-total { font-size: 24px; }
-  .sum-add { display: none; }
+  .sum-add { padding: 7px 12px; }
   .sum-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
   .sum-item { padding: 6px 8px; }
   .sum-item .v { font-size: 15.5px; }
-  .fab { display: grid; place-items: center; position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; width: 56px; height: 56px;
+  .fab { display: grid; opacity: 0; transform: scale(.6); pointer-events: none; transition: opacity .18s, transform .18s; place-items: center; position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; width: 56px; height: 56px;
          border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 18px rgba(0, 0, 0, .25); cursor: pointer; }
   .fab svg { width: 22px; height: 22px; }
+  .fab.show { opacity: 1; transform: none; pointer-events: auto; }
   .shell { padding-bottom: 100px; }
 }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; min-width: 0; }
@@ -1243,6 +1244,9 @@ $("detailView").querySelectorAll("button").forEach(b => b.addEventListener("clic
 }));
 { const v = store.get("detailView"); if (v === "chart" || v === "list") S.detailView = v; }
 $("btnEditMes").onclick = () => openDialog("per", { id: S.period });
+// móvil: el botón flotante de añadir aparece cuando el del resumen ya no se ve
+{ const fab = document.querySelector(".fab"), upd = () => fab.classList.toggle("show", $("sec-resumen").getBoundingClientRect().bottom < 60);
+  addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd(); }
 $("periodSel").onchange = e => {
   if (e.target.value === "__nuevo") { e.target.value = S.period || ""; e.target._ddSync?.(); openDialog("per", {}); return; }
   S.period = e.target.value; S.movPage = 0; render();
