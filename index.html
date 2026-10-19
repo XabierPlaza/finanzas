@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-69/Rsi26mPM0+qA37WlfYs7TDqnDB1I+0Lx9whlzRVM=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-R3ds7IiAZvR7s0YRoNbsog9VoNgTZUB/qAxPOWdzRr4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -201,17 +201,8 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
 
 /* selector de tipo en el formulario */
-.types { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-@media (max-width: 520px) { .types { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.types svg { width: 16px; height: 16px; fill: none; stroke: var(--accent); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.types button:focus { outline: none; }
-.types button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 [hidden] { display: none !important; }
 .f2:has(> [hidden]) { grid-template-columns: 1fr; }
-.types button { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; height: 42px; padding: 0 12px; font-size: 13.5px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--ink); line-height: 1.2; white-space: nowrap; }
-.types button:hover:not(:disabled) { background: var(--soft); }
-.types button[aria-pressed="true"] { border-color: var(--accent); background: var(--tint); color: var(--accent); font-weight: 600; box-shadow: inset 0 0 0 1px var(--accent); }
-.types button:disabled { opacity: .4; cursor: default; background: var(--soft); }
 /* vista lista del detalle */
 .dlist { list-style: none; margin: 0; padding: 0; }
 @media (max-width: 760px) { .dlist { columns: 1; } }
@@ -408,8 +399,6 @@ dialog form > h3 + * { margin-top: 8px; }
   .fld input, .fld select, .fld textarea, .edit-num { font-size: 16px; }
   /* campos de fecha/mes: en iOS tienen un ancho propio que se sale de la columna */
   .fld input[type="month"], .fld input[type="date"] { -webkit-appearance: none; appearance: none; width: 100%; display: block; line-height: 44px; text-align: left; }
-  .types { gap: 6px; }
-  .types button { padding: 0 6px; gap: 6px; font-size: 13px; }
 }
 dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; padding: 20px 64px 20px 32px; background: linear-gradient(135deg, var(--navy-1), var(--navy-2)); color: #fff; border-radius: 14px 14px 0 0; }
 .fld { display: grid; gap: 7px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
@@ -540,15 +529,14 @@ dialog .btn.danger { padding-left: 0; }
 
 <dialog id="dlg-mov" tabindex="-1"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
   <h3 data-t-new="Nuevo movimiento" data-t-edit="Editar movimiento"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-  <p class="dlg-label">Tipo</p>
-  <div class="types" role="group" aria-label="Tipo">
-    <button type="button" data-type="Pago de Deudas"><span class="sw" style="background:var(--c3)"></span>Pago deuda</button>
-    <button type="button" data-type="Ahorro e Inversión"><span class="sw" style="background:var(--c2)"></span>Ahorro</button>
-    <button type="button" data-type="Gastos Fijos"><span class="sw" style="background:var(--c1)"></span>Gasto fijo</button>
-    <button type="button" data-type="Gastos Variables"><span class="sw" style="background:var(--c4)"></span>Gasto variable</button>
-    <button type="button" data-type="Ingreso extra"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5M4.8 6.8 8 10l3.2-3.2M3 13.5h10"/></svg>Ingreso</button>
-    <button type="button" data-type="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="10" height="12" rx="1.5"/><path d="M5.8 5.8h4.4M5.8 8.5h4.4M5.8 11.2h2.4"/></svg>Deuda</button>
-  </div>
+  <label class="fld">Tipo<select id="movType">
+    <option value="Ingreso extra" data-color="var(--accent)">Ingreso extra</option>
+    <option value="Gastos Fijos" data-color="var(--c1)">Gasto fijo</option>
+    <option value="Pago de Deudas" data-color="var(--c3)">Pago de deuda</option>
+    <option value="Ahorro e Inversión" data-color="var(--c2)">Ahorro e inversión</option>
+    <option value="Gastos Variables" data-color="var(--c4)">Gasto variable</option>
+    <option value="Deuda" data-color="var(--c3)">Nueva deuda</option>
+  </select></label>
   <input type="hidden" name="Categoría">
   <div class="f2">
     <label class="fld"><span id="lblConcepto">Concepto</span><input name="Concepto" required></label>
@@ -1018,7 +1006,7 @@ function openDialog(kind, opts = {}) {
   if (kind === "mov") {
     const type = rec ? ({ ingresos: "Ingreso extra", deudas: "Deuda" }[tabla] || rec.Categoría) : (opts.cat || "Gastos Variables");
     // al editar solo se puede cambiar de tipo dentro de la misma hoja del Excel
-    f.querySelectorAll("[data-type]").forEach(b => b.disabled = !!rec && typeTable(b.dataset.type) !== tabla);
+    [...$("movType").options].forEach(o => o.disabled = !!rec && typeTable(o.value) !== tabla);
     if (rec && tabla === "deudas") { f.elements["Concepto"].value = rec.Descripción ?? ""; f.elements["Importe"].value = dec(rec.Importe_Total); }
     setType(f, type);
     if (rec && tabla !== "movimientos") f.querySelector("h3").textContent = tabla === "ingresos" ? "Editar ingreso extra" : "Editar deuda";
@@ -1048,7 +1036,7 @@ function setType(f, t) {
   f.dataset.tabla = tabla;
   f.dataset.new = NEW_ENDPOINT[tabla];
   f.elements["Categoría"].value = tabla === "movimientos" ? t : "";
-  f.querySelectorAll("[data-type]").forEach(b => b.setAttribute("aria-pressed", b.dataset.type === t));
+  $("movType").value = t; $("movType")._ddSync?.();
   f.querySelectorAll("[data-show]").forEach(e => e.hidden = !e.dataset.show.split("|").includes(t));
   f.querySelectorAll("[data-hide]").forEach(e => e.hidden = e.dataset.hide.split("|").includes(t));
   f.elements["Periodo"].required = !debt;
@@ -1137,7 +1125,7 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
   });
 });
 const movForm = document.querySelector("#dlg-mov form"), perForm = document.querySelector("#dlg-per form");
-movForm.querySelectorAll("[data-type]").forEach(b => b.addEventListener("click", () => setType(movForm, b.dataset.type)));
+$("movType").addEventListener("change", e => setType(movForm, e.target.value));
 movForm.elements["ID_Deuda"].addEventListener("change", e => {
   const x = debts().find(d => d.ID_Deuda === e.target.value);
   if (x) { movForm.elements["Acreedor"].value = x.Acreedor; if (!movForm.elements["Concepto"].value) movForm.elements["Concepto"].value = `Pago ${x.Descripción}`; }
@@ -1328,7 +1316,7 @@ function enhanceSelect(sel, variant) {
     if (ddOpen) ddOpen.close(false);
     const menu = document.createElement("div");
     menu.className = "dd-menu"; menu.setAttribute("role", "listbox");
-    menu.innerHTML = [...sel.options].map(o => `<button type="button" class="dd-opt" role="option" data-v="${esc(o.value)}" aria-selected="${o.selected}">${dot(o)}<span>${esc(o.text)}</span><svg class="tk" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>`).join("");
+    menu.innerHTML = [...sel.options].filter(o => !o.disabled).map(o => `<button type="button" class="dd-opt" role="option" data-v="${esc(o.value)}" aria-selected="${o.selected}">${dot(o)}<span>${esc(o.text)}</span><svg class="tk" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>`).join("");
     (sel.closest("dialog") || document.body).appendChild(menu);
     const r = btn.getBoundingClientRect();
     menu.style.maxWidth = `${innerWidth - 16}px`;
