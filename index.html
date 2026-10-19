@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/v0TKeMPvaDb5Ctn5jGny9ulRFIRVnz1GqTO5wlufTc=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LXoM1830v2KCulHGWIEVUJqex7Asg4gWW7H5+d7mIWI=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -364,7 +364,16 @@ table.data .num { text-align: right; }
 
 /* tooltip, toast */
 #tip { position: fixed; pointer-events: none; z-index: 70; background: var(--ink); color: var(--surface); padding: 8px 11px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; max-width: 280px; opacity: 0; transition: opacity .08s; }
-#toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--accent); color: var(--accent-ink); padding: 10px 16px; border-radius: 9px; font-size: 14px; opacity: 0; transition: opacity .2s; z-index: 60; pointer-events: none; max-width: calc(100vw - 32px); }
+#toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translate(-50%, 16px); z-index: 60; pointer-events: none;
+         display: flex; align-items: center; gap: 10px; width: max-content; max-width: calc(100vw - 32px); padding: 11px 16px 11px 12px; border-radius: 12px;
+         background: #1f2430; color: #fff; font-size: 14px; font-weight: 500; line-height: 1.35; box-shadow: 0 10px 30px rgba(0, 0, 0, .22);
+         opacity: 0; transition: opacity .2s, transform .2s; }
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+#toast .ti { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; flex: none; background: #1f9d6e; }
+#toast.err .ti { background: #d03b3b; }
+#toast .ti svg { width: 12px; height: 12px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #toast { background: #f3f5f9; color: #14213d; } }
+:root[data-theme="dark"] #toast { background: #f3f5f9; color: #14213d; }
 #errorBox { display: none; margin-top: 16px; padding: 14px 18px; border-radius: 12px; background: color-mix(in srgb, var(--critical) 10%, var(--surface)); font-size: 14px; }
 
 /* diálogos */
@@ -632,7 +641,15 @@ function showTip(e, html) {
 }
 const hideTip = () => { tip.style.opacity = 0; };
 function bindTips(root) { root.querySelectorAll("[data-tip]").forEach(el => { el.addEventListener("mousemove", e => showTip(e, el.dataset.tip)); el.addEventListener("mouseleave", hideTip); }); }
-function toast(msg) { const t = $("toast"); t.textContent = msg; t.style.opacity = 1; clearTimeout(toast.t); toast.t = setTimeout(() => t.style.opacity = 0, 2800); }
+// aviso breve abajo: ✓ verde si salió bien, ! roja si hubo un error (estos duran algo más)
+function toast(msg, kind = "ok") {
+  const t = $("toast"), err = kind === "err";
+  t.className = err ? "err" : "";
+  t.innerHTML = `<span class="ti" aria-hidden="true"><svg viewBox="0 0 12 12">${err ? '<path d="M6 3v3.6M6 9h.01"/>' : '<path d="m2.6 6.2 2.2 2.2 4.6-4.8"/>'}</svg></span><span></span>`;
+  t.lastChild.textContent = msg;
+  void t.offsetWidth; t.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), err ? 4500 : 2800);
+}
 const ICON = {
   ok: `<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--good)"/><path d="M4.6 8.2l2.2 2.2 4.6-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   pend: `<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--warning)"/><path d="M8 4.5V8.3l2.4 1.5" stroke="#0b0b0b" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>`,
@@ -868,10 +885,10 @@ function renderSaving(m) {
     saveField("periodos", S.period, campos, b.dataset.modo === "Importe" ? "Ahorro como cantidad fija en €" : "Ahorro como % de los ingresos");
   }));
 }
-async function saveField(tabla, id, campos, okMsg = "Guardado en el Excel") {
+async function saveField(tabla, id, campos, okMsg = "Guardado") {
   S.editing = true;
   try { await api("/api/actualizar", { tabla, id, campos }); toast(okMsg); }
-  catch (e) { toast(e.message); }
+  catch (e) { toast(e.message, "err"); }
   finally { S.editing = false; await load(); }
 }
 // input editable en línea: Enter/blur guarda, Esc cancela
@@ -1106,14 +1123,14 @@ async function copyRecurrentes(per) {
     const r = await api("/api/periodo/recurrentes", { Periodo: per });
     toast(r.registro.copiados ? `Copiados ${r.registro.copiados} apuntes recurrentes` : "No había nada que copiar");
     await load(); return true;
-  } catch (e) { toast(e.message); return false; }
+  } catch (e) { toast(e.message, "err"); return false; }
 }
 async function deleteRecord(tabla, id, name) {
   const msg = tabla === "periodos" ? `¿Eliminar ${perName(id)} con todos sus movimientos e ingresos extra? No se puede deshacer (salvo desde una copia del Excel).`
     : `¿Eliminar «${name || id}» del Excel?`;
   if (!confirm(msg)) return false;
-  try { const r = await api("/api/borrar", { tabla, id }); toast(r.registro.borrados > 1 ? `Eliminados ${r.registro.borrados} registros` : "Eliminado del Excel"); await load(); return true; }
-  catch (e) { toast(e.message); return false; }
+  try { const r = await api("/api/borrar", { tabla, id }); toast(r.registro.borrados > 1 ? `Eliminados ${r.registro.borrados} registros` : "Eliminado"); await load(); return true; }
+  catch (e) { toast(e.message, "err"); return false; }
 }
 document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
   f.addEventListener("submit", async e => {
@@ -1132,12 +1149,12 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
     try {
       if (id) {
         if (tabla === "periodos") delete body.Periodo;
-        await api("/api/actualizar", { tabla, id, campos: body }); toast("Cambios guardados en el Excel");
+        await api("/api/actualizar", { tabla, id, campos: body }); toast("Cambios guardados");
       } else {
         if (f.elements["copiar_fijos"]) { body.copiar_fijos = f.elements["copiar_fijos"].checked; body.copiar_ahorro = f.elements["copiar_ahorro"].checked; }
         const r = await api(f.dataset.new, body);
         if (tabla === "periodos") { S.period = r.registro.Periodo; toast(`Mes creado${r.registro.copiados ? ` con ${r.registro.copiados} apunte${r.registro.copiados === 1 ? "" : "s"} copiado${r.registro.copiados === 1 ? "" : "s"}` : ""}`); }
-        else toast("Guardado en el Excel");
+        else toast("Guardado");
       }
       f.closest("dialog").close(); await load();
     } catch (ex) { f.querySelector(".err").textContent = ex.message; }
@@ -1261,7 +1278,7 @@ $("fileImport").onchange = async e => {
   if (!f) return;
   if ((S.data?.movimientos.length || 0) && !confirm(`Se sustituirán los datos de este dispositivo por los de «${f.name}». ¿Continuar?`)) return;
   try { const r = await Finanzas.importExcel(f); toast(`Importado: ${r.periodos} meses y ${r.movimientos} movimientos`); S.period = null; await load(); if ($("dlg-datos").open) renderDatos(); }
-  catch (err) { toast(err.message); }
+  catch (err) { toast(err.message, "err"); }
 };
 document.addEventListener("click", e => {
   const w = e.target.closest("[data-act]");
@@ -1270,7 +1287,7 @@ document.addEventListener("click", e => {
   if (w.dataset.act === "datos") openDatos();
 });
 $("btnExcel").onclick = async () => {
-  if (LOCAL) return openDatos(); try { await api("/api/abrir-excel", {}); toast("Abriendo el Excel… al guardar, esta página se actualiza sola"); } catch (e) { toast(e.message); } };
+  if (LOCAL) return openDatos(); try { await api("/api/abrir-excel", {}); toast("Abriendo el Excel… al guardar, esta página se actualiza sola"); } catch (e) { toast(e.message, "err"); } };
 /* menú de ajustes de la cabecera */
 const topMenu = $("topMenu"), btnMenu = $("btnMenu");
 function setMenu(open) {
