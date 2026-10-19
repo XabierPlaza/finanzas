@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-FrbrOXzY+p0ZDEMSg+7BmvO7lTTSZJlBme3f1rChxmc=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vrzC4TcBNAkICcfpDzlYEb7nZrGg8/rf68Pu2ocDCTc=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -145,46 +145,22 @@ main > :first-child { margin-top: 0; }
 /* móvil: primero la información; sin menú de secciones y con los avisos al final */
 .news-m { display: none; }
 .news.empty, .news-m.empty { display: none !important; }
-/* el mes como una cascada: ingresos − fijos − (deudas) − ahorro = gastos variables */
-.cascada { padding: 22px 24px; margin-top: 0 !important; }
-.c-step { padding: 14px 0; border-top: 1px solid var(--line); }
-.c-step:first-of-type { border-top: 0; padding-top: 4px; }
-.c-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
-.c-l { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 650; color: var(--ink); min-width: 0; }
-.c-op { width: 14px; flex: none; text-align: center; color: var(--muted); font-weight: 700; }
-.c-v { font-size: 17px; font-weight: 700; white-space: nowrap; }
-.c-meta { margin: 4px 0 0 24px; font-size: 12.5px; color: var(--muted); display: flex; gap: 6px 12px; flex-wrap: wrap; align-items: center; }
-.c-meta .link { font-size: 12.5px; padding: 0; }
-.c-step .inc-list { margin: 6px 0 0 24px; }
-.c-step .inc-list li { font-size: 13.5px; min-height: 36px; }
-.c-step #saving { margin: 8px 0 0 24px; }
-.sav-ctl { display: flex; align-items: center; gap: 12px; }
-.sav-ctl .big-input { margin: 0; }
-.cascada .big-input input { font-size: 20px; }
-.cascada .big-input span { font-size: 16px; }
-#saving input[type="range"] { width: 100%; margin: 10px 0 4px; }
-.c-var { margin-top: 6px; background: var(--soft); border-radius: 12px; padding: 16px 18px; }
-.c-disp { margin: 14px 0 10px; }
-.c-disp .eyebrow { margin: 0 0 2px; }
-.c-num { font-size: clamp(34px, 5vw, 48px); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; color: var(--accent); white-space: nowrap; }
-.c-num.neg { color: var(--critical); }
-.c-add { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; }
-.c-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
-.c-var .hero-bar { background: var(--surface); }
-.c-spent { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
-.c-spent b { color: var(--ink); font-weight: 650; }
-/* escritorio: la resta a la izquierda y el resultado a la derecha */
-@media (min-width: 1000px) {
-  .cascada { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); column-gap: 32px; align-items: start; }
-  .cascada > * { grid-column: 1; }
-  .cascada > .c-var { grid-column: 2; grid-row: 1 / span 8; margin-top: 0; }
-}
-@media (max-width: 680px) {
-  .cascada { padding: 16px; }
-  .c-var { padding: 14px; }
-  .c-num { font-size: 40px; }
-  .c-add { width: 100%; justify-content: center; padding: 11px; }
-  .c-meta, .c-step .inc-list, .c-step #saving { margin-left: 0; }
+/* el mes en 4 tarjetas, en el orden en que se reparte la nómina */
+.mes-cards { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.mes-cards > .card { margin: 0; }
+.step-n { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--tint); color: var(--accent);
+          font-size: 11px; font-weight: 700; letter-spacing: 0; margin-right: 7px; vertical-align: 1px; }
+.inc-list li.clk { cursor: pointer; }
+.inc-list li.clk:hover { background: var(--soft); }
+.card .more { display: block; margin-top: 4px; }
+.deb-line { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; padding: 9px 12px; border-radius: 9px;
+            background: var(--soft); font-size: 13px; color: var(--ink-2); }
+.deb-line b { color: var(--ink); font-weight: 650; }
+.btn-add { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; }
+.btn-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+@media (max-width: 760px) {
+  .mes-cards { grid-template-columns: minmax(0, 1fr); }
+  .btn-add { width: 100%; justify-content: center; padding: 11px; }
 }
 @media (max-width: 680px) {
   .side-nav, .side .news { display: none !important; }
@@ -243,8 +219,7 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .hero .big.neg { color: var(--critical); }
 .hero-bar { height: 10px; border-radius: 5px; background: var(--soft); overflow: hidden; }
 .hero-bar div { height: 100%; border-radius: 5px; background: var(--c4); transition: width .4s; }
-.hero-stats .of { display: block; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
-.hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
 .hero-stats div { background: var(--soft); border-radius: 9px; padding: 9px 12px; font-size: 12.5px; color: var(--ink-2); }
 .hero-stats b { display: block; color: var(--ink); font-size: 16px; font-weight: 650; margin-top: 1px; }
 .notice { display: inline-flex; gap: 8px; align-items: center; margin-top: 14px; font-size: 13.5px; color: var(--ink-2); background: var(--tint); padding: 7px 12px; border-radius: 8px; }
@@ -519,7 +494,12 @@ dialog .btn.danger { padding-left: 0; }
   </div>
 
   <div class="news news-m" id="newsMob" aria-label="Avisos del mes"><p class="side-title">Avisos del mes</p><div class="news-list" id="noticesM"></div></div>
-  <section class="card cascada" id="sec-resumen" aria-label="Tu mes"></section>
+  <div class="mes-cards" id="sec-resumen">
+    <section class="card" id="cIng" aria-label="Ingresos"></section>
+    <section class="card" id="cFij" aria-label="Gastos fijos"></section>
+    <section class="card" id="cAho" aria-label="Ahorro e inversión"><div id="saving"></div></section>
+    <section class="card hero" id="cVar" aria-label="Gastos variables"></section>
+  </div>
 
   <section class="card" id="sec-movimientos">
     <p class="eyebrow">Movimientos</p>
@@ -743,7 +723,7 @@ function render() {
   if (!S.data) return;
   const m = month(S.period);
   renderPeriod(); renderSummary(m);
-  renderTrend(); renderDebts(); renderMovs(); renderNotices(m); renderFooter(); fillForms(); syncSelects();
+  renderTrend(); renderDebts(); renderMovs(); renderNotices(m); renderFooter(); fillForms(); syncSelects(); window.navSpy?.();
 }
 function renderPeriod() {
   const ps = periods(), i = ps.indexOf(S.period);
@@ -756,42 +736,41 @@ function renderPeriod() {
 const CAT_LABEL = { "Pago de Deudas": "Deudas", "Ahorro e Inversión": "Ahorro e inversión", "Gastos Fijos": "Gastos fijos", "Gastos Variables": "Gastos variables" };
 const lab = c => CAT_LABEL[c] || c;
 function renderSummary(m) {
-  const count = c => m.movs.filter(x => x.Categoría === c).length;
-  const nFix = count("Gastos Fijos"), nDeb = count("Pago de Deudas");
-  const step = (op, color, label, value, extra = "", id = "") =>
-    `<div class="c-step"><div class="c-row"><span class="c-l"><span class="c-op">${op}</span>${color ? `<span class="sw" style="background:${color}"></span>` : ""}${label}</span><span class="c-v num"${id ? ` id="${id}"` : ""}>${value}</span></div>${extra}</div>`;
-  const income = m.cfg ? `<ul class="inc-list">
+  const head = (n, label) => `<p class="eyebrow"><span class="step-n">${n}</span>${label}</p>`;
+  // 1 · ingresos
+  $("cIng").innerHTML = `${head(1, "Ingresos")}<div class="p-val num">${eur(m.ingresos)}</div>` + (m.cfg ? `
+    <ul class="inc-list">
       <li><span>Nómina</span><span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina" title="Toca para editar"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button><span style="width:28px"></span></span></li>
       ${m.extras.map(i => `<li><span>${esc(i.Concepto)} <span class="muted" style="font-size:12px">· extra</span></span>
         <span class="r"><span class="num" style="margin-right:6px">${eur(i.Importe)}</span>
         <button class="icon-btn" type="button" data-edit="ingresos" data-id="${esc(i.ID)}" aria-label="Editar ${esc(i.Concepto)}" title="Editar">✎</button>
         <button class="icon-btn del" type="button" data-delete="ingresos" data-id="${esc(i.ID)}" data-name="${esc(i.Concepto)}" aria-label="Eliminar ${esc(i.Concepto)}" title="Eliminar">✕</button></span></li>`).join("")}
-    </ul><div class="c-meta"><button class="link" type="button" data-open="mov" data-cat="Ingreso extra">+ Ingreso extra</button></div>`
-    : `<div class="c-meta">Mes sin configurar · <button class="link" type="button" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></div>`;
-  const meta = (c, n, add) => `<div class="c-meta">${n} concepto${n === 1 ? "" : "s"}${n ? ` · <button class="link" type="button" data-catkpi="${esc(c)}">ver</button>` : ""}${add ? ` · <button class="link" type="button" data-open="mov" data-cat="${esc(c)}">${add}</button>` : ""}</div>`;
-  $("sec-resumen").innerHTML = `
-    <p class="eyebrow">${esc(perName(S.period))}</p>
-    ${step("", "", "Ingresos", eur(m.ingresos), income)}
-    ${step("−", col("Gastos Fijos"), lab("Gastos Fijos"), eur(m.fijos), meta("Gastos Fijos", nFix, "+ Fijo"))}
-    ${m.deudas ? step("−", col("Pago de Deudas"), "Pagos de deudas", eur(m.deudas), meta("Pago de Deudas", nDeb, "")) : ""}
-    ${step("−", col("Ahorro e Inversión"), lab("Ahorro e Inversión"), eur(m.ahorro), `<div id="saving"></div>`, "cSavAmt")}
-    <div class="c-var" id="cVar"></div>`;
+    </ul>
+    <button class="link" type="button" data-open="mov" data-cat="Ingreso extra">+ Añadir ingreso extra</button>`
+    : `<p class="muted" style="margin:0">Mes sin configurar · <button class="link" type="button" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></p>`);
   const inp = $("nominaInp");
   if (inp) { $("nominaBtn").addEventListener("click", () => inp.focus()); bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada")); }
+  // 2 · gastos fijos (y, si los hay, los pagos de deudas, que van antes del ahorro)
+  const fijos = m.movs.filter(x => x.Categoría === "Gastos Fijos").sort((a, b) => n(b.Importe) - n(a.Importe));
+  $("cFij").innerHTML = `${head(2, "Gastos fijos")}<div class="p-val num">${eur(m.fijos)}</div>
+    <ul class="inc-list">${fijos.slice(0, 5).map(x => `<li class="clk" data-edit="movimientos" data-id="${esc(x.ID)}" title="Ver o editar"><span>${esc(x.Concepto)}</span><span class="num">${eur(x.Importe)}</span></li>`).join("")}</ul>
+    ${fijos.length > 5 ? `<button class="link more" type="button" data-catkpi="Gastos Fijos">Ver los ${fijos.length}</button>` : ""}
+    <button class="link" type="button" data-open="mov" data-cat="Gastos Fijos">+ Añadir gasto fijo</button>
+    ${m.deudas ? `<div class="deb-line"><span><span class="sw" style="background:${col("Pago de Deudas")}"></span> Pagos de deudas</span><span><b class="num">${eur(m.deudas)}</b> · <button class="link" type="button" style="padding:0" data-catkpi="Pago de Deudas">ver</button></span></div>` : ""}`;
   renderVar(m);
   renderSaving(m);
 }
-// cierre de la cascada: lo que queda para gastos variables, lo gastado y lo disponible
+// 4 · gastos variables: lo que queda, lo gastado y lo disponible
 function renderVar(m) {
   const disp = m.variable - m.gastado;
   const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
-  if ($("cSavAmt")) $("cSavAmt").textContent = eur(m.ahorro);
   $("cVar").innerHTML = `
-    <div class="c-row"><span class="c-l"><span class="c-op">=</span><span class="sw" style="background:${col("Gastos Variables")}"></span>${lab("Gastos Variables")}</span><span class="c-v num${m.variable < 0 ? " neg" : ""}">${eur(m.variable)}</span></div>
-    <div class="c-disp"><p class="eyebrow">Disponible</p><div class="c-num num${disp < 0 ? " neg" : ""}">${eur(disp)}</div></div>
+    <p class="eyebrow"><span class="step-n">4</span>Gastos variables</p>
+    <div class="label">Disponible para gastar en ${esc(monthName(S.period))}</div>
+    <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
-    <p class="c-spent">Has gastado <b class="num">${eur(m.gastado)}</b> · ${pct(ratio)}${m.gastado ? ` · <button class="link" type="button" style="padding:0;font-size:13px" data-catkpi="Gastos Variables">ver</button>` : ""}</p>
-    <button class="btn primary c-add" type="button" data-open="mov" data-cat="Gastos Variables"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir gasto</button>`;
+    <div class="hero-stats"><div>Presupuesto<b class="num">${eur(m.variable)}</b></div><div>Gastado<b class="num">${eur(m.gastado)}</b></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>
+    <button class="btn primary btn-add" type="button" data-open="mov" data-cat="Gastos Variables"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir gasto</button>`;
 }
 
 
@@ -800,10 +779,11 @@ function renderSaving(m) {
   const val = isPct ? Math.round(m.pctA * 1000) / 10 : n(m.cfg?.Importe_Ahorro);
   const max = isPct ? 100 : Math.max(100, Math.ceil(m.ingresos / 50) * 50);
   $("saving").innerHTML = `
-    <div class="sav-ctl"><span class="seg" role="group" aria-label="Tipo de objetivo">
+    <div class="p-label"><p class="eyebrow" style="margin:0"><span class="step-n">3</span>Ahorro e inversión</p>
+      <span class="seg" role="group" aria-label="Tipo de objetivo">
         <button type="button" data-modo="Porcentaje" aria-pressed="${isPct}" ${dis}>%</button>
-        <button type="button" data-modo="Importe" aria-pressed="${!isPct}" ${dis}>€</button></span>
-      <div class="big-input"><input id="savInp" value="${dec(val)}" inputmode="decimal" aria-label="Objetivo de ahorro" ${dis}><span>${isPct ? "%" : "€"}</span></div></div>
+        <button type="button" data-modo="Importe" aria-pressed="${!isPct}" ${dis}>€</button></span></div>
+    <div class="big-input"><input id="savInp" value="${dec(val)}" inputmode="decimal" aria-label="Objetivo de ahorro" ${dis}><span>${isPct ? "%" : "€"}</span></div>
     <input type="range" id="savRange" min="0" max="${max}" step="${isPct ? 0.5 : 5}" value="${val}" aria-label="Objetivo de ahorro" ${dis}>
     <div class="saving-note" id="savNote"></div>
     ${m.cfg && !m.movs.some(x => x.Categoría === "Ahorro e Inversión") && recurrentesPara(S.period).some(x => x.Categoría === "Ahorro e Inversión")
@@ -839,8 +819,9 @@ function renderSaving(m) {
     if (b.dataset.modo === m.modo) return;
     const campos = { Modo_Ahorro: b.dataset.modo };
     // al cambiar de modo se mantiene el mismo objetivo en euros / en porcentaje
-    if (b.dataset.modo === "Importe") campos.Importe_Ahorro = Math.round(m.ahorro * 100) / 100;
-    else campos.Pct_Ahorro = m.ingresos ? Math.round(m.ahorro / m.ingresos * 1000) / 1000 : 0;
+    // al volver a € se conserva el importe guardado si equivale al %: el % redondeado no debe convertir 900 € en 899,73 €
+    if (b.dataset.modo === "Importe") { const prev = n(m.cfg?.Importe_Ahorro); if (!(prev && Math.abs(prev - m.ahorro) < 0.5)) campos.Importe_Ahorro = Math.round(m.ahorro * 100) / 100; }
+    else campos.Pct_Ahorro = m.ingresos ? Math.round(m.ahorro / m.ingresos * 1e6) / 1e6 : 0;
     saveField("periodos", S.period, campos, b.dataset.modo === "Importe" ? "Ahorro como cantidad fija en €" : "Ahorro como % de los ingresos");
   }));
 }
@@ -1219,7 +1200,8 @@ $("detailView").querySelectorAll("button").forEach(b => b.addEventListener("clic
 { const v = store.get("detailView"); if (v === "chart" || v === "list") S.detailView = v; }
 $("btnEditMes").onclick = () => openDialog("per", { id: S.period });
 // móvil: el botón flotante de añadir aparece cuando el del resumen ya no se ve
-{ const fab = document.querySelector(".fab"), upd = () => fab.classList.toggle("show", $("sec-resumen").getBoundingClientRect().bottom < 60);
+{ const fab = document.querySelector(".fab"), upd = () => { const b = document.querySelector("#cVar .btn-add"); if (!b) return;
+    const r = b.getBoundingClientRect(); fab.classList.toggle("show", r.bottom < 60 || r.top > innerHeight); };
   addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd(); }
 $("periodSel").onchange = e => {
   if (e.target.value === "__nuevo") { e.target.value = S.period || ""; e.target._ddSync?.(); openDialog("per", {}); return; }
@@ -1440,6 +1422,7 @@ $("toTop").addEventListener("click", e => {
     links.forEach((a, i) => a.classList.toggle("on", secs[i] === cur));
   };
   addEventListener("scroll", spy, { passive: true }); spy();
+  window.navSpy = spy;  // también tras pintar los datos: al cargar la página aún está vacía
 }
 // menú lateral: fijo arriba si cabe; si no, pegado por abajo (se desplaza con la página, sin barra propia)
 {
