@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-F1+U+eyx1QDTtnxFAwqhyoLRlu7rmpeIB/IpCQn+CTA=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JjF6hqU3tRqBKo6dIa6/GRRzbkLRluCoYKvys9SrP4Y=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -141,10 +141,29 @@ main > :first-child { margin-top: 0; }
                 text-align: center; white-space: normal; }
 }
 /* resumen del mes: ingresos, reparto en una barra y las 4 cifras */
-.summary { padding: 20px 24px; margin-top: 0 !important; }
+.summary { padding: 22px 24px; margin-top: 0 !important; }
+.summary .big { margin: 2px 0 12px; }
+.sum-line { margin: 10px 0 0; font-size: 13.5px; color: var(--ink-2); }
+.sum-line b { color: var(--ink); font-weight: 650; }
+.sum-split { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.sum-split .sum-k { margin: 0; font-size: 13px; color: var(--ink-2); }
+.sum-split .sum-k b { color: var(--ink); font-weight: 650; }
+.sum-split .sum-bar { margin: 10px 0 12px; }
+/* ingresos y ahorro: una tarjeta, dos columnas */
+.mes-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.mes-grid > #income { padding-right: 24px; border-right: 1px solid var(--line); }
+.mes-grid > #saving { padding-left: 24px; }
+@media (max-width: 760px) {
+  .mes-grid { grid-template-columns: minmax(0, 1fr); }
+  .mes-grid > #income { padding: 0 0 18px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .mes-grid > #saving { padding: 18px 0 0; }
+}
+/* móvil: primero la información; sin menú de secciones y con los avisos al final */
+@media (max-width: 680px) {
+  .side-nav { display: none !important; }
+  .side { order: 2; }
+}
 .sum-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.sum-total { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-top: 2px; }
-.sum-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
 .sum-add { display: inline-flex; align-items: center; gap: 6px; flex: none; }
 .sum-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 .sum-bar { display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden; background: var(--soft); margin: 16px 0 14px; }
@@ -161,7 +180,6 @@ main > :first-child { margin-top: 0; }
 .fab { display: none; }
 @media (max-width: 680px) {
   .summary { padding: 16px; }
-  .sum-total { font-size: 24px; }
   .sum-add { padding: 7px 12px; }
   .sum-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
   .sum-item { padding: 6px 8px; }
@@ -491,13 +509,11 @@ dialog .btn.danger { padding-left: 0; }
     </div>
   </div>
 
-  <section class="card summary" id="sec-resumen" aria-label="Resumen del mes"></section>
+  <section class="card summary hero" id="sec-resumen" aria-label="Este mes"></section>
 
-  <div class="row row-3" id="sec-mes">
-    <div class="card" id="income"></div>
-    <div class="card" id="saving"></div>
-    <div class="card hero" id="hero"></div>
-  </div>
+  <section class="card" id="sec-mes" aria-label="Ingresos y ahorro">
+    <div class="mes-grid"><div id="income"></div><div id="saving"></div></div>
+  </section>
 
   <section class="card" id="sec-movimientos">
     <p class="eyebrow">Movimientos</p>
@@ -720,7 +736,7 @@ function debts() {
 function render() {
   if (!S.data) return;
   const m = month(S.period);
-  renderPeriod(); renderHero(m); renderSummary(m); renderIncome(m); renderSaving(m);
+  renderPeriod(); renderSummary(m); renderIncome(m); renderSaving(m);
   renderTrend(); renderDebts(); renderMovs(); renderNotices(m); renderFooter(); fillForms(); syncSelects();
 }
 function renderPeriod() {
@@ -730,42 +746,38 @@ function renderPeriod() {
   $("prev").disabled = i <= 0; $("next").disabled = i < 0 || i >= ps.length - 1;
   $("btnEditMes").hidden = !cfgOf(S.period);
 }
-function renderHero(m) {
+const SUM_LABEL = { "Pago de Deudas": "Deudas", "Ahorro e Inversión": "Ahorro", "Gastos Fijos": "Gastos fijos", "Gastos Variables": "Gastos variables" };
+function renderSummary(m) {
   const disp = m.variable - m.gastado;
   const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
   let notice = "";
-  if (!m.cfg) notice = `<div class="notice">Este mes no está configurado · <button class="link" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></div>`;
-  else if (disp < 0) notice = `<div class="notice">⚠️ Te has pasado ${eur(-disp)} del presupuesto</div>`;
+  if (!m.cfg) notice = `<div class="notice">Este mes no está configurado · <button class="link" type="button" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></div>`;
+  else if (disp < 0) notice = `<div class="notice">Te has pasado ${eur(-disp)} del presupuesto</div>`;
   else if (ratio >= .85) notice = `<div class="notice">${ICON.pend} Cerca del límite del presupuesto</div>`;
-  $("hero").innerHTML = `
-    <p class="eyebrow">Gasto variable</p>
-    <div class="label">Disponible para gastar en ${esc(monthName(S.period))}</div>
-    <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
-    <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
-    <div class="hero-stats"><div>Gastado<b class="num">${eur(m.gastado)}</b><span class="of">de ${eur(m.variable)}</span></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>${notice}`;
-}
-const SUM_LABEL = { "Pago de Deudas": "Deudas", "Ahorro e Inversión": "Ahorro", "Gastos Fijos": "Fijos", "Gastos Variables": "Para variables" };
-function renderSummary(m) {
   const base = Math.max(m.ingresos, CATS.reduce((a, k) => a + Math.max(0, m.budget[k]), 0));
   const bar = base > 0 ? CATS.filter(k => m.budget[k] > 0).map(k =>
     `<span style="flex:${m.budget[k] / base} 0 0;background:${col(k)}" title="${esc(SUM_LABEL[k])}: ${eur(m.budget[k])}"></span>`).join("") : "";
-  const sub = m.cfg ? "" : `<div class="sum-sub">Mes sin configurar · <button class="link" type="button" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear</button></div>`;
   $("sec-resumen").innerHTML = `
     <div class="sum-head">
-      <div><p class="eyebrow" style="margin:0">Ingresos de ${esc(monthName(S.period))}</p>
-        <div class="sum-total num">${eur(m.ingresos)}</div>${sub}</div>
+      <div><p class="eyebrow" style="margin:0">Disponible para gastar en ${esc(monthName(S.period))}</p>
+        <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div></div>
       <button class="btn primary sum-add" type="button" data-open="mov"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir</button>
     </div>
-    <div class="sum-bar" role="img" aria-label="Reparto de los ingresos">${bar}</div>
-    <div class="sum-items">${CATS.map(k => `<button class="sum-item${S.cat === k ? " on" : ""}" type="button" data-catkpi="${esc(k)}" title="Ver los movimientos de ${esc(SUM_LABEL[k].toLowerCase())}">
-      <span class="l"><span class="sw" style="background:${col(k)}"></span>${esc(SUM_LABEL[k])}</span>
-      <span class="v num${m.budget[k] < 0 ? " neg" : ""}">${eur(m.budget[k])}</span>
-      <span class="p">${pct(m.ingresos ? m.budget[k] / m.ingresos : 0)}</span></button>`).join("")}</div>`;
+    <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
+    <p class="sum-line">Has gastado <b class="num">${eur(m.gastado)}</b> de <b class="num">${eur(m.variable)}</b> · ${pct(ratio)}</p>${notice}
+    <div class="sum-split">
+      <p class="sum-k">Así se reparten tus ingresos de <b class="num">${eur(m.ingresos)}</b></p>
+      <div class="sum-bar" role="img" aria-label="Reparto de los ingresos">${bar}</div>
+      <div class="sum-items">${CATS.map(k => `<button class="sum-item${S.cat === k ? " on" : ""}" type="button" data-catkpi="${esc(k)}" title="Ver los movimientos de ${esc(SUM_LABEL[k].toLowerCase())}">
+        <span class="l"><span class="sw" style="background:${col(k)}"></span>${esc(SUM_LABEL[k])}</span>
+        <span class="v num${m.budget[k] < 0 ? " neg" : ""}">${eur(m.budget[k])}</span>
+        <span class="p">${pct(m.ingresos ? m.budget[k] / m.ingresos : 0)}</span></button>`).join("")}</div>
+    </div>`;
 }
 
 function renderIncome(m) {
   $("income").innerHTML = `
-    <p class="eyebrow">Nómina e ingresos extra</p>
+    <p class="eyebrow">Ingresos</p>
     <ul class="inc-list">
       <li><span>Nómina</span>${m.cfg ? `<span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina" title="Haz clic para editar"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button><span style="width:28px"></span></span>` : `<span class="muted">Mes sin configurar</span>`}</li>
       ${m.extras.map(i => `<li><span>${esc(i.Concepto)} <span class="muted" style="font-size:12px">· extra</span></span>
@@ -804,7 +816,7 @@ function renderSaving(m) {
   const preview = v => {
     const c = cfgOf(S.period); if (!c) return;
     c[field] = isPct ? v / 100 : v;
-    const mm = month(S.period); renderHero(mm); renderSummary(mm); note(v);
+    const mm = month(S.period); renderSummary(mm); note(v);
   };
   const range = $("savRange"), inp = $("savInp");
   // ancho a medida del texto real (tipografía, negrita y relleno incluidos)
