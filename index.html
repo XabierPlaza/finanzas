@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-R3ds7IiAZvR7s0YRoNbsog9VoNgTZUB/qAxPOWdzRr4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nMhpgMOz+wJi+VJPf5JI6wS1hM0KljlU2Tow5MPrqGk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -169,7 +169,7 @@ main > :first-child { margin-top: 0; }
 .sav-list, .var-list { margin-top: 14px; }
 .btn.add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; border-color: var(--accent); color: var(--accent-ink); background: var(--accent); font-weight: 600; }
 .btn.add-btn:hover { background: var(--accent-2); }
-.add-btn svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.add-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
   .btn.add-btn { width: 100%; justify-content: center; min-height: 44px; }
@@ -178,15 +178,6 @@ main > :first-child { margin-top: 0; }
 @media (max-width: 680px) {
   .side .news, .side-foot { display: none !important; }
   .news-m { display: block; margin-bottom: 16px; }
-}
-/* móvil: botón flotante para añadir, siempre a mano */
-.fab { display: none; }
-@media (max-width: 680px) {
-  .fab { display: grid; opacity: 0; transform: scale(.6); pointer-events: none; transition: opacity .18s, transform .18s; place-items: center; position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; width: 56px; height: 56px;
-         border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 18px rgba(0, 0, 0, .25); cursor: pointer; }
-  .fab svg { width: 22px; height: 22px; }
-  .fab.show { opacity: 1; transform: none; pointer-events: auto; }
-  .shell { padding-bottom: 100px; }
 }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; min-width: 0; }
 section.card { margin-top: 16px; }
@@ -517,6 +508,7 @@ dialog .btn.danger { padding-left: 0; }
       <div class="filters"><select class="sel" id="debtCred" aria-label="Acreedor"></select><div class="chips" id="debtState"></div></div>
     </div>
     <div class="tbl-wrap"><table class="data" id="debtTbl"></table></div>
+    <button class="btn add-btn" type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir deuda</button>
   </section>
 
 
@@ -583,8 +575,6 @@ dialog .btn.danger { padding-left: 0; }
   <div class="err"></div>
   <div class="actions"><button class="btn danger" type="button" data-del>Eliminar mes</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div>
 </form></dialog>
-
-<button class="fab" type="button" data-open="mov" aria-label="Añadir movimiento" title="Añadir"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
 
 <script>
 "use strict";
@@ -1152,10 +1142,6 @@ document.addEventListener("click", e => {
   if (rc) { copyRecurrentes(rc.dataset.recur); return; }
 });
 $("btnEditMes").onclick = () => openDialog("per", { id: S.period });
-// móvil: el botón flotante de añadir aparece cuando el del resumen ya no se ve
-{ const fab = document.querySelector(".fab"), upd = () => { const b = document.querySelector("#cVar .add-btn"); if (!b) return;
-    const r = b.getBoundingClientRect(); fab.classList.toggle("show", r.bottom < 60 || r.top > innerHeight); };
-  addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd(); }
 $("periodSel").onchange = e => {
   if (e.target.value === "__nuevo") { e.target.value = S.period || ""; e.target._ddSync?.(); openDialog("per", {}); return; }
   S.period = e.target.value; S.movPage = 0; render();
