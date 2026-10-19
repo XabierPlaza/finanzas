@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IJ7dvQ/uYidqxXnCCnM2tV4/OV+7HaOl8s0vDSGNW8g=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-/v0TKeMPvaDb5Ctn5jGny9ulRFIRVnz1GqTO5wlufTc=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
-<meta name="theme-color" content="#1f4e8c">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" data-auto="#ffffff">
+<meta name="theme-color" content="#18191f" media="(prefers-color-scheme: dark)" data-auto="#18191f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Finanzas">
@@ -81,6 +82,10 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .top-menu button[hidden] { display: none; }
 .top-menu svg { width: 17px; height: 17px; flex: none; fill: none; stroke: var(--accent); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .tm-sep { height: 1px; background: var(--line); margin: 5px 4px; }
+.tm-theme { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 6px 6px 10px; font-size: 14px; color: var(--ink); }
+.tm-theme-l { display: flex; align-items: center; gap: 10px; }
+.top-menu .seg button { width: auto; padding: 4px 9px; font-size: 12.5px; border-radius: 6px; color: var(--ink-2); font-weight: 600; }
+.top-menu .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 .tm-status { margin: 4px 10px 4px; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
 .tm-status:empty { display: none; }
 .ghost { border: 0; background: none; padding: 7px 10px; border-radius: 8px; color: var(--ink-2); font-size: 13.5px; display: inline-flex; align-items: center; gap: 7px; }
@@ -447,7 +452,8 @@ dialog .btn.danger { padding-left: 0; }
         <button type="button" role="menuitem" id="btnExcel"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>Abrir el Excel</button>
         <button type="button" role="menuitem" id="btnDatos"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span id="btnDatosLbl">Ubicación de los datos</span></button>
         <div class="tm-sep" role="separator"></div>
-        <button type="button" role="menuitem" id="btnTheme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg><span id="btnThemeLbl">Modo oscuro</span></button>
+        <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>Tema</span>
+          <span class="seg" role="group" aria-label="Tema" id="themeSeg"><button type="button" data-tema="auto" title="Según el móvil o el navegador">Auto</button><button type="button" data-tema="light">Claro</button><button type="button" data-tema="dark">Oscuro</button></span></div>
         <p class="tm-status" id="tmStatus"></p>
       </div>
     </div>
@@ -1263,18 +1269,16 @@ $("btnExcel").onclick = async () => {
   if (LOCAL) return openDatos(); try { await api("/api/abrir-excel", {}); toast("Abriendo el Excel… al guardar, esta página se actualiza sola"); } catch (e) { toast(e.message); } };
 /* menú de ajustes de la cabecera */
 const topMenu = $("topMenu"), btnMenu = $("btnMenu");
-const isDark = () => { const r = document.documentElement; return r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; };
 function setMenu(open) {
   topMenu.hidden = !open; btnMenu.setAttribute("aria-expanded", open);
   if (open) {
-    $("btnThemeLbl").textContent = isDark() ? "Modo claro" : "Modo oscuro";
     const off = $("syncDot").classList.contains("off"), wait = $("syncDot").classList.contains("wait");
     $("tmStatus").textContent = off ? "Sin conexión con los datos" : wait ? "Sincronizando cambios…" : LOCAL ? "Datos guardados en este dispositivo" : "Conectado al Excel";
     topMenu.querySelector("button:not([hidden])")?.focus();
   }
 }
 btnMenu.onclick = e => { e.stopPropagation(); setMenu(topMenu.hidden); };
-topMenu.addEventListener("click", e => { if (e.target.closest("button")) setMenu(false); });
+topMenu.addEventListener("click", e => { if (e.target.closest("button") && !e.target.closest("[data-tema]")) setMenu(false); });
 document.addEventListener("click", e => { if (!topMenu.hidden && !e.target.closest(".nav-right")) setMenu(false); });
 document.addEventListener("keydown", e => {
   if (topMenu.hidden) return;
@@ -1284,11 +1288,16 @@ document.addEventListener("keydown", e => {
     items[(i + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length].focus(); e.preventDefault();
   }
 });
-$("btnTheme").onclick = () => {
-  const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  r.dataset.theme = dark ? "light" : "dark"; store.set("theme", r.dataset.theme);
-};
-{ const t = store.get("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; }
+// tema: «auto» sigue al móvil o al navegador (y cambia solo); «light» / «dark» lo fijan
+function applyTheme(tema) {
+  const fixed = tema === "light" || tema === "dark", r = document.documentElement;
+  if (fixed) r.dataset.theme = tema; else delete r.dataset.theme;
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.content = fixed ? (tema === "dark" ? "#18191f" : "#ffffff") : m.dataset.auto);
+  $("themeSeg").querySelectorAll("[data-tema]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tema === (fixed ? tema : "auto")));
+}
+$("themeSeg").addEventListener("click", e => { const b = e.target.closest("[data-tema]"); if (b) { store.set("tema", b.dataset.tema); applyTheme(b.dataset.tema); } });
+try { localStorage.removeItem("theme"); } catch {}  // preferencia antigua (claro/oscuro fijo): todos vuelven a automático
+applyTheme(store.get("tema") || "auto");
 
 let resizeT;
 addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (S.data) renderTrend(); }, 150); });
