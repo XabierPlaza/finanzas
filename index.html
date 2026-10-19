@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-xYCn1p7h5IocjcnBza13J3qvhCMJzz+xk1zOqwKg864=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4mueRAWqK3zdQ9Psyq6WWLTrNORRKD0j9gHWEc1/YNY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -160,8 +160,6 @@ main > :first-child { margin-top: 0; }
 .sav-list, .var-list { margin-top: 14px; }
 .btn.add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; border-color: var(--accent); color: var(--accent-ink); background: var(--accent); font-weight: 600; }
 .btn.add-btn:hover { background: var(--accent-2); }
-.inc-list .chev { width: 14px; height: 14px; margin-left: 10px; flex: none; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.inc-list li.clk:hover .chev { stroke: var(--accent); }
 .add-btn svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
@@ -724,8 +722,7 @@ const lab = c => CAT_LABEL[c] || c;
 const byAmount = (a, b) => n(b.Importe) - n(a.Importe);
 const byNewest = (a, b) => String(b.ID).localeCompare(String(a.ID));
 // apuntes de una categoría dentro de su tarjeta: 5 a la vista y «Ver los N» para desplegar; al tocarlos se editan
-const CHEV = `<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3.5 4.5 4.5L6 12.5"/></svg>`;
-const itemRow = (tabla, id, concept, amount, extra = "") => `<li class="clk" data-edit="${tabla}" data-id="${esc(id)}" tabindex="0" role="button" title="Ver, editar o eliminar"><span>${esc(concept || "—")}${extra}</span><span class="r"><span class="num">${eur(amount)}</span>${CHEV}</span></li>`;
+const itemRow = (tabla, id, concept, amount, extra = "") => `<li class="clk" data-edit="${tabla}" data-id="${esc(id)}" tabindex="0" role="button" title="Ver, editar o eliminar"><span>${esc(concept || "—")}${extra}</span><span class="r"><span class="num">${eur(amount)}</span></span></li>`;
 const addBtn = (cat, label) => `<button class="btn add-btn" type="button" data-open="mov" data-cat="${esc(cat)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>${label}</button>`;
 function catList(m, cat, { sort, empty, add }) {
   const all = m.movs.filter(x => x.Categoría === cat).sort(sort), open = S.open[cat];
@@ -773,7 +770,7 @@ function renderSummary(m) {
   // 1 · ingresos
   $("cIng").innerHTML = `${head(1, "Ingresos")}<div class="p-val num">${eur(m.ingresos)}</div>` + (m.cfg ? `
     <ul class="inc-list">
-      <li class="clk" id="nominaRow" tabindex="0" role="button" title="Editar la nómina del mes"><span>Nómina</span><span class="r"><span class="num">${eur(m.nomina)}</span>${CHEV}</span></li>
+      <li class="clk" id="nominaRow" tabindex="0" role="button" title="Editar la nómina del mes"><span>Nómina</span><span class="r"><span class="num">${eur(m.nomina)}</span></span></li>
       ${m.extras.map(i => itemRow("ingresos", i.ID, i.Concepto, i.Importe, ` <span class="muted" style="font-size:12px">· extra</span>`)).join("")}
     </ul>
     ${addBtn("Ingreso extra", "Añadir ingreso")}`
