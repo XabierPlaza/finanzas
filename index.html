@@ -136,7 +136,7 @@ main > :first-child { margin-top: 0; }
 }
 /* móvil: el menú cabe entero (3 × 2), icono encima del texto, sin desplazamiento lateral */
 @media (max-width: 680px) {
-  .side-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; overflow: visible; }
+  .side-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; overflow: visible; }
   .side-nav a { flex-direction: column; justify-content: center; gap: 4px; padding: 8px 4px; font-size: 12px; line-height: 1.2;
                 text-align: center; white-space: normal; }
 }
@@ -163,8 +163,7 @@ main > :first-child { margin-top: 0; }
   .btn-add { width: 100%; justify-content: center; padding: 11px; }
 }
 @media (max-width: 680px) {
-  .side-nav, .side .news { display: none !important; }
-  .side { order: 2; }
+  .side .news, .side-foot { display: none !important; }
   .news-m { display: block; margin-bottom: 16px; }
 }
 /* móvil: botón flotante para añadir, siempre a mano */
