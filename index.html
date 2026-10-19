@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sHERnzNSWEmF/sSc1M48rKVxWpZid+vQmjMBvhCpz+E=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Paa7+J22Fb5pcUiu5o7GDMa33toRcOIXhcnTEHK/QA4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -465,6 +465,7 @@ dialog .btn.danger { padding-left: 0; }
 <aside class="side">
   <nav class="side-nav" id="sideNav" aria-label="Secciones">
     <a href="#sec-resumen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/></svg>Tu mes</a>
+    <a href="#sec-reparto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg>Reparto</a>
     <a href="#sec-evolucion"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Evolución</a>
     <a href="#sec-deudas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Deudas</a>
   </nav>
@@ -491,6 +492,15 @@ dialog .btn.danger { padding-left: 0; }
     <section class="card" id="cAho" aria-label="Ahorro e inversión"><div id="saving"></div><div id="savList" class="sav-list"></div></section>
     <section class="card hero" id="cVar" aria-label="Gastos variables"></section>
   </div>
+
+  <section class="card" id="sec-reparto">
+    <p class="eyebrow">Reparto</p>
+    <div class="sec-head"><div><h2 id="splitTitle"></h2><p class="lead">Fijos, deudas y ahorro primero; lo que queda es tu presupuesto para gastos variables. Pulsa una categoría para ir a su tarjeta.</p></div></div>
+    <div class="chart-grid">
+      <div id="donut"></div>
+      <table class="legend" id="legend"></table>
+    </div>
+  </section>
 
   <section class="card" id="sec-evolucion">
     <p class="eyebrow">Evolución</p>
@@ -694,7 +704,7 @@ function debts() {
 function render() {
   if (!S.data) return;
   const m = month(S.period);
-  renderPeriod(); renderSummary(m);
+  renderPeriod(); renderSummary(m); renderDonut(m);
   renderTrend(); renderDebts(); renderNotices(m); renderFooter(); fillForms(); syncSelects(); window.navSpy?.();
 }
 function renderPeriod() {
@@ -718,6 +728,39 @@ function catList(m, cat, { sort, empty, add }) {
   const acts = [all.length > 5 ? `<button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button>` : "",
                 add ? `<button class="link" type="button" data-open="mov" data-cat="${esc(cat)}">${add}</button>` : ""].join("");
   return list + (acts ? `<div class="list-acts">${acts}</div>` : "");
+}
+const CAT_CARD = { "Pago de Deudas": "cFij", "Gastos Fijos": "cFij", "Ahorro e Inversión": "cAho", "Gastos Variables": "cVar" };
+function renderDonut(m) {
+  const vals = CATS.map(k => [k, Math.max(0, m.budget[k])]), tot = vals.reduce((a, [, v]) => a + v, 0);
+  const R = 112, r = 78, cx = 120, cy = 120, gap = 0.012;
+  let a0 = -Math.PI / 2, paths = "";
+  const P = (rad, a) => `${(cx + rad * Math.cos(a)).toFixed(2)},${(cy + rad * Math.sin(a)).toFixed(2)}`;
+  if (tot > 0) vals.forEach(([k, v]) => {
+    if (v <= 0) return;
+    const sw = v / tot * Math.PI * 2;
+    let d;
+    if (sw >= Math.PI * 2 - 1e-6) d = `M${cx},${cy - R} a${R},${R} 0 1,1 0,${2 * R} a${R},${R} 0 1,1 0,${-2 * R} M${cx},${cy - r} a${r},${r} 0 1,0 0,${2 * r} a${r},${r} 0 1,0 0,${-2 * r}`;
+    else { const s = a0 + (sw > gap * 2 ? gap : 0), e = a0 + sw - (sw > gap * 2 ? gap : 0), lg = e - s > Math.PI ? 1 : 0;
+      d = `M${P(R, s)} A${R},${R} 0 ${lg} 1 ${P(R, e)} L${P(r, e)} A${r},${r} 0 ${lg} 0 ${P(r, s)}Z`; }
+    paths += `<path class="mark" d="${d}" fill="${col(k)}" fill-rule="evenodd" data-cat="${esc(k)}" data-tip="<b>${esc(lab(k))}</b><br>${eur(m.budget[k])} · ${pct(m.ingresos ? m.budget[k] / m.ingresos : 0)} de los ingresos"></path>`;
+    a0 += sw;
+  });
+  else paths = `<circle cx="${cx}" cy="${cy}" r="${(R + r) / 2}" fill="none" stroke="var(--line)" stroke-width="${R - r}"/>`;
+  $("donut").innerHTML = `<svg viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Reparto de los ingresos">${paths}
+    <text x="${cx}" y="${cy - 2}" text-anchor="middle" style="fill:var(--ink);font-size:22px;font-weight:700">${fEur0.format(m.ingresos)}</text>
+    <text x="${cx}" y="${cy + 18}" text-anchor="middle" style="font-size:12px">ingresos de ${esc(monthName(S.period))}</text></svg>`;
+  $("splitTitle").textContent = m.ingresos ? `Así se reparten tus ${eur(m.ingresos)}` : "Sin ingresos este mes";
+  const total = CATS.reduce((a, k) => a + m.budget[k], 0);
+  // en el orden de la nómina: fijos, deudas, ahorro y lo que queda
+  const ORDER = ["Gastos Fijos", "Pago de Deudas", "Ahorro e Inversión", "Gastos Variables"];
+  $("legend").innerHTML = `<tr class="hd"><td>Categoría</td><td class="num">Importe</td><td class="num">% ingresos</td></tr>` +
+    ORDER.map(k => `<tr class="clk" data-cat="${esc(k)}"><td><span style="display:inline-flex;gap:8px;align-items:center"><span class="sw" style="background:${col(k)}"></span>${esc(lab(k))}</span></td>
+      <td class="num">${eur(m.budget[k])}</td><td class="num">${pct(m.ingresos ? m.budget[k] / m.ingresos : 0)}</td></tr>`).join("") +
+    `<tr class="tot"><td>Total</td><td class="num">${eur(total)}</td><td class="num">${pct(m.ingresos ? total / m.ingresos : 0)}</td></tr>`;
+  document.querySelectorAll("#donut [data-cat], #legend [data-cat]").forEach(el => el.addEventListener("click", () => {
+    hideTip(); $(CAT_CARD[el.dataset.cat]).scrollIntoView({ behavior: "smooth", block: "center" });
+  }));
+  bindTips($("donut"));
 }
 function renderSummary(m) {
   const head = (n, label) => `<p class="eyebrow"><span class="step-n">${n}</span>${label}</p>`;
@@ -784,7 +827,7 @@ function renderSaving(m) {
   const preview = v => {
     const c = cfgOf(S.period); if (!c) return;
     c[field] = isPct ? v / 100 : v;
-    const mm = month(S.period); renderVar(mm); note(v);
+    const mm = month(S.period); renderVar(mm); renderDonut(mm); note(v);
   };
   const range = $("savRange"), inp = $("savInp");
   // ancho a medida del texto real (tipografía, negrita y relleno incluidos)
