@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nMhpgMOz+wJi+VJPf5JI6wS1hM0KljlU2Tow5MPrqGk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-wRrD0RbQVaCoCmuLzCRxDcW5bL8R+RXs9rn6IkivrzY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -758,12 +758,20 @@ function renderSummary(m) {
   // 1 · ingresos
   $("cIng").innerHTML = `${head(1, "Ingresos")}<div class="p-val num">${eur(m.ingresos)}</div>` + (m.cfg ? `
     <ul class="inc-list">
-      <li class="clk" id="nominaRow" tabindex="0" role="button" title="Editar la nómina del mes"><span>Nómina</span><span class="r"><span class="num">${eur(m.nomina)}</span></span></li>
+      <li class="clk" id="nominaRow" tabindex="0" role="button" title="Toca para editar la nómina"><span>Nómina</span><span class="r"><span class="num">${eur(m.nomina)}</span></span></li>
       ${m.extras.map(i => itemRow("ingresos", i.ID, i.Concepto, i.Importe, ` <span class="muted" style="font-size:12px">· extra</span>`)).join("")}
     </ul>
     ${addBtn("Ingreso extra", "Añadir ingreso")}`
     : `<p class="muted" style="margin:0">Mes sin configurar · <button class="link" type="button" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></p>`);
-  $("nominaRow")?.addEventListener("click", () => openDialog("per", { id: S.period }));
+  // nómina: al tocarla, la cifra se edita ahí mismo (Intro o salir guarda, Esc cancela)
+  $("nominaRow")?.addEventListener("click", () => {
+    const cell = $("nominaRow").querySelector(".num"); if (!cell) return;
+    const inp = Object.assign(document.createElement("input"), { className: "edit-num", inputMode: "decimal", value: eur(m.nomina) });
+    inp.setAttribute("aria-label", "Nómina");
+    cell.replaceWith(inp);
+    bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada"), () => {});
+    inp.focus();
+  });
   // 2 · gastos fijos (y, si los hay, los pagos de deudas, que van antes del ahorro)
   $("cFij").innerHTML = `${head(2, "Gastos fijos")}<div class="p-val num">${eur(m.fijos)}</div>
     ${catList(m, "Gastos Fijos", { sort: byAmount, empty: "Sin gastos fijos este mes." })}
