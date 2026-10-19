@@ -149,6 +149,13 @@ main > :first-child { margin-top: 0; }
 .mes-cards { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
 .mes-cards > .card { margin: 0; }
 .mes-cards.has-deb > #cVar { grid-column: 1 / -1; }
+/* escritorio: el botón de añadir, abajo a la izquierda y a la misma altura en todas las tarjetas */
+@media (min-width: 761px) {
+  .mes-cards > .card { display: flex; flex-direction: column; }
+  .mes-cards #savList, .mes-cards .var-list { display: contents; }
+  .mes-cards .btn.add-btn { margin-top: auto; align-self: flex-start; }
+  .mes-cards .card *:has(+ .add-btn) { margin-bottom: 16px; }
+}
 .deb-sub { margin: -6px 0 10px; font-size: 12.5px; }
 .step-n { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--tint); color: var(--accent);
           font-size: 11px; font-weight: 700; letter-spacing: 0; margin-right: 7px; vertical-align: 1px; }
