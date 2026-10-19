@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-vrzC4TcBNAkICcfpDzlYEb7nZrGg8/rf68Pu2ocDCTc=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-sHERnzNSWEmF/sSc1M48rKVxWpZid+vQmjMBvhCpz+E=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -152,10 +152,12 @@ main > :first-child { margin-top: 0; }
           font-size: 11px; font-weight: 700; letter-spacing: 0; margin-right: 7px; vertical-align: 1px; }
 .inc-list li.clk { cursor: pointer; }
 .inc-list li.clk:hover { background: var(--soft); }
-.card .more { display: block; margin-top: 4px; }
-.deb-line { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; padding: 9px 12px; border-radius: 9px;
-            background: var(--soft); font-size: 13px; color: var(--ink-2); }
-.deb-line b { color: var(--ink); font-weight: 650; }
+.list-acts { display: flex; gap: 6px 18px; flex-wrap: wrap; }
+.c-empty { margin: 6px 0 8px; font-size: 13px; }
+.sub-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line);
+         font-size: 13.5px; font-weight: 650; color: var(--ink); }
+.sub-h > span { display: inline-flex; align-items: center; gap: 8px; }
+.sav-list, .var-list { margin-top: 14px; }
 .btn-add { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; }
 .btn-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 @media (max-width: 760px) {
@@ -208,7 +210,6 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .dtotal { display: flex; justify-content: space-between; padding: 12px 4px 0; font-weight: 650; color: var(--accent); }
 .head-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; flex: 1 1 auto; }
 /* el selector de vista va siempre al borde derecho, separado de los filtros */
-#detailView { margin-left: auto; }
 .mov-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
 .tools-r { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
 
@@ -315,14 +316,6 @@ table.data .num { text-align: right; }
   #movTbl tfoot tr, #debtTbl tfoot tr { display: flex; justify-content: space-between; padding: 11px 4px 2px; }
   #movTbl tfoot td, #debtTbl tfoot td { padding: 0; }
 
-  /* movimiento: concepto e importe arriba; categoría · mes · acreedor debajo */
-  #movTbl tbody tr { grid-template-columns: auto auto minmax(0, 1fr) auto; }
-  #movTbl tbody td:nth-child(3) { grid-row: 1; grid-column: 1 / 4; font-weight: 600; overflow-wrap: anywhere; }
-  #movTbl tbody td:nth-child(5) { grid-row: 1; grid-column: 4; font-weight: 650; white-space: nowrap; }
-  #movTbl tbody td:nth-child(2), #movTbl tbody td:nth-child(1), #movTbl tbody td:nth-child(4) { grid-row: 2; font-size: 12px; color: var(--muted); }
-  #movTbl tbody td:nth-child(2) { grid-column: 1; }
-  #movTbl tbody td:nth-child(1) { grid-column: 2; }
-  #movTbl tbody td:nth-child(4) { grid-column: 3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* deuda: descripción y restante; acreedor y estado; progreso y botón Pagar */
   #debtTbl tbody tr { grid-template-columns: minmax(0, 1fr) auto; }
@@ -401,7 +394,7 @@ dialog form > h3 + * { margin-top: 8px; }
   dialog form > .actions .sp { display: none; }
   dialog form > .actions .btn.danger { flex-basis: 100%; text-align: left; padding: 2px 0; min-height: 0; }
   /* iPhone: con letra < 16 px Safari amplía la página al escribir y el diálogo deja de encajar */
-  .fld input, .fld select, .fld textarea, #movSearch, .edit-num { font-size: 16px; }
+  .fld input, .fld select, .fld textarea, .edit-num { font-size: 16px; }
   /* campos de fecha/mes: en iOS tienen un ancho propio que se sale de la columna */
   .fld input[type="month"], .fld input[type="date"] { -webkit-appearance: none; appearance: none; width: 100%; display: block; line-height: 44px; text-align: left; }
   .types { gap: 6px; }
@@ -472,7 +465,6 @@ dialog .btn.danger { padding-left: 0; }
 <aside class="side">
   <nav class="side-nav" id="sideNav" aria-label="Secciones">
     <a href="#sec-resumen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/></svg>Tu mes</a>
-    <a href="#sec-movimientos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>Movimientos</a>
     <a href="#sec-evolucion"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Evolución</a>
     <a href="#sec-deudas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Deudas</a>
   </nav>
@@ -496,27 +488,9 @@ dialog .btn.danger { padding-left: 0; }
   <div class="mes-cards" id="sec-resumen">
     <section class="card" id="cIng" aria-label="Ingresos"></section>
     <section class="card" id="cFij" aria-label="Gastos fijos"></section>
-    <section class="card" id="cAho" aria-label="Ahorro e inversión"><div id="saving"></div></section>
+    <section class="card" id="cAho" aria-label="Ahorro e inversión"><div id="saving"></div><div id="savList" class="sav-list"></div></section>
     <section class="card hero" id="cVar" aria-label="Gastos variables"></section>
   </div>
-
-  <section class="card" id="sec-movimientos">
-    <p class="eyebrow">Movimientos</p>
-    <div class="sec-head"><div><h2>En qué se va cada euro</h2><p class="lead" id="movLead"></p></div></div>
-    <div class="mov-tools">
-      <div class="chips" id="catChips"></div>
-      <div class="tools-r">
-        <input class="inp" id="movSearch" type="search" placeholder="Buscar…" aria-label="Buscar">
-        <select class="sel" id="movScope" aria-label="Alcance"><option value="period">Este mes</option><option value="all">Todos los meses</option></select>
-        <div class="seg" role="group" aria-label="Vista" id="detailView">
-          <button type="button" data-v="chart">Gráfico</button><button type="button" data-v="list">Tabla</button>
-        </div>
-      </div>
-    </div>
-    <div id="detail"></div>
-    <div class="tbl-wrap" id="movTblWrap"><table class="data" id="movTbl"></table></div>
-    <div class="pager" id="movPager"></div>
-  </section>
 
   <section class="card" id="sec-evolucion">
     <p class="eyebrow">Evolución</p>
@@ -629,8 +603,7 @@ const TYPE_TITLES = { "Gastos Variables": "Nuevo gasto variable", "Gastos Fijos"
 const typeTable = t => t === "Ingreso extra" ? "ingresos" : t === "Deuda" ? "deudas" : "movimientos";
 const NEW_ENDPOINT = { movimientos: "/api/movimiento", ingresos: "/api/ingreso", deudas: "/api/deuda" };
 const PAGE_SIZE = 10;
-const S = { movPage: 0, detailView: "chart", data: null, mtime: null, period: null, cat: "all", debtCred: "all", debtState: "pend",
-            movScope: "period", search: "", sort: { key: "Importe", dir: -1 }, editing: false };
+const S = { data: null, mtime: null, period: null, debtCred: "all", debtState: "pend", editing: false, open: {} };
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 
 /* ---------- utilidades UI ---------- */
@@ -722,7 +695,7 @@ function render() {
   if (!S.data) return;
   const m = month(S.period);
   renderPeriod(); renderSummary(m);
-  renderTrend(); renderDebts(); renderMovs(); renderNotices(m); renderFooter(); fillForms(); syncSelects(); window.navSpy?.();
+  renderTrend(); renderDebts(); renderNotices(m); renderFooter(); fillForms(); syncSelects(); window.navSpy?.();
 }
 function renderPeriod() {
   const ps = periods(), i = ps.indexOf(S.period);
@@ -734,6 +707,18 @@ function renderPeriod() {
 // nombres en pantalla (el Excel conserva los suyos)
 const CAT_LABEL = { "Pago de Deudas": "Deudas", "Ahorro e Inversión": "Ahorro e inversión", "Gastos Fijos": "Gastos fijos", "Gastos Variables": "Gastos variables" };
 const lab = c => CAT_LABEL[c] || c;
+const byAmount = (a, b) => n(b.Importe) - n(a.Importe);
+const byNewest = (a, b) => String(b.ID).localeCompare(String(a.ID));
+// apuntes de una categoría dentro de su tarjeta: 5 a la vista y «Ver los N» para desplegar; al tocarlos se editan
+function catList(m, cat, { sort, empty, add }) {
+  const all = m.movs.filter(x => x.Categoría === cat).sort(sort), open = S.open[cat];
+  const list = all.length
+    ? `<ul class="inc-list">${(open ? all : all.slice(0, 5)).map(x => `<li class="clk" data-edit="movimientos" data-id="${esc(x.ID)}" title="Ver o editar"><span>${esc(x.Concepto || "—")}</span><span class="num">${eur(x.Importe)}</span></li>`).join("")}</ul>`
+    : (empty ? `<p class="muted c-empty">${empty}</p>` : "");
+  const acts = [all.length > 5 ? `<button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button>` : "",
+                add ? `<button class="link" type="button" data-open="mov" data-cat="${esc(cat)}">${add}</button>` : ""].join("");
+  return list + (acts ? `<div class="list-acts">${acts}</div>` : "");
+}
 function renderSummary(m) {
   const head = (n, label) => `<p class="eyebrow"><span class="step-n">${n}</span>${label}</p>`;
   // 1 · ingresos
@@ -750,12 +735,12 @@ function renderSummary(m) {
   const inp = $("nominaInp");
   if (inp) { $("nominaBtn").addEventListener("click", () => inp.focus()); bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada")); }
   // 2 · gastos fijos (y, si los hay, los pagos de deudas, que van antes del ahorro)
-  const fijos = m.movs.filter(x => x.Categoría === "Gastos Fijos").sort((a, b) => n(b.Importe) - n(a.Importe));
   $("cFij").innerHTML = `${head(2, "Gastos fijos")}<div class="p-val num">${eur(m.fijos)}</div>
-    <ul class="inc-list">${fijos.slice(0, 5).map(x => `<li class="clk" data-edit="movimientos" data-id="${esc(x.ID)}" title="Ver o editar"><span>${esc(x.Concepto)}</span><span class="num">${eur(x.Importe)}</span></li>`).join("")}</ul>
-    ${fijos.length > 5 ? `<button class="link more" type="button" data-catkpi="Gastos Fijos">Ver los ${fijos.length}</button>` : ""}
-    <button class="link" type="button" data-open="mov" data-cat="Gastos Fijos">+ Añadir gasto fijo</button>
-    ${m.deudas ? `<div class="deb-line"><span><span class="sw" style="background:${col("Pago de Deudas")}"></span> Pagos de deudas</span><span><b class="num">${eur(m.deudas)}</b> · <button class="link" type="button" style="padding:0" data-catkpi="Pago de Deudas">ver</button></span></div>` : ""}`;
+    ${catList(m, "Gastos Fijos", { sort: byAmount, empty: "Sin gastos fijos este mes.", add: "+ Añadir gasto fijo" })}
+    ${m.deudas ? `<div class="sub-h"><span><span class="sw" style="background:${col("Pago de Deudas")}"></span>Pagos de deudas</span><span class="num">${eur(m.deudas)}</span></div>
+      ${catList(m, "Pago de Deudas", { sort: byAmount })}` : ""}`;
+  // 3 · las aportaciones de ahorro e inversión, bajo el objetivo
+  $("savList").innerHTML = catList(m, "Ahorro e Inversión", { sort: byAmount, empty: "Aún no hay aportaciones este mes.", add: "+ Añadir aportación" });
   renderVar(m);
   renderSaving(m);
 }
@@ -769,6 +754,7 @@ function renderVar(m) {
     <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
     <div class="hero-stats"><div>Presupuesto<b class="num">${eur(m.variable)}</b></div><div>Gastado<b class="num">${eur(m.gastado)}</b></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>
+    <div class="var-list">${catList(m, "Gastos Variables", { sort: byNewest, empty: "Aún no hay gastos variables este mes." })}</div>
     <button class="btn primary btn-add" type="button" data-open="mov" data-cat="Gastos Variables"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir gasto</button>`;
 }
 
@@ -842,30 +828,8 @@ function bindEdit(inp, original, onSave, onInput) {
   });
 }
 
-function setCat(c) { S.cat = c; S.movPage = 0; hideTip(); const m = month(S.period); renderMovs(); renderSummary(m); }
 
 // vista Gráfico: barras por concepto del mes seleccionado
-function renderChart(m) {
-  const items = m.movs.filter(x => S.cat === "all" || x.Categoría === S.cat).map(x => ({ ...x, v: n(x.Importe) })).sort((a, b) => b.v - a.v);
-  const tot = items.reduce((a, x) => a + x.v, 0);
-  $("movLead").textContent = `${perName(S.period)} · ${items.length} conceptos · ${eur(tot)} · pulsa una barra para ver o editar`;
-  if (!items.length) { $("detail").innerHTML = `<div class="empty">No hay movimientos para este filtro.</div>`; return; }
-  const W = Math.max(340, $("detail").clientWidth || 1000), labelW = Math.round(W * .5), valW = 96, rowH = 32, barH = 18, plotW = W - labelW - valW;
-  const max = Math.max(...items.map(x => x.v), 1), H = items.length * rowH + 4;
-  const trunc = (s, k) => s.length > k ? s.slice(0, k - 1) + "…" : s;
-  let g = `<line class="base" x1="${labelW}" x2="${labelW}" y1="0" y2="${H}"/>`;
-  items.forEach((x, i) => {
-    const y = i * rowH + (rowH - barH) / 2 + 2, w = Math.max(x.v > 0 ? 3 : 0, x.v / max * plotW);
-    const t = `<b>${esc(x.Concepto)}</b><br>${esc(lab(x.Categoría))}${x.Acreedor ? " · " + esc(x.Acreedor) : ""}<br>${eur(x.v)} · ${pct(tot ? x.v / tot : 0)} del total`;
-    g += `<g class="mark" data-edit="movimientos" data-id="${esc(x.ID)}" data-tip="${esc(t)}">
-      <rect x="0" y="${i * rowH}" width="${W}" height="${rowH}" fill="transparent"/>
-      <text class="lbl" x="${labelW - 12}" y="${y + barH / 2 + 4.5}" text-anchor="end">${esc(trunc(x.Concepto || "—", Math.floor((labelW - 16) / 7)))}</text>
-      ${w > 0 ? `<path d="M${labelW},${y} h${Math.max(0, w - 4)} a4,4 0 0 1 4,4 v${barH - 8} a4,4 0 0 1 -4,4 h${-Math.max(0, w - 4)}Z" fill="${col(x.Categoría)}"/>` : ""}
-      <text class="val" x="${labelW + w + 8}" y="${y + barH / 2 + 4.5}">${eur(x.v)}</text></g>`;
-  });
-  $("detail").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Movimientos por concepto" style="display:block;max-width:100%">${g}</svg>`;
-  bindTips($("detail"));
-}
 
 function niceStep(x) { const p = Math.pow(10, Math.floor(Math.log10(x || 1))), f = x / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
 function renderTrend() {
@@ -920,60 +884,8 @@ function renderDebts() {
   <tfoot><tr><td colspan="2">Total (${rows.length})</td><td class="num">${eur(t.t)}</td><td class="num">${eur(t.p)}</td><td class="num">${eur(t.r)}</td><td colspan="4"></td></tr></tfoot>`;
 }
 
-function renderMovs() {
-  $("catChips").innerHTML = [["all", "Todas"], ...CATS.map(k => [k, lab(k)])].map(([k, l]) =>
-    `<button class="chip" type="button" aria-pressed="${S.cat === k}" data-k="${esc(k)}">${k !== "all" ? `<span class="sw" style="background:${col(k)}"></span>` : ""}${esc(l)}</button>`).join("");
-  $("catChips").querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => setCat(b.dataset.k)));
-  $("detailView").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === S.detailView));
-  const chart = S.detailView === "chart";
-  // buscador y alcance solo tienen sentido en la tabla; el gráfico es siempre del mes seleccionado
-  [$("movSearch"), $("movScope").closest(".dd") || $("movScope")].forEach(e => e.hidden = chart);
-  $("detail").hidden = !chart; $("movTblWrap").hidden = chart;
-  if (chart) { $("movPager").innerHTML = ""; renderChart(month(S.period)); return; }
-  $("movScope").value = S.movScope;
-  const q = S.search.toLowerCase();
-  let rows = S.data.movimientos.filter(x => (S.movScope === "all" || x.Periodo === S.period) && (S.cat === "all" || x.Categoría === S.cat) &&
-    (!q || [x.Concepto, x.Acreedor, x.Notas].some(v => String(v ?? "").toLowerCase().includes(q))));
-  const { key, dir } = S.sort;
-  rows = rows.slice().sort((a, b) => { const va = a[key], vb = b[key];
-    return (typeof va === "number" || typeof vb === "number" ? n(va) - n(vb) : String(va ?? "").localeCompare(String(vb ?? ""), "es")) * dir; });
-  $("movLead").textContent = `${S.movScope === "all" ? "Todos los meses" : perName(S.period)} · ${rows.length} apuntes · pulsa una fila para ver o editar`;
-  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  S.movPage = Math.min(Math.max(0, S.movPage), pages - 1);
-  const from = S.movPage * PAGE_SIZE, page = rows.slice(from, from + PAGE_SIZE);
-  const cols = [["Periodo", "Mes"], ["Categoría", "Categoría"], ["Concepto", "Concepto"], ["Acreedor", "Acreedor"], ["Importe", "Importe"]];
-  $("movTbl").innerHTML = `<thead><tr>${cols.map(([k, l]) => `<th class="sort${k === "Importe" ? " num" : ""}" data-k="${k}">${l}${k === key ? (dir > 0 ? " ▲" : " ▼") : ""}</th>`).join("")}</tr></thead>
-  <tbody>${page.length ? page.map(x => `<tr data-edit="movimientos" data-id="${esc(x.ID)}"${x.Notas ? ` title="${esc(x.Notas)}"` : ""}><td style="white-space:nowrap">${esc(perShort(x.Periodo))}</td>
-    <td><span style="display:inline-flex;gap:7px;align-items:center;white-space:nowrap"><span class="sw" style="background:${col(x.Categoría)}"></span>${esc(lab(x.Categoría))}</span></td>
-    <td>${esc(x.Concepto)}</td><td>${esc(x.Acreedor || "")}</td><td class="num">${eur(x.Importe)}</td></tr>`).join("")
-    : `<tr><td colspan="5" class="empty">No hay movimientos para este filtro.</td></tr>`}</tbody>
-  <tfoot><tr><td colspan="4">Total${pages > 1 ? ` (${rows.length} apuntes)` : ""}</td><td class="num">${eur(rows.reduce((a, x) => a + n(x.Importe), 0))}</td></tr></tfoot>`;
-  $("movTbl").querySelectorAll("th[data-k]").forEach(th => th.addEventListener("click", () => {
-    const k = th.dataset.k; S.sort = { key: k, dir: S.sort.key === k ? -S.sort.dir : (k === "Importe" ? -1 : 1) }; S.movPage = 0; renderMovs();
-  }));
-  renderPager(rows.length, pages, from, page.length);
-}
 // paginador: "Mostrando 1–10 de 32" + ‹ 1 2 3 4 › (con "…" a partir de 8 páginas)
 // paginador: "Mostrando 1–10 de 32" + ‹ 1 2 3 4 › (con "…" a partir de 8 páginas)
-function renderPagerInto(el, total, pages, cur, from, shown, label, go) {
-  if (pages <= 1) { el.innerHTML = ""; return; }
-  const nums = [];
-  for (let i = 0; i < pages; i++) if (pages <= 7 || i === 0 || i === pages - 1 || Math.abs(i - cur) <= 1) nums.push(i);
-  const items = nums.flatMap((p, i) => i && p - nums[i - 1] > 1 ? ["gap", p] : [p]);
-  el.innerHTML = `<span>Mostrando <b>${from + 1}–${from + shown}</b> de <b>${total}</b></span>
-    <nav class="pages" aria-label="${esc(label)}">
-      <button type="button" data-page="${cur - 1}" ${cur === 0 ? "disabled" : ""} aria-label="Página anterior">‹</button>
-      ${items.map(p => p === "gap" ? `<span class="gap">…</span>` : `<button type="button" data-page="${p}"${p === cur ? ' aria-current="page"' : ""}>${p + 1}</button>`).join("")}
-      <button type="button" data-page="${cur + 1}" ${cur === pages - 1 ? "disabled" : ""} aria-label="Página siguiente">›</button>
-    </nav>`;
-  el.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => {
-    go(+b.dataset.page);
-    const card = el.closest(".card"); if (card.getBoundingClientRect().top < 0) card.scrollIntoView({ block: "start" });
-  }));
-}
-function renderPager(total, pages, from, shown) {
-  renderPagerInto($("movPager"), total, pages, S.movPage, from, shown, "Páginas de movimientos", p => { S.movPage = p; renderMovs(); });
-}
 
 function renderFooter() {
   const m = S.data.meta;
@@ -1181,11 +1093,11 @@ $("btnRecur").addEventListener("click", async () => { if (await copyRecurrentes(
 const DLG = { movimientos: "mov", ingresos: "mov", deudas: "mov", periodos: "per" };
 document.addEventListener("click", e => {
   const o = e.target.closest("[data-open]");
-  if (o) { openDialog(o.dataset.open, { cat: o.dataset.cat || (S.cat !== "all" ? S.cat : null), mes: o.dataset.mes }); return; }
+  if (o) { openDialog(o.dataset.open, { cat: o.dataset.cat || null, mes: o.dataset.mes }); return; }
   const pay = e.target.closest("[data-pay]");
   if (pay) { openDialog("mov", { cat: "Pago de Deudas", debtId: pay.dataset.pay }); return; }
-  const kp = e.target.closest("[data-catkpi]");
-  if (kp) { setCat(S.cat === kp.dataset.catkpi ? "all" : kp.dataset.catkpi); $("sec-movimientos").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  const more = e.target.closest("[data-more]");
+  if (more) { S.open[more.dataset.more] = !S.open[more.dataset.more]; renderSummary(month(S.period)); return; }
   const ed = e.target.closest("[data-edit]");
   if (ed) { hideTip(); openDialog(DLG[ed.dataset.edit], { id: ed.dataset.id, tabla: ed.dataset.edit }); return; }
   const rc = e.target.closest("[data-recur]");
@@ -1193,10 +1105,6 @@ document.addEventListener("click", e => {
   const del = e.target.closest("[data-delete]");
   if (del) { deleteRecord(del.dataset.delete, del.dataset.id, del.dataset.name); return; }
 });
-$("detailView").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
-  S.detailView = b.dataset.v; S.movPage = 0; store.set("detailView", S.detailView); hideTip(); renderMovs();
-}));
-{ const v = store.get("detailView"); if (v === "chart" || v === "list") S.detailView = v; }
 $("btnEditMes").onclick = () => openDialog("per", { id: S.period });
 // móvil: el botón flotante de añadir aparece cuando el del resumen ya no se ve
 { const fab = document.querySelector(".fab"), upd = () => { const b = document.querySelector("#cVar .btn-add"); if (!b) return;
@@ -1209,8 +1117,6 @@ $("periodSel").onchange = e => {
 $("prev").onclick = () => { const ps = periods(), i = ps.indexOf(S.period); if (i > 0) { S.period = ps[i - 1]; render(); } };
 $("next").onclick = () => { const ps = periods(), i = ps.indexOf(S.period); if (i < ps.length - 1) { S.period = ps[i + 1]; render(); } };
 $("debtCred").onchange = e => { S.debtCred = e.target.value; renderDebts(); };
-$("movScope").onchange = e => { S.movScope = e.target.value; S.movPage = 0; renderMovs(); };
-$("movSearch").oninput = e => { S.search = e.target.value; S.movPage = 0; renderMovs(); };
 const fmtTime = ts => { const d = new Date(ts), z = n => String(n).padStart(2, "0"); return `${z(d.getDate())}/${z(d.getMonth() + 1)} ${z(d.getHours())}:${z(d.getMinutes())}`; };
 const DB_ICON = '<svg class="g-ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>';
 const DRIVE_ICON = '<svg class="g-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8l6 10-4 7H6l-4-7z"/><path d="M8 3l6 10H2M16 3l-6 10 4 7"/></svg>';
@@ -1330,7 +1236,7 @@ $("btnTheme").onclick = () => {
 { const t = store.get("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; }
 
 let resizeT;
-addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (S.data) { if (S.detailView === "chart") renderMovs(); renderTrend(); } }, 150); });
+addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (S.data) renderTrend(); }, 150); });
 /* ---------- desplegables propios ----------
    El <select> original sigue siendo la fuente de verdad (valor, eventos "change", formularios);
    aquí solo se dibuja el botón y la lista con el estilo de la app. */
@@ -1402,7 +1308,7 @@ addEventListener("resize", () => ddOpen?.close(false));
 document.querySelectorAll("dialog").forEach(d => d.addEventListener("close", () => ddOpen?.close(false)));
 document.querySelectorAll("form").forEach(f => f.addEventListener("reset", () => setTimeout(syncSelects)));
 enhanceSelect($("periodSel"), "period");
-["debtCred", "movScope"].forEach(id => enhanceSelect($(id), "sel"));
+enhanceSelect($("debtCred"), "sel");
 document.querySelectorAll("dialog .fld select").forEach(s => enhanceSelect(s, "fld"));
 
 // logo y título: vuelven al inicio de la página
