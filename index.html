@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-4mueRAWqK3zdQ9Psyq6WWLTrNORRKD0j9gHWEc1/YNY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-69/Rsi26mPM0+qA37WlfYs7TDqnDB1I+0Lx9whlzRVM=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -148,6 +148,8 @@ main > :first-child { margin-top: 0; }
 /* el mes en 4 tarjetas, en el orden en que se reparte la nómina */
 .mes-cards { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
 .mes-cards > .card { margin: 0; }
+.mes-cards.has-deb > #cVar { grid-column: 1 / -1; }
+.deb-sub { margin: -6px 0 10px; font-size: 12.5px; }
 .step-n { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--tint); color: var(--accent);
           font-size: 11px; font-weight: 700; letter-spacing: 0; margin-right: 7px; vertical-align: 1px; }
 .inc-list li.clk { cursor: pointer; }
@@ -491,6 +493,7 @@ dialog .btn.danger { padding-left: 0; }
   <div class="mes-cards" id="sec-resumen">
     <section class="card" id="cIng" aria-label="Ingresos"></section>
     <section class="card" id="cFij" aria-label="Gastos fijos"></section>
+    <section class="card" id="cDeb" aria-label="Deudas" hidden></section>
     <section class="card" id="cAho" aria-label="Ahorro e inversión"><div id="saving"></div><div id="savList" class="sav-list"></div></section>
     <section class="card hero" id="cVar" aria-label="Gastos variables"></section>
   </div>
@@ -732,7 +735,7 @@ function catList(m, cat, { sort, empty, add }) {
   const more = all.length > 5 ? `<div class="list-acts"><button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button></div>` : "";
   return list + more + (add ? addBtn(cat, add) : "");
 }
-const CAT_CARD = { "Pago de Deudas": "cFij", "Gastos Fijos": "cFij", "Ahorro e Inversión": "cAho", "Gastos Variables": "cVar" };
+const CAT_CARD = { "Pago de Deudas": "cDeb", "Gastos Fijos": "cFij", "Ahorro e Inversión": "cAho", "Gastos Variables": "cVar" };
 function renderDonut(m) {
   const vals = CATS.map(k => [k, Math.max(0, m.budget[k])]), tot = vals.reduce((a, [, v]) => a + v, 0);
   const R = 112, r = 78, cx = 120, cy = 120, gap = 0.012;
@@ -779,9 +782,14 @@ function renderSummary(m) {
   // 2 · gastos fijos (y, si los hay, los pagos de deudas, que van antes del ahorro)
   $("cFij").innerHTML = `${head(2, "Gastos fijos")}<div class="p-val num">${eur(m.fijos)}</div>
     ${catList(m, "Gastos Fijos", { sort: byAmount, empty: "Sin gastos fijos este mes." })}
-    ${m.deudas ? `<div class="sub-h"><span><span class="sw" style="background:${col("Pago de Deudas")}"></span>Pagos de deudas</span><span class="num">${eur(m.deudas)}</span></div>
-      ${catList(m, "Pago de Deudas", { sort: byAmount })}` : ""}
     ${addBtn("Gastos Fijos", "Añadir gasto fijo")}`;
+  // 3 · deudas: solo si hay alguna pendiente o pagos este mes; si no, la tarjeta desaparece y se renumera
+  const pend = debts().filter(x => !x.paid), withDebts = m.deudas > 0 || pend.length > 0;
+  S.steps = { aho: withDebts ? 4 : 3, var: withDebts ? 5 : 4 };
+  $("cDeb").hidden = !withDebts; $("sec-resumen").classList.toggle("has-deb", withDebts);
+  if (withDebts) $("cDeb").innerHTML = `${head(3, "Deudas")}<div class="p-val num">${eur(m.deudas)}</div>
+    <p class="muted deb-sub">Pagado este mes${pend.length ? ` · quedan ${eur(pend.reduce((a, x) => a + x.rest, 0))} por pagar` : ""}</p>
+    ${catList(m, "Pago de Deudas", { sort: byAmount, empty: "Sin pagos este mes.", add: "Añadir pago de deuda" })}`;
   // 3 · las aportaciones de ahorro e inversión, bajo el objetivo
   $("savList").innerHTML = catList(m, "Ahorro e Inversión", { sort: byAmount, empty: "Aún no hay aportaciones este mes.", add: "Añadir aportación" });
   renderVar(m);
@@ -792,7 +800,7 @@ function renderVar(m) {
   const disp = m.variable - m.gastado;
   const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
   $("cVar").innerHTML = `
-    <p class="eyebrow"><span class="step-n">4</span>Gastos variables</p>
+    <p class="eyebrow"><span class="step-n">${S.steps?.var || 4}</span>Gastos variables</p>
     <div class="label">Disponible para gastar en ${esc(monthName(S.period))}</div>
     <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
@@ -806,7 +814,7 @@ function renderSaving(m) {
   const val = isPct ? Math.round(m.pctA * 1000) / 10 : n(m.cfg?.Importe_Ahorro);
   const max = isPct ? 100 : Math.max(100, Math.ceil(m.ingresos / 50) * 50);
   $("saving").innerHTML = `
-    <div class="p-label"><p class="eyebrow" style="margin:0"><span class="step-n">3</span>Ahorro e inversión</p>
+    <div class="p-label"><p class="eyebrow" style="margin:0"><span class="step-n">${S.steps?.aho || 3}</span>Ahorro e inversión</p>
       <span class="seg" role="group" aria-label="Tipo de objetivo">
         <button type="button" data-modo="Porcentaje" aria-pressed="${isPct}" ${dis}>%</button>
         <button type="button" data-modo="Importe" aria-pressed="${!isPct}" ${dis}>€</button></span></div>
