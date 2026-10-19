@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Paa7+J22Fb5pcUiu5o7GDMa33toRcOIXhcnTEHK/QA4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3NOAoUnz3OwLimg6H4qCjKKlEt+xHqvDmT0lDq5mRxY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -158,11 +158,13 @@ main > :first-child { margin-top: 0; }
          font-size: 13.5px; font-weight: 650; color: var(--ink); }
 .sub-h > span { display: inline-flex; align-items: center; gap: 8px; }
 .sav-list, .var-list { margin-top: 14px; }
-.btn-add { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; }
-.btn-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.btn.add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; border-color: var(--accent); color: var(--accent); background: transparent; font-weight: 600; }
+.btn.add-btn:hover { background: var(--tint); }
+.add-btn svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
-  .btn-add { width: 100%; justify-content: center; padding: 11px; }
+  .btn.add-btn { width: 100%; justify-content: center; min-height: 44px; }
+  .inc-list .icon-btn { width: 40px; height: 40px; font-size: 17px; }
 }
 @media (max-width: 680px) {
   .side .news, .side-foot { display: none !important; }
@@ -720,14 +722,14 @@ const lab = c => CAT_LABEL[c] || c;
 const byAmount = (a, b) => n(b.Importe) - n(a.Importe);
 const byNewest = (a, b) => String(b.ID).localeCompare(String(a.ID));
 // apuntes de una categoría dentro de su tarjeta: 5 a la vista y «Ver los N» para desplegar; al tocarlos se editan
+const addBtn = (cat, label) => `<button class="btn add-btn" type="button" data-open="mov" data-cat="${esc(cat)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>${label}</button>`;
 function catList(m, cat, { sort, empty, add }) {
   const all = m.movs.filter(x => x.Categoría === cat).sort(sort), open = S.open[cat];
   const list = all.length
     ? `<ul class="inc-list">${(open ? all : all.slice(0, 5)).map(x => `<li class="clk" data-edit="movimientos" data-id="${esc(x.ID)}" title="Ver o editar"><span>${esc(x.Concepto || "—")}</span><span class="num">${eur(x.Importe)}</span></li>`).join("")}</ul>`
     : (empty ? `<p class="muted c-empty">${empty}</p>` : "");
-  const acts = [all.length > 5 ? `<button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button>` : "",
-                add ? `<button class="link" type="button" data-open="mov" data-cat="${esc(cat)}">${add}</button>` : ""].join("");
-  return list + (acts ? `<div class="list-acts">${acts}</div>` : "");
+  const more = all.length > 5 ? `<div class="list-acts"><button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button></div>` : "";
+  return list + more + (add ? addBtn(cat, add) : "");
 }
 const CAT_CARD = { "Pago de Deudas": "cFij", "Gastos Fijos": "cFij", "Ahorro e Inversión": "cAho", "Gastos Variables": "cVar" };
 function renderDonut(m) {
@@ -767,23 +769,21 @@ function renderSummary(m) {
   // 1 · ingresos
   $("cIng").innerHTML = `${head(1, "Ingresos")}<div class="p-val num">${eur(m.ingresos)}</div>` + (m.cfg ? `
     <ul class="inc-list">
-      <li><span>Nómina</span><span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina" title="Toca para editar"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button><span style="width:28px"></span></span></li>
-      ${m.extras.map(i => `<li><span>${esc(i.Concepto)} <span class="muted" style="font-size:12px">· extra</span></span>
-        <span class="r"><span class="num" style="margin-right:6px">${eur(i.Importe)}</span>
-        <button class="icon-btn" type="button" data-edit="ingresos" data-id="${esc(i.ID)}" aria-label="Editar ${esc(i.Concepto)}" title="Editar">✎</button>
-        <button class="icon-btn del" type="button" data-delete="ingresos" data-id="${esc(i.ID)}" data-name="${esc(i.Concepto)}" aria-label="Eliminar ${esc(i.Concepto)}" title="Eliminar">✕</button></span></li>`).join("")}
+      <li class="clk" id="nominaRow" title="Toca para editar"><span>Nómina</span><span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button></span></li>
+      ${m.extras.map(i => `<li class="clk" data-edit="ingresos" data-id="${esc(i.ID)}" title="Ver o editar"><span>${esc(i.Concepto)} <span class="muted" style="font-size:12px">· extra</span></span><span class="num">${eur(i.Importe)}</span></li>`).join("")}
     </ul>
-    <button class="link" type="button" data-open="mov" data-cat="Ingreso extra">+ Añadir ingreso extra</button>`
+    ${addBtn("Ingreso extra", "Añadir ingreso")}`
     : `<p class="muted" style="margin:0">Mes sin configurar · <button class="link" type="button" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></p>`);
   const inp = $("nominaInp");
-  if (inp) { $("nominaBtn").addEventListener("click", () => inp.focus()); bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada")); }
+  if (inp) { $("nominaRow").addEventListener("click", e => { if (e.target !== inp) inp.focus(); }); bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada")); }
   // 2 · gastos fijos (y, si los hay, los pagos de deudas, que van antes del ahorro)
   $("cFij").innerHTML = `${head(2, "Gastos fijos")}<div class="p-val num">${eur(m.fijos)}</div>
-    ${catList(m, "Gastos Fijos", { sort: byAmount, empty: "Sin gastos fijos este mes.", add: "+ Añadir gasto fijo" })}
+    ${catList(m, "Gastos Fijos", { sort: byAmount, empty: "Sin gastos fijos este mes." })}
     ${m.deudas ? `<div class="sub-h"><span><span class="sw" style="background:${col("Pago de Deudas")}"></span>Pagos de deudas</span><span class="num">${eur(m.deudas)}</span></div>
-      ${catList(m, "Pago de Deudas", { sort: byAmount })}` : ""}`;
+      ${catList(m, "Pago de Deudas", { sort: byAmount })}` : ""}
+    ${addBtn("Gastos Fijos", "Añadir gasto fijo")}`;
   // 3 · las aportaciones de ahorro e inversión, bajo el objetivo
-  $("savList").innerHTML = catList(m, "Ahorro e Inversión", { sort: byAmount, empty: "Aún no hay aportaciones este mes.", add: "+ Añadir aportación" });
+  $("savList").innerHTML = catList(m, "Ahorro e Inversión", { sort: byAmount, empty: "Aún no hay aportaciones este mes.", add: "Añadir aportación" });
   renderVar(m);
   renderSaving(m);
 }
@@ -797,8 +797,7 @@ function renderVar(m) {
     <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
     <div class="hero-stats"><div>Presupuesto<b class="num">${eur(m.variable)}</b></div><div>Gastado<b class="num">${eur(m.gastado)}</b></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>
-    <div class="var-list">${catList(m, "Gastos Variables", { sort: byNewest, empty: "Aún no hay gastos variables este mes." })}</div>
-    <button class="btn primary btn-add" type="button" data-open="mov" data-cat="Gastos Variables"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir gasto</button>`;
+    <div class="var-list">${catList(m, "Gastos Variables", { sort: byNewest, empty: "Aún no hay gastos variables este mes.", add: "Añadir gasto variable" })}</div>`;
 }
 
 
@@ -1150,7 +1149,7 @@ document.addEventListener("click", e => {
 });
 $("btnEditMes").onclick = () => openDialog("per", { id: S.period });
 // móvil: el botón flotante de añadir aparece cuando el del resumen ya no se ve
-{ const fab = document.querySelector(".fab"), upd = () => { const b = document.querySelector("#cVar .btn-add"); if (!b) return;
+{ const fab = document.querySelector(".fab"), upd = () => { const b = document.querySelector("#cVar .add-btn"); if (!b) return;
     const r = b.getBoundingClientRect(); fab.classList.toggle("show", r.bottom < 60 || r.top > innerHeight); };
   addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd(); }
 $("periodSel").onchange = e => {
