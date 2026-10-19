@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-B0tGVTlVv3tP8uLDjRWMmmTpQYwB2PqmCuZoRrOzK1I=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-FrbrOXzY+p0ZDEMSg+7BmvO7lTTSZJlBme3f1rChxmc=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -108,7 +108,7 @@ main > .welcome:nth-child(2) { margin-top: 0; }
 .shell { max-width: 1360px; margin: 0 auto; padding: 20px 20px 60px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; align-items: start; }
 main { min-width: 0; }
 main > :first-child { margin-top: 0; }
-#sec-resumen, main section, #sec-mes { scroll-margin-top: 76px; }
+#sec-resumen, main section { scroll-margin-top: 76px; }
 /* menú lateral */
 /* sin scroll propio: si no cabe, JS ajusta top para que quede pegado por abajo y se desplace con la página */
 .side { position: sticky; top: 76px; display: grid; gap: 12px; }
@@ -141,63 +141,59 @@ main > :first-child { margin-top: 0; }
                 text-align: center; white-space: normal; }
 }
 /* resumen del mes: ingresos, reparto en una barra y las 4 cifras */
-.summary { padding: 22px 24px; margin-top: 0 !important; }
-.summary .sum-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 16px; margin-bottom: 14px; }
-.sum-fig .eyebrow { margin: 0 0 4px; }
-.sum-add-m { display: none; }
-.sum-add-m svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
-.sum-num { font-size: clamp(34px, 5vw, 52px); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; color: var(--ink); white-space: nowrap; }
-.sum-num.acc { color: var(--accent); }
-.sum-num.neg { color: var(--critical); }
-@media (max-width: 680px) {
-  .summary .sum-head { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .summary .sum-add { display: none; }
-  .sum-add-m { display: flex !important; width: 100%; justify-content: center; align-items: center; gap: 6px; padding: 11px; margin-top: 14px; }
-  .sum-num { font-size: 40px; }
-}
-.sum-line { margin: 10px 0 0; font-size: 13.5px; color: var(--ink-2); }
-.sum-line b { color: var(--ink); font-weight: 650; }
-.sum-split { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
-.sum-split .sum-k { margin: 0; font-size: 13px; color: var(--ink-2); }
-.sum-split .sum-k b { color: var(--ink); font-weight: 650; }
-.sum-split .sum-bar { margin: 10px 0 12px; }
 /* ingresos y ahorro: una tarjeta, dos columnas */
-.mes-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.mes-grid > #income { padding-right: 24px; border-right: 1px solid var(--line); }
-.mes-grid > #saving { padding-left: 24px; }
-@media (max-width: 760px) {
-  .mes-grid { grid-template-columns: minmax(0, 1fr); }
-  .mes-grid > #income { padding: 0 0 18px; border-right: 0; border-bottom: 1px solid var(--line); }
-  .mes-grid > #saving { padding: 18px 0 0; }
-}
 /* móvil: primero la información; sin menú de secciones y con los avisos al final */
 .news-m { display: none; }
+.news.empty, .news-m.empty { display: none !important; }
+/* el mes como una cascada: ingresos − fijos − (deudas) − ahorro = gastos variables */
+.cascada { padding: 22px 24px; margin-top: 0 !important; }
+.c-step { padding: 14px 0; border-top: 1px solid var(--line); }
+.c-step:first-of-type { border-top: 0; padding-top: 4px; }
+.c-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.c-l { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 650; color: var(--ink); min-width: 0; }
+.c-op { width: 14px; flex: none; text-align: center; color: var(--muted); font-weight: 700; }
+.c-v { font-size: 17px; font-weight: 700; white-space: nowrap; }
+.c-meta { margin: 4px 0 0 24px; font-size: 12.5px; color: var(--muted); display: flex; gap: 6px 12px; flex-wrap: wrap; align-items: center; }
+.c-meta .link { font-size: 12.5px; padding: 0; }
+.c-step .inc-list { margin: 6px 0 0 24px; }
+.c-step .inc-list li { font-size: 13.5px; min-height: 36px; }
+.c-step #saving { margin: 8px 0 0 24px; }
+.sav-ctl { display: flex; align-items: center; gap: 12px; }
+.sav-ctl .big-input { margin: 0; }
+.cascada .big-input input { font-size: 20px; }
+.cascada .big-input span { font-size: 16px; }
+#saving input[type="range"] { width: 100%; margin: 10px 0 4px; }
+.c-var { margin-top: 6px; background: var(--soft); border-radius: 12px; padding: 16px 18px; }
+.c-disp { margin: 14px 0 10px; }
+.c-disp .eyebrow { margin: 0 0 2px; }
+.c-num { font-size: clamp(34px, 5vw, 48px); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; color: var(--accent); white-space: nowrap; }
+.c-num.neg { color: var(--critical); }
+.c-add { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; }
+.c-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.c-var .hero-bar { background: var(--surface); }
+.c-spent { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+.c-spent b { color: var(--ink); font-weight: 650; }
+/* escritorio: la resta a la izquierda y el resultado a la derecha */
+@media (min-width: 1000px) {
+  .cascada { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); column-gap: 32px; align-items: start; }
+  .cascada > * { grid-column: 1; }
+  .cascada > .c-var { grid-column: 2; grid-row: 1 / span 8; margin-top: 0; }
+}
+@media (max-width: 680px) {
+  .cascada { padding: 16px; }
+  .c-var { padding: 14px; }
+  .c-num { font-size: 40px; }
+  .c-add { width: 100%; justify-content: center; padding: 11px; }
+  .c-meta, .c-step .inc-list, .c-step #saving { margin-left: 0; }
+}
 @media (max-width: 680px) {
   .side-nav, .side .news { display: none !important; }
   .side { order: 2; }
   .news-m { display: block; margin-bottom: 16px; }
 }
-.sum-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-.sum-add { display: inline-flex; align-items: center; gap: 6px; flex: none; }
-.sum-add svg, .fab svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
-.sum-bar { display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden; background: var(--soft); margin: 16px 0 14px; }
-.sum-bar span { height: 100%; min-width: 3px; }
-.sum-items { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.sum-item { border: 1px solid transparent; background: none; text-align: left; padding: 8px 10px; border-radius: 9px; cursor: pointer; color: var(--ink); min-width: 0; display: block; }
-.sum-item:hover { background: var(--soft); }
-.sum-item.on { border-color: var(--accent); background: var(--tint); }
-.sum-item .l { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-2); }
-.sum-item .v { display: block; font-size: 17px; font-weight: 650; margin-top: 3px; white-space: nowrap; }
-.sum-item .v.neg { color: var(--critical); }
-.sum-item .p { font-size: 12px; color: var(--muted); }
 /* móvil: botón flotante para añadir, siempre a mano */
 .fab { display: none; }
 @media (max-width: 680px) {
-  .summary { padding: 16px; }
-  .sum-add { padding: 7px 12px; }
-  .sum-items { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
-  .sum-item { padding: 6px 8px; }
-  .sum-item .v { font-size: 15.5px; }
   .fab { display: grid; opacity: 0; transform: scale(.6); pointer-events: none; transition: opacity .18s, transform .18s; place-items: center; position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; width: 56px; height: 56px;
          border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 18px rgba(0, 0, 0, .25); cursor: pointer; }
   .fab svg { width: 22px; height: 22px; }
@@ -501,13 +497,12 @@ dialog .btn.danger { padding-left: 0; }
 <div class="shell">
 <aside class="side">
   <nav class="side-nav" id="sideNav" aria-label="Secciones">
-    <a href="#sec-resumen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/></svg>Resumen</a>
-    <a href="#sec-mes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></svg>Ingresos y ahorro</a>
+    <a href="#sec-resumen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5z"/></svg>Tu mes</a>
     <a href="#sec-movimientos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>Movimientos</a>
     <a href="#sec-evolucion"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Evolución</a>
     <a href="#sec-deudas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>Deudas</a>
   </nav>
-  <div class="news"><p class="side-title">Avisos del mes</p><div class="news-list" id="notices"></div></div>
+  <div class="news" id="newsSide"><p class="side-title">Avisos del mes</p><div class="news-list" id="notices"></div></div>
   <div class="side-foot" id="footer"></div>
 </aside>
 <main>
@@ -523,12 +518,8 @@ dialog .btn.danger { padding-left: 0; }
     </div>
   </div>
 
-  <div class="news news-m" aria-label="Avisos del mes"><p class="side-title">Avisos del mes</p><div class="news-list" id="noticesM"></div></div>
-  <section class="card summary hero" id="sec-resumen" aria-label="Este mes"></section>
-
-  <section class="card" id="sec-mes" aria-label="Ingresos y ahorro">
-    <div class="mes-grid"><div id="income"></div><div id="saving"></div></div>
-  </section>
+  <div class="news news-m" id="newsMob" aria-label="Avisos del mes"><p class="side-title">Avisos del mes</p><div class="news-list" id="noticesM"></div></div>
+  <section class="card cascada" id="sec-resumen" aria-label="Tu mes"></section>
 
   <section class="card" id="sec-movimientos">
     <p class="eyebrow">Movimientos</p>
@@ -751,7 +742,7 @@ function debts() {
 function render() {
   if (!S.data) return;
   const m = month(S.period);
-  renderPeriod(); renderSummary(m); renderIncome(m); renderSaving(m);
+  renderPeriod(); renderSummary(m);
   renderTrend(); renderDebts(); renderMovs(); renderNotices(m); renderFooter(); fillForms(); syncSelects();
 }
 function renderPeriod() {
@@ -761,62 +752,58 @@ function renderPeriod() {
   $("prev").disabled = i <= 0; $("next").disabled = i < 0 || i >= ps.length - 1;
   $("btnEditMes").hidden = !cfgOf(S.period);
 }
-const SUM_LABEL = { "Pago de Deudas": "Deudas", "Ahorro e Inversión": "Ahorro", "Gastos Fijos": "Gastos fijos", "Gastos Variables": "Gastos variables" };
+// nombres en pantalla (el Excel conserva los suyos)
+const CAT_LABEL = { "Pago de Deudas": "Deudas", "Ahorro e Inversión": "Ahorro e inversión", "Gastos Fijos": "Gastos fijos", "Gastos Variables": "Gastos variables" };
+const lab = c => CAT_LABEL[c] || c;
 function renderSummary(m) {
-  const disp = m.variable - m.gastado;
-  const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
-  let notice = "";
-  if (!m.cfg) notice = `<div class="notice">Este mes no está configurado · <button class="link" type="button" style="padding:0" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></div>`;
-  else if (disp < 0) notice = `<div class="notice">Te has pasado ${eur(-disp)} del presupuesto</div>`;
-  else if (ratio >= .85) notice = `<div class="notice">${ICON.pend} Cerca del límite del presupuesto</div>`;
-  const base = Math.max(m.ingresos, CATS.reduce((a, k) => a + Math.max(0, m.budget[k]), 0));
-  const bar = base > 0 ? CATS.filter(k => m.budget[k] > 0).map(k =>
-    `<span style="flex:${m.budget[k] / base} 0 0;background:${col(k)}" title="${esc(SUM_LABEL[k])}: ${eur(m.budget[k])}"></span>`).join("") : "";
-  $("sec-resumen").innerHTML = `
-    <div class="sum-head">
-      <div class="sum-fig"><p class="eyebrow">Disponible para gastar en ${esc(monthName(S.period))}</p><div class="sum-num num acc${disp < 0 ? " neg" : ""}">${eur(disp)}</div></div>
-      <button class="btn primary sum-add" type="button" data-open="mov"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir</button>
-    </div>
-    <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
-    <p class="sum-line">Has gastado <b class="num">${eur(m.gastado)}</b> de <b class="num">${eur(m.variable)}</b> · ${pct(ratio)}</p>${notice}
-    <button class="btn primary sum-add-m" type="button" data-open="mov"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir gasto o ingreso</button>
-    <div class="sum-split">
-      <p class="sum-k">Así se reparten tus ingresos</p>
-      <div class="sum-bar" role="img" aria-label="Reparto de los ingresos">${bar}</div>
-      <div class="sum-items">${CATS.map(k => `<button class="sum-item${S.cat === k ? " on" : ""}" type="button" data-catkpi="${esc(k)}" title="Ver los movimientos de ${esc(SUM_LABEL[k].toLowerCase())}">
-        <span class="l"><span class="sw" style="background:${col(k)}"></span>${esc(SUM_LABEL[k])}</span>
-        <span class="v num${m.budget[k] < 0 ? " neg" : ""}">${eur(m.budget[k])}</span>
-        <span class="p">${pct(m.ingresos ? m.budget[k] / m.ingresos : 0)}</span></button>`).join("")}</div>
-    </div>`;
-}
-
-function renderIncome(m) {
-  $("income").innerHTML = `
-    <p class="eyebrow">Ingresos</p>
-    <div class="p-val num">${eur(m.ingresos)}</div>
-    <ul class="inc-list">
-      <li><span>Nómina</span>${m.cfg ? `<span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina" title="Haz clic para editar"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button><span style="width:28px"></span></span>` : `<span class="muted">Mes sin configurar</span>`}</li>
+  const count = c => m.movs.filter(x => x.Categoría === c).length;
+  const nFix = count("Gastos Fijos"), nDeb = count("Pago de Deudas");
+  const step = (op, color, label, value, extra = "", id = "") =>
+    `<div class="c-step"><div class="c-row"><span class="c-l"><span class="c-op">${op}</span>${color ? `<span class="sw" style="background:${color}"></span>` : ""}${label}</span><span class="c-v num"${id ? ` id="${id}"` : ""}>${value}</span></div>${extra}</div>`;
+  const income = m.cfg ? `<ul class="inc-list">
+      <li><span>Nómina</span><span class="r"><input class="edit-num" id="nominaInp" value="${esc(eur(m.nomina))}" aria-label="Nómina" title="Toca para editar"><button class="icon-btn" type="button" id="nominaBtn" aria-label="Editar nómina" title="Editar">✎</button><span style="width:28px"></span></span></li>
       ${m.extras.map(i => `<li><span>${esc(i.Concepto)} <span class="muted" style="font-size:12px">· extra</span></span>
         <span class="r"><span class="num" style="margin-right:6px">${eur(i.Importe)}</span>
         <button class="icon-btn" type="button" data-edit="ingresos" data-id="${esc(i.ID)}" aria-label="Editar ${esc(i.Concepto)}" title="Editar">✎</button>
         <button class="icon-btn del" type="button" data-delete="ingresos" data-id="${esc(i.ID)}" data-name="${esc(i.Concepto)}" aria-label="Eliminar ${esc(i.Concepto)}" title="Eliminar">✕</button></span></li>`).join("")}
-    </ul>
-    <button class="link" type="button" data-open="mov" data-cat="Ingreso extra">+ Añadir ingreso extra</button>`;
+    </ul><div class="c-meta"><button class="link" type="button" data-open="mov" data-cat="Ingreso extra">+ Ingreso extra</button></div>`
+    : `<div class="c-meta">Mes sin configurar · <button class="link" type="button" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button></div>`;
+  const meta = (c, n, add) => `<div class="c-meta">${n} concepto${n === 1 ? "" : "s"}${n ? ` · <button class="link" type="button" data-catkpi="${esc(c)}">ver</button>` : ""}${add ? ` · <button class="link" type="button" data-open="mov" data-cat="${esc(c)}">${add}</button>` : ""}</div>`;
+  $("sec-resumen").innerHTML = `
+    <p class="eyebrow">${esc(perName(S.period))}</p>
+    ${step("", "", "Ingresos", eur(m.ingresos), income)}
+    ${step("−", col("Gastos Fijos"), lab("Gastos Fijos"), eur(m.fijos), meta("Gastos Fijos", nFix, "+ Fijo"))}
+    ${m.deudas ? step("−", col("Pago de Deudas"), "Pagos de deudas", eur(m.deudas), meta("Pago de Deudas", nDeb, "")) : ""}
+    ${step("−", col("Ahorro e Inversión"), lab("Ahorro e Inversión"), eur(m.ahorro), `<div id="saving"></div>`, "cSavAmt")}
+    <div class="c-var" id="cVar"></div>`;
   const inp = $("nominaInp");
-  $("nominaBtn")?.addEventListener("click", () => inp.focus());
-  if (inp) bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada"));
+  if (inp) { $("nominaBtn").addEventListener("click", () => inp.focus()); bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada")); }
+  renderVar(m);
+  renderSaving(m);
 }
+// cierre de la cascada: lo que queda para gastos variables, lo gastado y lo disponible
+function renderVar(m) {
+  const disp = m.variable - m.gastado;
+  const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
+  if ($("cSavAmt")) $("cSavAmt").textContent = eur(m.ahorro);
+  $("cVar").innerHTML = `
+    <div class="c-row"><span class="c-l"><span class="c-op">=</span><span class="sw" style="background:${col("Gastos Variables")}"></span>${lab("Gastos Variables")}</span><span class="c-v num${m.variable < 0 ? " neg" : ""}">${eur(m.variable)}</span></div>
+    <div class="c-disp"><p class="eyebrow">Disponible</p><div class="c-num num${disp < 0 ? " neg" : ""}">${eur(disp)}</div></div>
+    <div class="hero-bar"><div style="width:${Math.min(1, ratio) * 100}%"></div></div>
+    <p class="c-spent">Has gastado <b class="num">${eur(m.gastado)}</b> · ${pct(ratio)}${m.gastado ? ` · <button class="link" type="button" style="padding:0;font-size:13px" data-catkpi="Gastos Variables">ver</button>` : ""}</p>
+    <button class="btn primary c-add" type="button" data-open="mov" data-cat="Gastos Variables"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir gasto</button>`;
+}
+
 
 function renderSaving(m) {
   const isPct = m.modo === "Porcentaje", dis = m.cfg ? "" : "disabled";
   const val = isPct ? Math.round(m.pctA * 1000) / 10 : n(m.cfg?.Importe_Ahorro);
   const max = isPct ? 100 : Math.max(100, Math.ceil(m.ingresos / 50) * 50);
   $("saving").innerHTML = `
-    <div class="p-label"><p class="eyebrow" style="margin:0">Ahorro e inversión</p>
-      <span class="seg" role="group" aria-label="Tipo de objetivo">
+    <div class="sav-ctl"><span class="seg" role="group" aria-label="Tipo de objetivo">
         <button type="button" data-modo="Porcentaje" aria-pressed="${isPct}" ${dis}>%</button>
-        <button type="button" data-modo="Importe" aria-pressed="${!isPct}" ${dis}>€</button></span></div>
-    <div class="big-input"><input id="savInp" value="${dec(val)}" inputmode="decimal" aria-label="Objetivo de ahorro" ${dis}><span>${isPct ? "%" : "€"}</span></div>
+        <button type="button" data-modo="Importe" aria-pressed="${!isPct}" ${dis}>€</button></span>
+      <div class="big-input"><input id="savInp" value="${dec(val)}" inputmode="decimal" aria-label="Objetivo de ahorro" ${dis}><span>${isPct ? "%" : "€"}</span></div></div>
     <input type="range" id="savRange" min="0" max="${max}" step="${isPct ? 0.5 : 5}" value="${val}" aria-label="Objetivo de ahorro" ${dis}>
     <div class="saving-note" id="savNote"></div>
     ${m.cfg && !m.movs.some(x => x.Categoría === "Ahorro e Inversión") && recurrentesPara(S.period).some(x => x.Categoría === "Ahorro e Inversión")
@@ -824,15 +811,15 @@ function renderSaving(m) {
   const note = v => {
     const obj = isPct ? m.ingresos * v / 100 : v;
     $("savNote").innerHTML = isPct
-      ? `Objetivo <b class="num">${eur(obj)}</b> · invertido ${eur(m.ahorroReal)}`
-      : `Objetivo fijo · <b class="num">${pct(m.ingresos ? obj / m.ingresos : 0)}</b> de tus ingresos · invertido ${eur(m.ahorroReal)}`;
+      ? `De tus ingresos · aportado ${eur(m.ahorroReal)}`
+      : `${pct(m.ingresos ? obj / m.ingresos : 0)} de tus ingresos · aportado ${eur(m.ahorroReal)}`;
   };
   note(val);
   const field = isPct ? "Pct_Ahorro" : "Importe_Ahorro";
   const preview = v => {
     const c = cfgOf(S.period); if (!c) return;
     c[field] = isPct ? v / 100 : v;
-    const mm = month(S.period); renderSummary(mm); note(v);
+    const mm = month(S.period); renderVar(mm); note(v);
   };
   const range = $("savRange"), inp = $("savInp");
   // ancho a medida del texto real (tipografía, negrita y relleno incluidos)
@@ -889,7 +876,7 @@ function renderChart(m) {
   let g = `<line class="base" x1="${labelW}" x2="${labelW}" y1="0" y2="${H}"/>`;
   items.forEach((x, i) => {
     const y = i * rowH + (rowH - barH) / 2 + 2, w = Math.max(x.v > 0 ? 3 : 0, x.v / max * plotW);
-    const t = `<b>${esc(x.Concepto)}</b><br>${esc(x.Categoría)}${x.Acreedor ? " · " + esc(x.Acreedor) : ""}<br>${eur(x.v)} · ${pct(tot ? x.v / tot : 0)} del total`;
+    const t = `<b>${esc(x.Concepto)}</b><br>${esc(lab(x.Categoría))}${x.Acreedor ? " · " + esc(x.Acreedor) : ""}<br>${eur(x.v)} · ${pct(tot ? x.v / tot : 0)} del total`;
     g += `<g class="mark" data-edit="movimientos" data-id="${esc(x.ID)}" data-tip="${esc(t)}">
       <rect x="0" y="${i * rowH}" width="${W}" height="${rowH}" fill="transparent"/>
       <text class="lbl" x="${labelW - 12}" y="${y + barH / 2 + 4.5}" text-anchor="end">${esc(trunc(x.Concepto || "—", Math.floor((labelW - 16) / 7)))}</text>
@@ -913,7 +900,7 @@ function renderTrend() {
   const slot = pw / by.length, bw = Math.min(56, slot * 0.55);
   by.forEach((o, i) => {
     const x = L + slot * i + (slot - bw) / 2, sel = o.p === S.period;
-    const t = `<b>${esc(perName(o.p))}</b><br>` + CATS.map(k => `${esc(k)}: ${eur(o[k])}`).join("<br>") + `<br><b>Total: ${eur(o.tot)}</b>` + (o.ing ? `<br>Ingresos: ${eur(o.ing)}` : "");
+    const t = `<b>${esc(perName(o.p))}</b><br>` + CATS.map(k => `${esc(lab(k))}: ${eur(o[k])}`).join("<br>") + `<br><b>Total: ${eur(o.tot)}</b>` + (o.ing ? `<br>Ingresos: ${eur(o.ing)}` : "");
     bg += `<rect x="${L + slot * i}" y="${T}" width="${slot}" height="${ph}" fill="${sel ? "var(--tint)" : "transparent"}" style="cursor:pointer" data-p="${esc(o.p)}" data-tip="${esc(t)}"/>`;
     let acc = 0; const segs = CATS.filter(k => o[k] > 0);
     segs.forEach((k, si) => {
@@ -928,7 +915,7 @@ function renderTrend() {
   $("trend").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Evolución mensual" style="display:block;max-width:100%">${bg}${g}</svg>`;
   $("trend").querySelectorAll("[data-p]").forEach(rc => rc.addEventListener("click", () => { S.period = rc.dataset.p; hideTip(); render(); }));
   bindTips($("trend"));
-  $("trendLegend").innerHTML = CATS.map(k => `<span><span class="sw" style="background:${col(k)}"></span>${esc(k)}</span>`).join("") +
+  $("trendLegend").innerHTML = CATS.map(k => `<span><span class="sw" style="background:${col(k)}"></span>${esc(lab(k))}</span>`).join("") +
     `<span><span style="width:16px;height:2px;background:var(--ink);display:inline-block;border-radius:1px"></span>Ingresos</span>`;
 }
 
@@ -954,7 +941,7 @@ function renderDebts() {
 }
 
 function renderMovs() {
-  $("catChips").innerHTML = [["all", "Todas"], ...CATS.map(k => [k, k])].map(([k, l]) =>
+  $("catChips").innerHTML = [["all", "Todas"], ...CATS.map(k => [k, lab(k)])].map(([k, l]) =>
     `<button class="chip" type="button" aria-pressed="${S.cat === k}" data-k="${esc(k)}">${k !== "all" ? `<span class="sw" style="background:${col(k)}"></span>` : ""}${esc(l)}</button>`).join("");
   $("catChips").querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => setCat(b.dataset.k)));
   $("detailView").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === S.detailView));
@@ -977,7 +964,7 @@ function renderMovs() {
   const cols = [["Periodo", "Mes"], ["Categoría", "Categoría"], ["Concepto", "Concepto"], ["Acreedor", "Acreedor"], ["Importe", "Importe"]];
   $("movTbl").innerHTML = `<thead><tr>${cols.map(([k, l]) => `<th class="sort${k === "Importe" ? " num" : ""}" data-k="${k}">${l}${k === key ? (dir > 0 ? " ▲" : " ▼") : ""}</th>`).join("")}</tr></thead>
   <tbody>${page.length ? page.map(x => `<tr data-edit="movimientos" data-id="${esc(x.ID)}"${x.Notas ? ` title="${esc(x.Notas)}"` : ""}><td style="white-space:nowrap">${esc(perShort(x.Periodo))}</td>
-    <td><span style="display:inline-flex;gap:7px;align-items:center;white-space:nowrap"><span class="sw" style="background:${col(x.Categoría)}"></span>${esc(x.Categoría)}</span></td>
+    <td><span style="display:inline-flex;gap:7px;align-items:center;white-space:nowrap"><span class="sw" style="background:${col(x.Categoría)}"></span>${esc(lab(x.Categoría))}</span></td>
     <td>${esc(x.Concepto)}</td><td>${esc(x.Acreedor || "")}</td><td class="num">${eur(x.Importe)}</td></tr>`).join("")
     : `<tr><td colspan="5" class="empty">No hay movimientos para este filtro.</td></tr>`}</tbody>
   <tfoot><tr><td colspan="4">Total${pages > 1 ? ` (${rows.length} apuntes)` : ""}</td><td class="num">${eur(rows.reduce((a, x) => a + n(x.Importe), 0))}</td></tr></tfoot>`;
@@ -1035,13 +1022,10 @@ function renderNotices(m) {
   if (!m.cfg) add("cal", "var(--accent)", "Mes sin configurar", `Crea ${monthName(S.period)} para fijar nómina y ahorro.`, `<button class="link" type="button" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button>`);
   else if (disp < 0) add("alert", "var(--critical)", "Presupuesto superado", `Te has pasado ${eur(-disp)} en gastos variables.`);
   else if (ratio >= .85) add("alert", "var(--warning)", "Cerca del límite", `Has gastado el ${pct(ratio)} del presupuesto variable.`);
-  else add("check", "var(--good)", "Vas bien este mes", `Te quedan ${eur(disp)} para gastos variables.`);
   const rec = m.cfg ? recurHint(S.period) : "";
   if (S.data.meta?.locked) add("lock", "var(--muted)", "El Excel está abierto", "Ciérralo para guardar cambios desde aquí.");
   if (rec) add("fixed", "var(--c1)", "Faltan apuntes recurrentes", `Del mes anterior: ${rec}.`, `<button class="link" type="button" data-recur="${esc(S.period)}">Copiar ahora</button>`);
-  if (m.ingresos) add("save", "var(--c2)", `Ahorras el ${pct(m.ahorro / m.ingresos)}`, `Objetivo de ${eur(m.ahorro)}${m.ahorroReal ? `, aportado ${eur(m.ahorroReal)}` : ""}.`);
-  const next = debts().filter(x => !x.paid).sort((a, b) => b.prog - a.prog)[0];
-  if (next) add("debt", "var(--c3)", "Deuda más cerca de terminar", `${next.Descripción} (${next.Acreedor}): quedan ${eur(next.rest)}.`, `<button class="link" type="button" data-pay="${esc(next.ID_Deuda)}">Registrar pago</button>`);
+  $("newsSide").classList.toggle("empty", !list.length); $("newsMob").classList.toggle("empty", !list.length);
   $("notices").innerHTML = $("noticesM").innerHTML = list.slice(0, 3).map(x => `<div class="news-item">
       <span class="th" style="background:color-mix(in srgb, ${x.color} 16%, var(--surface));color:${x.color}"><svg viewBox="0 0 24 24" aria-hidden="true">${NI[x.ic]}</svg></span>
       <div><b>${esc(x.title)}</b><p>${esc(x.text)}</p>${x.action}</div></div>`).join("");
