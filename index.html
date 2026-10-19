@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3QWcEURBq2X7ZRjG4NhOnM+3DJZGueHm9vWtPoUnrXs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IJ7dvQ/uYidqxXnCCnM2tV4/OV+7HaOl8s0vDSGNW8g=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -565,12 +565,12 @@ dialog .btn.danger { padding-left: 0; }
     <label class="fld">Mes<input name="Periodo" type="month" required></label>
     <label class="fld">Nómina (€)<input name="Nómina" required inputmode="decimal"></label>
   </div>
-  <div class="f2">
+  <div class="f2" data-edit-only>
     <label class="fld">Ahorro objetivo<select name="Modo_Ahorro"><option value="Porcentaje">Porcentaje (%)</option><option value="Importe">Cantidad fija (€)</option></select></label>
     <label class="fld" data-modo="Porcentaje">% de los ingresos<input name="Pct_Ahorro" inputmode="decimal"></label>
     <label class="fld" data-modo="Importe">Cantidad (€)<input name="Importe_Ahorro" inputmode="decimal"></label>
   </div>
-  <label class="fld">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
+  <label class="fld" data-edit-only>Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <div class="checks" data-new-only>
     <label class="check"><input type="checkbox" name="copiar_fijos" checked><span>Copiar los gastos fijos del último mes <span class="muted" id="hintFijos"></span></span></label>
     <label class="check"><input type="checkbox" name="copiar_ahorro" checked><span>Copiar el ahorro e inversión del último mes <span class="muted" id="hintAhorro"></span></span></label>
@@ -1025,6 +1025,9 @@ function prepareNewPeriod(f, mes) {
   if (!next) { const now = new Date(); next = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     if (ps.includes(next) && last) { let [yy, mo] = last.split("-").map(Number); mo++; if (mo > 12) { mo = 1; yy++; } next = `${yy}-${String(mo).padStart(2, "0")}`; } }
   f.elements["Periodo"].value = next;
+  f.elements["Notas"].value = "";
+  // el objetivo de ahorro se hereda del último mes (se ajusta luego en su tarjeta); sin mes anterior, 0 %
+  f.elements["Modo_Ahorro"].value = "Porcentaje"; f.elements["Pct_Ahorro"].value = "0"; f.elements["Importe_Ahorro"].value = "";
   const ref = cfgOf(last);
   if (ref) {
     f.elements["Nómina"].value = dec(ref["Nómina"]);
@@ -1051,7 +1054,8 @@ function setType(f, t) {
 function syncPerForm(f) {
   const modo = f.elements["Modo_Ahorro"].value;
   f.querySelectorAll("[data-modo]").forEach(e => e.style.display = e.dataset.modo === modo ? "" : "none");
-  f.elements["Pct_Ahorro"].required = modo === "Porcentaje"; f.elements["Importe_Ahorro"].required = modo === "Importe";
+  const edit = !!f.dataset.id;  // al crear, el ahorro va oculto (se hereda): no se exige
+  f.elements["Pct_Ahorro"].required = edit && modo === "Porcentaje"; f.elements["Importe_Ahorro"].required = edit && modo === "Importe";
 }
 const RECURRENTES = ["Ahorro e Inversión", "Gastos Fijos"];
 // lo que se copiaría a `per`: por cada categoría recurrente que le falte, los apuntes del último mes que la tenga
@@ -1076,9 +1080,10 @@ function updateFijosHint(f) {
   const items = recurrentesPara(f.elements["Periodo"].value);
   for (const [cat, name, hint] of [["Gastos Fijos", "copiar_fijos", "hintFijos"], ["Ahorro e Inversión", "copiar_ahorro", "hintAhorro"]]) {
     const its = items.filter(m => m.Categoría === cat), box = f.elements[name];
-    $(hint).textContent = its.length ? `(${its.length}, ${eur(its.reduce((a, m) => a + n(m.Importe), 0))})` : "(no hay nada que copiar)";
-    box.disabled = !its.length; box.checked = !!its.length;
+    $(hint).textContent = `(${its.length}, ${eur(its.reduce((a, m) => a + n(m.Importe), 0))})`;
+    box.checked = !!its.length; box.closest(".check").style.display = its.length ? "" : "none";
   }
+  f.querySelector(".checks").hidden = !items.length;
 }
 function updateRecurEdit(per) {
   const h = recurHint(per);
