@@ -163,7 +163,8 @@ main > :first-child { margin-top: 0; }
   .mes-cards > .card { display: flex; flex-direction: column; }
   .mes-cards #savList, .mes-cards .var-list { display: contents; }
   .mes-cards :is(#savList, .var-list) > :first-child { margin-top: 14px; }  /* el margen de la lista se pierde con display: contents */
-  .mes-cards .btn.add-btn { align-self: flex-start; }  /* justo tras la lista, con el ancho de su texto */
+  .mes-cards .btn.add-btn { margin-top: auto; align-self: flex-start; }
+  .mes-cards .card *:has(+ .add-btn) { margin-bottom: 16px; }
 }
 .deb-sub { margin: -6px 0 10px; font-size: 12.5px; }
 .step-n { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--tint); color: var(--accent);
