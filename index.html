@@ -611,10 +611,9 @@ dialog .btn.danger { padding-left: 0; }
     <label class="fld">Ya pagado antes (€)<input name="Pagado_Previo" inputmode="decimal" placeholder="0"></label>
     <label class="fld">Mes cuota final<select name="Mes_Cuota_Final"></select></label>
   </div>
-  <div class="f2">
-    <label class="fld" data-hide="Deuda">Mes<input name="Periodo" type="month" required></label>
-    <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<input name="Acreedor" list="credList"></label>
-  </div>
+  <!-- el mes no se pregunta: los apuntes nuevos van al mes que se está viendo (al editar se conserva el suyo) -->
+  <input type="hidden" name="Periodo">
+  <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<input name="Acreedor" list="credList"></label>
   <label class="fld">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <p class="hint" data-show="Deuda">Los pagos de deuda vinculados a esta deuda se suman a «ya pagado».</p>
   <div class="err"></div>
