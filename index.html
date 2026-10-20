@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LLxzEkdeJfhPEiem7UXnrEtAHTtWvnN/alRAKtdrbSE=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1WS9NciXLlLzH8HOr68FQHTRr5gYYVveJYAwItu3HS0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -276,6 +276,13 @@ svg .val { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
 .mark { transition: opacity .12s; cursor: pointer; }
 .dim .mark { opacity: var(--dim); }
 .dim .mark.hot { opacity: 1; }
+/* Evolución: ventana de meses con flechas (y deslizamiento en el móvil) */
+.trend-nav { display: flex; align-items: center; gap: 4px; background: var(--soft); border-radius: 10px; padding: 3px; flex: none; }
+.trend-nav button { border: 0; background: none; width: 30px; height: 30px; border-radius: 7px; font-size: 17px; color: var(--ink-2); cursor: pointer; }
+.trend-nav button:hover:not(:disabled) { background: var(--surface); }
+.trend-nav button:disabled { opacity: .25; cursor: default; }
+#trendRange { font-size: 12.5px; font-weight: 600; color: var(--ink-2); white-space: nowrap; padding: 0 4px; }
+#trend { touch-action: pan-y; }
 .legend-inline { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
 .legend-inline span { display: inline-flex; align-items: center; gap: 6px; }
 
@@ -521,7 +528,8 @@ dialog .btn.danger { padding-left: 0; }
 
   <section class="card" id="sec-evolucion">
     <p class="eyebrow">Evolución</p>
-    <div class="sec-head"><div><h2>Mes a mes</h2><p class="lead">Importes registrados por categoría. La línea marca los ingresos. Pulsa una columna para ir a ese mes.</p></div></div>
+    <div class="sec-head"><div><h2>Mes a mes</h2><p class="lead">Importes registrados por categoría. La línea marca los ingresos. Pulsa una columna para ir a ese mes.</p></div>
+      <div class="trend-nav"><button type="button" id="trendPrev" aria-label="Meses anteriores">‹</button><span id="trendRange"></span><button type="button" id="trendNext" aria-label="Meses siguientes">›</button></div></div>
     <div id="trend"></div>
     <div class="legend-inline" id="trendLegend"></div>
   </section>
@@ -925,9 +933,24 @@ function bindEdit(inp, original, onSave, onInput) {
 // vista Gráfico: barras por concepto del mes seleccionado
 
 function niceStep(x) { const p = Math.pow(10, Math.floor(Math.log10(x || 1))), f = x / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
+// Evolución: se ven N meses (4 en el móvil, 6 en el ordenador); flechas, deslizamiento o rueda para moverse.
+// Al cambiar de mes, la ventana se desplaza si hace falta para que el mes elegido se vea.
+const trendN = () => innerWidth <= 680 ? 4 : 6;
 function renderTrend() {
-  const ps = periods();
-  if (!ps.length) { $("trend").innerHTML = `<div class="empty">Sin datos.</div>`; return; }
+  const all = periods();
+  $("trendPrev").disabled = $("trendNext").disabled = true; $("trendRange").textContent = "";
+  if (!all.length) { $("trend").innerHTML = `<div class="empty">Sin datos.</div>`; return; }
+  const N = Math.min(trendN(), all.length), last = all.length - N;
+  if (S.trendStart == null) S.trendStart = last;
+  if (S.trendFor !== S.period) {
+    const i = all.indexOf(S.period);
+    if (i >= 0 && (i < S.trendStart || i >= S.trendStart + N)) S.trendStart = i < S.trendStart ? i : i - N + 1;
+    S.trendFor = S.period;
+  }
+  S.trendStart = Math.max(0, Math.min(last, S.trendStart));
+  const ps = all.slice(S.trendStart, S.trendStart + N);
+  $("trendPrev").disabled = S.trendStart <= 0; $("trendNext").disabled = S.trendStart >= last;
+  $("trendRange").textContent = ps.length > 1 ? `${perShort(ps[0])} – ${perShort(ps.at(-1))}` : perShort(ps[0]);
   const by = ps.map(p => { const mm = month(p), o = { p, ing: mm.ingresos, tot: 0 }; CATS.forEach(k => { o[k] = mm.movs.filter(x => x.Categoría === k).reduce((a, x) => a + n(x.Importe), 0); o.tot += o[k]; }); return o; });
   const W = Math.max(340, $("trend").clientWidth || 1000), H = 300, L = 64, Rr = 10, T = 14, B = 32, pw = W - L - Rr, ph = H - T - B;
   const raw = Math.max(...by.map(o => Math.max(o.tot, o.ing)), 1), step = niceStep(raw / 4), max = Math.ceil(raw / step) * step;
@@ -952,10 +975,30 @@ function renderTrend() {
   $("trend").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Evolución mensual" style="display:block;max-width:100%">${bg}${g}</svg>`;
   $("trend").querySelectorAll("[data-p]").forEach(rc => rc.addEventListener("click", () => { S.period = rc.dataset.p; hideTip(); render(); }));
   bindTips($("trend"));
+  S.trendSlot = slot * ($("trend").clientWidth || W) / W;  // ancho real de una columna, para el deslizamiento
   $("trendLegend").innerHTML = CATS.map(k => `<span><span class="sw" style="background:${col(k)}"></span>${esc(lab(k))}</span>`).join("") +
     `<span><span style="width:16px;height:2px;background:var(--ink);display:inline-block;border-radius:1px"></span>Ingresos</span>`;
 }
 
+const shiftTrend = d => { if (!d) return; S.trendStart = (S.trendStart || 0) + d; hideTip(); renderTrend(); };
+$("trendPrev").addEventListener("click", () => shiftTrend(-1));
+$("trendNext").addEventListener("click", () => shiftTrend(1));
+{ // deslizar con el dedo: hacia la izquierda, meses más recientes; hacia la derecha, anteriores
+  let x0 = null, y0 = 0;
+  $("trend").addEventListener("touchstart", e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  $("trend").addEventListener("touchend", e => {
+    if (x0 == null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+    if (Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)) shiftTrend(-Math.sign(dx) * Math.max(1, Math.round(Math.abs(dx) / (S.trendSlot || 80))));
+  });
+  // ordenador: gesto horizontal del panel táctil o rueda horizontal
+  let acc = 0;
+  $("trend").addEventListener("wheel", e => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    e.preventDefault(); acc += e.deltaX;
+    if (Math.abs(acc) > 60) { shiftTrend(Math.sign(acc)); acc = 0; }
+  }, { passive: false });
+}
 function renderDebts() {
   const all = debts(), pend = all.filter(x => !x.paid);
   $("debtTitle").textContent = pend.length ? `Te quedan ${eur(pend.reduce((a, x) => a + x.rest, 0))} por pagar` : "Sin deudas pendientes 🎉";
