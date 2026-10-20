@@ -543,7 +543,8 @@ dialog .btn.danger { padding-left: 0; }
 
 <dialog id="dlg-mov" tabindex="-1"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
   <h3 data-t-new="Nuevo movimiento" data-t-edit="Editar movimiento"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-  <label class="fld">Tipo<select id="movType">
+  <!-- el tipo lo fija el botón que abre el formulario (o el apunte que se edita): no se muestra ni se cambia aquí -->
+  <label class="fld" hidden>Tipo<select id="movType">
     <option value="Ingreso extra" data-color="var(--accent)">Ingreso extra</option>
     <option value="Gastos Fijos" data-color="var(--c1)">Gasto fijo</option>
     <option value="Pago de Deudas" data-color="var(--c3)">Pago de deuda</option>
