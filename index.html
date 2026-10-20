@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-anHejqodTX+7f8xVQpt16Zx+11iVaKizBI2pAbYmnv0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-MNQE8xeBK8j5NGtz8vyMXfeAB+osZWEQJ0clhL971c0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -125,6 +125,14 @@ main > :first-child { margin-top: 0; }
 .side-nav a { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; color: var(--ink-2); text-decoration: none; font-size: 14px; font-weight: 500; }
 .side-nav a:hover { background: var(--soft); color: var(--ink); }
 .side-nav a.on { background: var(--tint); color: var(--accent); font-weight: 650; }
+/* resaltado deslizante: una pieza que se mueve a la sección activa (la coloca el espía de scroll) */
+.side-nav { position: relative; }
+.side-nav .nav-ind { position: absolute; left: 0; top: 0; border-radius: var(--r-in); background: var(--tint); pointer-events: none;
+                     transition: transform .28s cubic-bezier(.3, .7, .3, 1), width .28s cubic-bezier(.3, .7, .3, 1), height .28s cubic-bezier(.3, .7, .3, 1); }
+.side-nav .nav-ind.noanim { transition: none; }
+.side-nav.has-ind a { position: relative; z-index: 1; transition: color .28s; }
+.side-nav.has-ind a.on { background: transparent; }
+@media (prefers-reduced-motion: reduce) { .side-nav .nav-ind { transition: none; } }
 .side-nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .side-title { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: .1em; font-weight: 700; margin: 0 0 10px; }
 .news { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 10px; }
@@ -1518,7 +1526,18 @@ $("toTop").addEventListener("click", e => {
     for (const sec of secs) if (sec.getBoundingClientRect().top < 120) cur = sec;
     if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = secs.at(-1);
     links.forEach((a, i) => a.classList.toggle("on", secs[i] === cur));
+    moveInd();
   };
+  // resaltado que se desliza hasta el enlace activo (en vertical, en la barra horizontal o en la rejilla del móvil)
+  const nav = $("sideNav"), ind = document.createElement("span");
+  ind.className = "nav-ind noanim"; ind.setAttribute("aria-hidden", "true"); nav.prepend(ind); nav.classList.add("has-ind");
+  const moveInd = () => {
+    const a = nav.querySelector("a.on"); if (!a || !a.offsetWidth) return;
+    ind.style.width = a.offsetWidth + "px"; ind.style.height = a.offsetHeight + "px";
+    ind.style.transform = `translate(${a.offsetLeft}px, ${a.offsetTop}px)`;
+    if (ind.classList.contains("noanim")) requestAnimationFrame(() => requestAnimationFrame(() => ind.classList.remove("noanim")));
+  };
+  addEventListener("resize", () => { ind.classList.add("noanim"); moveInd(); });
   addEventListener("scroll", spy, { passive: true }); spy();
   window.navSpy = spy;  // también tras pintar los datos: al cargar la página aún está vacía
 }
