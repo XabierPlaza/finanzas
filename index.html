@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7mulS6xaKM5yVFbdaMcbvRg6cp5u9NaKI/bAhTgbjXs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1KvEg2O7MfheaA54SqR0dq1UUrDKoCkAjkWJPryW/5U=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -287,7 +287,6 @@ svg .val { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
 .trend-nav button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .trend-nav button:hover:not(:disabled) { background: var(--surface); }
 .trend-nav button:disabled { opacity: .25; cursor: default; }
-#trendRange { font-size: 13px; font-weight: 600; color: var(--ink-2); white-space: nowrap; padding: 0 6px; min-width: 7.5em; text-align: center; font-variant-numeric: tabular-nums; }
 #trend { touch-action: pan-y; }
 .legend-inline { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
 .legend-inline span { display: inline-flex; align-items: center; gap: 6px; }
@@ -474,7 +473,6 @@ dialog .btn.danger { padding-left: 0; }
 :is(.p-label, .sec-head) :is(.seg, .trend-nav) { height: var(--ctl-h); padding: 3px; box-sizing: border-box; align-items: stretch; }
 :is(.p-label, .sec-head) :is(.seg, .trend-nav) button { height: auto; display: inline-flex; align-items: center; justify-content: center; }
 .trend-nav button { width: calc(var(--ctl-h) - 6px); }
-.trend-nav #trendRange { align-self: center; }
 :is(.seg, .trend-nav) button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 :is(.p-label, .sec-head) :is(.sel, .chip, .btn) { height: var(--ctl-h); box-sizing: border-box; }
 </style>
@@ -549,7 +547,7 @@ dialog .btn.danger { padding-left: 0; }
 
   <section class="card" id="sec-evolucion">
     <div class="p-label sec-top"><p class="eyebrow" style="margin:0">Evolución</p>
-      <div class="trend-nav"><button type="button" id="trendPrev" aria-label="Meses anteriores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><span id="trendRange"></span><button type="button" id="trendNext" aria-label="Meses siguientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+      <div class="trend-nav"><button type="button" id="trendPrev" aria-label="Meses anteriores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><button type="button" id="trendNext" aria-label="Meses siguientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
     <div class="sec-head"><div><h2>Mes a mes</h2></div></div>
     <div id="trend"></div>
     <div class="legend-inline" id="trendLegend"></div>
@@ -652,7 +650,6 @@ const col = c => `var(${CAT_VAR[c] || "--muted"})`;
 const $ = id => document.getElementById(id);
 const perName = p => { const m = /^(\d{4})-(\d{2})$/.exec(p || ""); return m ? `${MESES[+m[2] - 1]} ${m[1]}` : (p || "—"); };
 const monthName = p => perName(p).split(" ")[0].toLowerCase();
-const perShort = p => { const m = /^(\d{4})-(\d{2})$/.exec(p || ""); return m ? `${MESES[+m[2] - 1].slice(0, 3)} ${m[1].slice(2)}` : (p || "—"); };
 const parseNum = s => { const v = parseFloat(String(s ?? "").replace(/\s|€|%/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return isFinite(v) ? v : null; };
 const dec = v => v == null || v === "" ? "" : String(Math.round(v * 100) / 100).replace(".", ",");
 
@@ -959,7 +956,7 @@ function niceStep(x) { const p = Math.pow(10, Math.floor(Math.log10(x || 1))), f
 const trendN = () => innerWidth <= 680 ? 4 : 6;
 function renderTrend() {
   const all = periods();
-  if (!all.length) { $("trendPrev").disabled = $("trendNext").disabled = true; $("trendRange").textContent = ""; $("trend").innerHTML = `<div class="empty">Sin datos.</div>`; return; }
+  if (!all.length) { $("trendPrev").disabled = $("trendNext").disabled = true; $("trend").innerHTML = `<div class="empty">Sin datos.</div>`; return; }
   const N = Math.min(trendN(), all.length), last = all.length - N;
   if (S.trendStart == null) S.trendStart = last;
   if (S.trendFor !== S.period) {
@@ -970,7 +967,6 @@ function renderTrend() {
   S.trendStart = Math.max(0, Math.min(last, S.trendStart));
   const ps = all.slice(S.trendStart, S.trendStart + N);
   $("trendPrev").disabled = S.trendStart <= 0; $("trendNext").disabled = S.trendStart >= last;
-  $("trendRange").textContent = ps.length > 1 ? `${perShort(ps[0])} – ${perShort(ps.at(-1))}` : perShort(ps[0]);
   const by = ps.map(p => { const mm = month(p), o = { p, ing: mm.ingresos, tot: 0 }; CATS.forEach(k => { o[k] = mm.movs.filter(x => x.Categoría === k).reduce((a, x) => a + n(x.Importe), 0); o.tot += o[k]; }); return o; });
   const W = Math.max(340, $("trend").clientWidth || 1000), H = 300, L = 64, Rr = 10, T = 14, B = 32, pw = W - L - Rr, ph = H - T - B;
   const raw = Math.max(...by.map(o => Math.max(o.tot, o.ing)), 1), step = niceStep(raw / 4), max = Math.ceil(raw / step) * step;
