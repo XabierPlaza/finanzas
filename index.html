@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JCprP9cxY6al3zAX5TCjjkZw4BrYsT3Nij1p8FajyN4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-zl97PZmSTIz2gBdVtlwvEzPuNv8zxW7d/bLrco5pEuM=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -362,6 +362,7 @@ tbody tr:hover .prog { background: var(--surface); }
 .dd-chev { width: 15px; height: 15px; fill: none; stroke: var(--ink-2); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; margin-left: auto; transition: transform .15s; }
 .dd-btn[aria-expanded="true"] .dd-chev { transform: rotate(180deg); stroke: var(--accent); }
 .dd-fld { display: block; width: 100%; }
+.dd[hidden], .fld input[hidden] { display: none !important; }
 .dd-fld .dd-btn { width: 100%; height: var(--fld-h); border-radius: var(--r-in); padding: 0 12px 0 14px; font-size: 15px; font-weight: 400; }
 .dd-period .dd-btn { border: 0; background: none; padding: 4px 8px; font-size: 14.5px; font-weight: 650; color: var(--accent); box-shadow: none; }
 .dd-period .dd-chev { stroke: var(--accent); }
@@ -614,7 +615,6 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
 
 <div id="tip" role="tooltip"></div>
 <div id="toast" role="status" aria-live="polite"></div>
-<datalist id="credList"></datalist>
 
 <dialog id="dlg-mov" tabindex="-1"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
   <h3 data-t-new="Nuevo movimiento" data-t-edit="Editar movimiento"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
@@ -635,7 +635,7 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
   <label class="fld pay-hide" data-show="Pago de Deudas">Deuda (opcional)<select name="ID_Deuda"></select></label>
   <!-- el mes no se pregunta: los apuntes nuevos van al mes que se está viendo (al editar se conserva el suyo) -->
   <input type="hidden" name="Periodo">
-  <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<input name="Acreedor" list="credList"></label>
+  <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<select id="credSel" aria-label="Acreedor"></select><input name="Acreedor" placeholder="Nombre del nuevo acreedor" hidden></label>
   <div class="debt-hist" id="debtHist" data-show="Deuda"></div>
   <label class="fld pay-hide">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <p class="hint" data-show="Deuda">Lo pagado se calcula solo: cada pago que apuntes con «Pagar» (o eligiendo esta deuda al añadir un pago) se suma aquí.</p>
@@ -1124,7 +1124,7 @@ function renderNotices(m) {
 function fillForms() {
   const d = S.data;
   const creds = [...new Set([...d.deudas.map(x => x.Acreedor), ...d.movimientos.map(x => x.Acreedor)].filter(Boolean))].sort();
-  $("credList").innerHTML = creds.map(c => `<option value="${esc(c)}">`).join("");
+  $("credSel").innerHTML = `<option value="">— Elige —</option>` + creds.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("") + `<option value="__otro">Otro…</option>`;
   const fm = document.querySelector("#dlg-mov form");
   fm.elements["ID_Deuda"].innerHTML = `<option value="">— Ninguna —</option>` + debts().map(x => `<option value="${esc(x.ID_Deuda)}">${esc(x.Acreedor)} · ${esc(x.Descripción)}${x.paid ? " (pagada)" : ` (quedan ${eur(x.rest)})`}</option>`).join("");
 }
@@ -1171,6 +1171,9 @@ function openDialog(kind, opts = {}) {
     const imp = f.elements["Importe"].closest("label");
     if (pay) $("debtHist").after(imp); else f.elements["Concepto"].closest("label").after(imp);
     ["Concepto", "Acreedor"].forEach(k => f.elements[k].readOnly = pay);
+    syncCred(true);
+    if (pay) f.elements["Acreedor"].hidden = false;
+    $("credSel").closest(".dd").hidden = pay;
     f.elements["Importe"].placeholder = x && !x.paid ? `Quedan ${eur(x.rest)}` : "0,00";
     if (!rec && type === "Ahorro e Inversión") { const mm = month(S.period), libre = mm.ahorro - mm.ahorroReal; if (mm.cfg) f.elements["Importe"].placeholder = libre > 0.005 ? `Quedan ${eur(libre)} por asignar` : "Objetivo ya asignado"; }
     if (x) { fillDebtHist(x.ID_Deuda); $("debtHist").hidden = false; f.querySelector("h3").textContent = `Pagar ${x.Descripción}`; $("lblImporte").textContent = "A pagar este mes (€)"; }
@@ -1217,7 +1220,7 @@ function setType(f, t) {
   f.querySelectorAll("[data-show]").forEach(e => e.hidden = !e.dataset.show.split("|").includes(t));
   f.querySelectorAll("[data-hide]").forEach(e => e.hidden = e.dataset.hide.split("|").includes(t));
   f.elements["Periodo"].required = !debt;
-  f.elements["Acreedor"].required = debt;
+  $("credSel").dataset.req = debt ? "1" : ""; f.elements["Acreedor"].required = false;  // obligatorio en deudas (lo comprueba el envío)
   $("lblConcepto").textContent = debt ? "Descripción" : "Concepto";
   $("lblImporte").textContent = debt ? "Importe total (€)" : "Importe (€)";
   if (!f.dataset.id) f.querySelector("h3").textContent = TYPE_TITLES[t] || "Nuevo movimiento";
@@ -1280,6 +1283,10 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
   f.addEventListener("submit", async e => {
     if (e.submitter?.value === "cancel") return;
     e.preventDefault();
+    // el desplegable de acreedor es propio (el nativo está oculto): su aviso va en el texto de error del formulario
+    if (f === movForm && $("credSel").dataset.req && !$("credSel").value && !$("credSel").closest(".dd").hidden) {
+      f.querySelector(".err").textContent = "Elige un acreedor, o «Otro…» para escribir uno nuevo."; return;
+    }
     if (!f.reportValidity()) return;
     const body = Object.fromEntries([...new FormData(f).entries()].filter(([k]) => !k.startsWith("copiar_")));
     const tabla = f.dataset.tabla, id = f.dataset.id;
@@ -1317,10 +1324,20 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
   });
 });
 const movForm = document.querySelector("#dlg-mov form"), perForm = document.querySelector("#dlg-per form");
+// Acreedor: se elige de los que ya hay; «Otro…» muestra un campo para escribir uno nuevo
+function syncCred(fromText) {
+  const sel = $("credSel"), inp = movForm.elements["Acreedor"], known = [...sel.options].some(o => o.value && o.value !== "__otro" && o.value === inp.value);
+  if (fromText) sel.value = known ? inp.value : inp.value ? "__otro" : "";
+  const otro = sel.value === "__otro";
+  if (!otro) inp.value = sel.value;
+  inp.hidden = !otro; inp.required = otro && !!sel.dataset.req;
+  sel._ddSync?.();
+}
+$("credSel").addEventListener("change", () => { syncCred(false); if ($("credSel").value === "__otro") { movForm.elements["Acreedor"].value = ""; movForm.elements["Acreedor"].focus(); } });
 $("movType").addEventListener("change", e => setType(movForm, e.target.value));
 movForm.elements["ID_Deuda"].addEventListener("change", e => {
   const x = debts().find(d => d.ID_Deuda === e.target.value);
-  if (x) { movForm.elements["Acreedor"].value = x.Acreedor; if (!movForm.elements["Concepto"].value) movForm.elements["Concepto"].value = `Pago ${x.Descripción}`; }
+  if (x) { movForm.elements["Acreedor"].value = x.Acreedor; syncCred(true); if (!movForm.elements["Concepto"].value) movForm.elements["Concepto"].value = `Pago ${x.Descripción}`; }
 });
 perForm.elements["Modo_Ahorro"].addEventListener("change", () => syncPerForm(perForm));
 perForm.elements["Periodo"].addEventListener("change", () => updateFijosHint(perForm));
