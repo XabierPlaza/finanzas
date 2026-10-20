@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-KV8UcBOAlwL/VkUd4tMkubWOXYftAntTr2rJwT9k4GE=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-CybKcTmcSli2HzUCFRGyMv6WuqwcEa86/m938zxxiEI=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -283,7 +283,7 @@ svg .val { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
 .trend-nav button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .trend-nav button:hover:not(:disabled) { background: var(--surface); }
 .trend-nav button:disabled { opacity: .25; cursor: default; }
-#trendRange { font-size: 13px; font-weight: 600; color: var(--ink-2); white-space: nowrap; padding: 0 6px; min-width: 9.5em; text-align: center; font-variant-numeric: tabular-nums; }
+#trendRange { font-size: 13px; font-weight: 600; color: var(--ink-2); white-space: nowrap; padding: 0 6px; min-width: 7.5em; text-align: center; font-variant-numeric: tabular-nums; }
 #trend { touch-action: pan-y; }
 .legend-inline { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
 .legend-inline span { display: inline-flex; align-items: center; gap: 6px; }
@@ -633,7 +633,7 @@ const col = c => `var(${CAT_VAR[c] || "--muted"})`;
 const $ = id => document.getElementById(id);
 const perName = p => { const m = /^(\d{4})-(\d{2})$/.exec(p || ""); return m ? `${MESES[+m[2] - 1]} ${m[1]}` : (p || "—"); };
 const monthName = p => perName(p).split(" ")[0].toLowerCase();
-const perShort = p => { const m = /^(\d{4})-(\d{2})$/.exec(p || ""); return m ? `${MESES[+m[2] - 1].slice(0, 3)} ${m[1]}` : (p || "—"); };
+const perShort = p => { const m = /^(\d{4})-(\d{2})$/.exec(p || ""); return m ? `${MESES[+m[2] - 1].slice(0, 3)} ${m[1].slice(2)}` : (p || "—"); };
 const parseNum = s => { const v = parseFloat(String(s ?? "").replace(/\s|€|%/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return isFinite(v) ? v : null; };
 const dec = v => v == null || v === "" ? "" : String(Math.round(v * 100) / 100).replace(".", ",");
 
@@ -789,7 +789,7 @@ function renderDonut(m) {
   else paths = `<circle cx="${cx}" cy="${cy}" r="${(R + r) / 2}" fill="none" stroke="var(--line)" stroke-width="${R - r}"/>`;
   $("donut").innerHTML = `<svg viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Reparto de los ingresos">${paths}
     <text x="${cx}" y="${cy - 2}" text-anchor="middle" style="fill:var(--ink);font-size:22px;font-weight:700">${fEur0.format(m.ingresos)}</text>
-    <text x="${cx}" y="${cy + 18}" text-anchor="middle" style="font-size:12px">ingresos de ${esc(monthName(S.period))}</text></svg>`;
+    <text x="${cx}" y="${cy + 18}" text-anchor="middle" style="font-size:12px">Ingresos de ${esc(monthName(S.period))}</text></svg>`;
   $("splitTitle").textContent = m.ingresos ? "Así se reparten tus ingresos" : "Sin ingresos este mes";
   const total = CATS.reduce((a, k) => a + m.budget[k], 0);
   $("legend").innerHTML = `<tr class="hd"><td>Categoría</td><td class="num">Importe</td><td class="num">% ingresos</td></tr>` +
