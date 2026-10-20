@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DP8XiL5MWvpW68r87iHG7kd9RMekbHaZhlC781Gdjeo=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-anHejqodTX+7f8xVQpt16Zx+11iVaKizBI2pAbYmnv0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -473,6 +473,15 @@ dialog .btn.danger { padding-left: 0; }
 .switch > button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .switch > button:not([aria-pressed="true"]):hover:not(:disabled) { background: var(--surface); }
 .switch > button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+/* Indicador deslizante: con opciones, la pastilla azul es un ::before que se mueve a la elegida (--sw-i de --sw-n; lo fija syncSwitches) */
+.switch { position: relative; }
+.switch.sw-ind::before { content: ""; position: absolute; top: 3px; bottom: 3px; left: 3px; border-radius: var(--r-in2); background: var(--accent);
+                         width: calc((100% - 6px - 3px * (var(--sw-n) - 1)) / var(--sw-n));
+                         transform: translateX(calc(var(--sw-i) * (100% + 3px))); transition: transform .28s cubic-bezier(.3, .7, .3, 1); }
+.switch.sw-ind > button { position: relative; z-index: 1; transition: background .15s, color .28s; }
+.switch.sw-ind > button[aria-pressed="true"] { background: transparent; }
+.switch.sw-noanim::before, .switch.sw-noanim > button { transition: none; }
+@media (prefers-reduced-motion: reduce) { .switch.sw-ind::before, .switch.sw-ind > button { transition: none; } }
 .switch > button:disabled { opacity: .3; cursor: default; }
 .switch > button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 </style>
@@ -1397,6 +1406,27 @@ function applyTheme(tema) {
 $("themeSeg").addEventListener("click", e => { const b = e.target.closest("[data-tema]"); if (b) { store.set("tema", b.dataset.tema); applyTheme(b.dataset.tema); } });
 try { localStorage.removeItem("theme"); } catch {}  // preferencia antigua (claro/oscuro fijo): todos vuelven a automático
 applyTheme(store.get("tema") || "auto");
+// .switch con opciones: la pastilla azul se desliza hasta la opción elegida. Si la tarjeta se vuelve a dibujar
+// (p. ej. % ↔ €), el switch nuevo arranca donde estaba el anterior (recordado por su id o aria-label) y se desliza.
+const swPrev = {};
+function syncSwitches() {
+  document.querySelectorAll(".switch").forEach(sw => {
+    const opts = [...sw.children].filter(b => b.hasAttribute("aria-pressed"));
+    const i = opts.findIndex(b => b.getAttribute("aria-pressed") === "true");
+    if (i < 0) { sw.classList.remove("sw-ind"); return; }
+    const key = sw.id || sw.getAttribute("aria-label") || "", cur = sw.style.getPropertyValue("--sw-i");
+    const from = cur === "" ? (swPrev[key] ?? i) : +cur;
+    swPrev[key] = i;
+    if (cur === "") {  // recién dibujado: colocarlo sin animar donde estaba
+      sw.classList.add("sw-noanim", "sw-ind");
+      sw.style.setProperty("--sw-n", opts.length); sw.style.setProperty("--sw-i", from);
+      void sw.offsetWidth; sw.classList.remove("sw-noanim");
+    }
+    if (from !== i) requestAnimationFrame(() => sw.style.setProperty("--sw-i", i));
+  });
+}
+new MutationObserver(syncSwitches).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-pressed"] });
+syncSwitches();
 
 let resizeT;
 addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (S.data) renderTrend(); }, 150); });
