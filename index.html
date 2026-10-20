@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NZTEn88Se6ekwYvA7x0z++cWqXq/b+FQWWaIjIsj4CA=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LLxzEkdeJfhPEiem7UXnrEtAHTtWvnN/alRAKtdrbSE=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -856,10 +856,11 @@ function renderSaving(m) {
     <div class="saving-note" id="savNote"></div>
     ${m.cfg && !m.movs.some(x => x.Categoría === "Ahorro e Inversión") && recurrentesPara(S.period).some(x => x.Categoría === "Ahorro e Inversión")
       ? `<div class="notice" style="margin-top:12px">Este mes no tiene aportaciones · <button class="link" type="button" style="padding:0" data-recur="${esc(S.period)}">Copiar del mes anterior</button></div>` : ""}`;
-  const note = v => {
+  // equivalencia: en € muestra el %, en % muestra los € (al abrir, el importe exacto; al mover, el del % elegido)
+  const note = (v, exacto) => {
     const queda = `lo que queda (${eur(m.margen)})`;
     $("savNote").innerHTML = isPct
-      ? `De ${queda} · aportado ${eur(m.ahorroReal)}`
+      ? `${eur(exacto ?? m.margen * Math.min(v, 100) / 100)} de ${queda} · aportado ${eur(m.ahorroReal)}`
       : `${pct(m.margen ? v / m.margen : 0)} de ${queda} · aportado ${eur(m.ahorroReal)}`;
   };
   // no se puede apartar más de lo que queda tras fijos y deudas (ni más del 100 %)
@@ -868,7 +869,7 @@ function renderSaving(m) {
     toast(isPct ? "Como máximo el 100 % de lo que queda" : `Como máximo ${eur(max)} (lo que queda tras fijos y deudas)`, "err");
     return max;
   };
-  note(val);
+  note(val, isPct ? m.ahorro : undefined);
   const field = isPct ? "Pct_Ahorro" : "Importe_Ahorro";
   const preview = v => {
     const c = cfgOf(S.period); if (!c) return;
