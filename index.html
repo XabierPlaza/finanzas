@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jCV6CG/3QesD4WRjgdLxptJguTrzrruPdx1JbM5+pNE=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ELoolkergxfrzEbgTy0d+WGoVmciPYSW1uEPoB9kjwk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -463,6 +463,7 @@ dialog .btn.danger { padding-left: 0; }
 .fld input[readonly], .fld textarea[readonly] { background: var(--soft); border-color: transparent; color: var(--ink-2); cursor: default; }
 .fld input[readonly]:hover { border-color: transparent; }
 .fld input[readonly]:focus { box-shadow: none; border-color: transparent; }
+.sav-over { color: var(--critical); font-weight: 600; }
 .debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
 .debt-hist:empty { display: none; }
 .debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
@@ -916,11 +917,15 @@ function renderSaving(m) {
     ${m.cfg && !m.movs.some(x => x.Categoría === "Ahorro e Inversión") && recurrentesPara(S.period).some(x => x.Categoría === "Ahorro e Inversión")
       ? `<div class="notice" style="margin-top:12px">Este mes no tiene aportaciones · <button class="link" type="button" style="padding:0" data-recur="${esc(S.period)}">Copiar del mes anterior</button></div>` : ""}`;
   // equivalencia: en € muestra el %, en % muestra los € (al abrir, el importe exacto; al mover, el del % elegido)
+  // y debajo, cuánto de ese objetivo está ya repartido en aportaciones (nunca debe pasarse)
   const note = (v, exacto) => {
-    const queda = `lo que queda (${eur(m.margen)})`;
-    $("savNote").innerHTML = isPct
-      ? `${eur(exacto ?? m.margen * Math.min(v, 100) / 100)} de ${queda} · aportado ${eur(m.ahorroReal)}`
-      : `${pct(m.margen ? v / m.margen : 0)} de ${queda} · aportado ${eur(m.ahorroReal)}`;
+    const queda = `lo que queda (${eur(m.margen)})`, obj = isPct ? (exacto ?? m.margen * Math.min(v, 100) / 100) : Math.min(v, max);
+    const eq = isPct ? `${eur(obj)} de ${queda}` : `${pct(m.margen ? v / m.margen : 0)} de ${queda}`;
+    const dif = obj - m.ahorroReal;
+    const reparto = dif < -0.005 ? `<span class="sav-over">Aportaciones ${eur(m.ahorroReal)}: superan el objetivo en ${eur(-dif)}</span>`
+      : dif > 0.005 ? `Aportado ${eur(m.ahorroReal)} · quedan <b>${eur(dif)}</b> por asignar`
+      : `Aportado ${eur(m.ahorroReal)} · todo asignado`;
+    $("savNote").innerHTML = `${eq}<br>${reparto}`;
   };
   // no se puede apartar más de lo que queda tras fijos y deudas (ni más del 100 %)
   const clamp = v => {
@@ -1159,6 +1164,7 @@ function openDialog(kind, opts = {}) {
     if (pay) $("debtHist").after(imp); else f.elements["Concepto"].closest("label").after(imp);
     ["Concepto", "Acreedor"].forEach(k => f.elements[k].readOnly = pay);
     f.elements["Importe"].placeholder = x && !x.paid ? `Quedan ${eur(x.rest)}` : "0,00";
+    if (!rec && type === "Ahorro e Inversión") { const mm = month(S.period), libre = mm.ahorro - mm.ahorroReal; if (mm.cfg) f.elements["Importe"].placeholder = libre > 0.005 ? `Quedan ${eur(libre)} por asignar` : "Objetivo ya asignado"; }
     if (x) { fillDebtHist(x.ID_Deuda); $("debtHist").hidden = false; f.querySelector("h3").textContent = `Pagar ${x.Descripción}`; $("lblImporte").textContent = "A pagar este mes (€)"; }
   }
   if (kind === "per") { syncPerForm(f); if (rec) updateRecurEdit(opts.id); }
@@ -1269,6 +1275,14 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
     if (!f.reportValidity()) return;
     const body = Object.fromEntries([...new FormData(f).entries()].filter(([k]) => !k.startsWith("copiar_")));
     const tabla = f.dataset.tabla, id = f.dataset.id;
+    if (tabla === "movimientos" && body.Categoría === "Ahorro e Inversión") {
+      const mm = month(body.Periodo || S.period), imp = parseNum(body.Importe) ?? 0;
+      const otras = mm.movs.filter(x => x.Categoría === "Ahorro e Inversión" && x.ID !== id).reduce((a, x) => a + n(x.Importe), 0);
+      if (mm.cfg && otras + imp > mm.ahorro + 0.005) {
+        f.querySelector(".err").textContent = `Supera el objetivo de ahorro (${eur(mm.ahorro)}): ya hay ${eur(otras)} en otras aportaciones, así que como máximo puedes poner ${eur(Math.max(0, mm.ahorro - otras))}. Si quieres aportar más, sube antes el objetivo.`;
+        return;
+      }
+    }
     if ("Pct_Ahorro" in body) { const v = parseNum(body.Pct_Ahorro); if (v === null) delete body.Pct_Ahorro; else body.Pct_Ahorro = v / 100; }
     if (tabla === "deudas") {
       // el formulario unificado usa Concepto/Importe; en la hoja Deudas son Descripción/Importe_Total
