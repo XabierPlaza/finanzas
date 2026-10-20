@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3AW9f7KcXND50hBmZS8HNnG48CGQUQiMcuOXlzC/kRY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aRkLtYlJWvWBETi6U1m8/XiEGK2ol5UgRCRHouTlJPg=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -333,7 +333,7 @@ tbody tr:hover .prog { background: var(--surface); }
 
   /* deuda: descripción y restante; acreedor y estado; progreso y botón Pagar */
   #debtTbl tbody tr { grid-template-columns: minmax(0, 1fr) auto; }
-  #debtTbl tbody td:nth-child(3), #debtTbl tbody td:nth-child(4), #debtTbl tbody td:nth-child(8) { display: none; }
+  #debtTbl tbody td:nth-child(3), #debtTbl tbody td:nth-child(4) { display: none; }
   #debtTbl tbody td:nth-child(2) { grid-row: 1; grid-column: 1; font-weight: 600; overflow-wrap: anywhere; }
   #debtTbl tbody td:nth-child(5) { grid-row: 1; grid-column: 2; font-weight: 650; white-space: nowrap; }
   #debtTbl tbody td:nth-child(5)::before, #debtTbl tfoot td:nth-child(4)::before { content: "Quedan "; font-weight: 400; font-size: 12px; color: var(--muted); }
@@ -342,7 +342,7 @@ tbody tr:hover .prog { background: var(--surface); }
   #debtTbl tbody td:nth-child(7) .state { font-size: 12px; }
   #debtTbl tbody td:nth-child(6) { grid-row: 3; grid-column: 1; display: flex; align-items: center; gap: 8px; }
   #debtTbl tbody td:nth-child(6) .prog { flex: 1; width: auto; }
-  #debtTbl tbody td:nth-child(9) { grid-row: 3; grid-column: 2; text-align: right; }
+  #debtTbl tbody td:nth-child(8) { grid-row: 3; grid-column: 2; text-align: right; }
   #debtTbl tfoot td:nth-child(2), #debtTbl tfoot td:nth-child(3), #debtTbl tfoot td:nth-child(5) { display: none; }
 }
 /* desplegable propio: sustituye la lista nativa del sistema, que no admite estilos */
@@ -619,7 +619,6 @@ dialog .btn.danger { padding-left: 0; }
     <label class="fld"><span id="lblImporte">Importe (€)</span><input name="Importe" required inputmode="decimal" placeholder="0,00"></label>
   </div>
   <label class="fld pay-hide" data-show="Pago de Deudas">Deuda (opcional)<select name="ID_Deuda"></select></label>
-  <label class="fld" data-show="Deuda">Mes cuota final<select name="Mes_Cuota_Final"></select></label>
   <!-- el mes no se pregunta: los apuntes nuevos van al mes que se está viendo (al editar se conserva el suyo) -->
   <input type="hidden" name="Periodo">
   <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<input name="Acreedor" list="credList"></label>
@@ -1054,14 +1053,14 @@ function renderDebts() {
   $("debtState").querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => { S.debtState = b.dataset.k; renderDebts(); }));
   const rows = all.filter(x => (S.debtCred === "all" || x.Acreedor === S.debtCred) && (S.debtState === "all" || (S.debtState === "paid") === x.paid));
   const t = rows.reduce((a, x) => ({ t: a.t + x.total, p: a.p + x.pagado, r: a.r + x.rest }), { t: 0, p: 0, r: 0 });
-  $("debtTbl").innerHTML = `<thead><tr><th>Acreedor</th><th>Descripción</th><th class="num">Total</th><th class="num">Pagado</th><th class="num">Restante</th><th>Progreso</th><th>Estado</th><th>Cuota final</th><th></th></tr></thead>
+  $("debtTbl").innerHTML = `<thead><tr><th>Acreedor</th><th>Descripción</th><th class="num">Total</th><th class="num">Pagado</th><th class="num">Restante</th><th>Progreso</th><th>Estado</th><th></th></tr></thead>
   <tbody>${rows.length ? rows.map(x => `<tr data-edit="deudas" data-id="${esc(x.ID_Deuda)}">
     <td>${esc(x.Acreedor)}</td><td>${esc(x.Descripción)}</td><td class="num">${eur(x.total)}</td>
     <td class="num" title="${n(x.Pagado_Previo) ? `Antes de usar la app ${eur(x.Pagado_Previo)} + pagos ${eur(x.linked)}` : `Suma de ${x.pagos.length} pago${x.pagos.length === 1 ? "" : "s"}`}">${eur(x.pagado)}</td><td class="num">${eur(x.rest)}</td>
     <td><span class="prog"><div style="width:${x.prog * 100}%;background:${x.paid ? "var(--good)" : "var(--cat-deb)"}"></div></span> <span class="muted num" style="font-size:12px">${pct(x.prog)}</span></td>
-    <td><span class="state">${x.paid ? ICON.ok + "Pagada" : ICON.pend + "Pendiente"}</span></td><td>${esc(x.Mes_Cuota_Final || "—")}</td><td style="text-align:right">${x.paid ? "" : `<button class="btn mini" type="button" data-pay="${esc(x.ID_Deuda)}">Pagar</button>`}</td></tr>`).join("")
-    : `<tr><td colspan="9" class="empty">No hay deudas para este filtro.</td></tr>`}</tbody>
-  <tfoot><tr><td colspan="2">Total (${rows.length})</td><td class="num">${eur(t.t)}</td><td class="num">${eur(t.p)}</td><td class="num">${eur(t.r)}</td><td colspan="4"></td></tr></tfoot>`;
+    <td><span class="state">${x.paid ? ICON.ok + "Pagada" : ICON.pend + "Pendiente"}</span></td><td style="text-align:right">${x.paid ? "" : `<button class="btn mini" type="button" data-pay="${esc(x.ID_Deuda)}">Pagar</button>`}</td></tr>`).join("")
+    : `<tr><td colspan="8" class="empty">No hay deudas para este filtro.</td></tr>`}</tbody>
+  <tfoot><tr><td colspan="2">Total (${rows.length})</td><td class="num">${eur(t.t)}</td><td class="num">${eur(t.p)}</td><td class="num">${eur(t.r)}</td><td colspan="3"></td></tr></tfoot>`;
 }
 
 // paginador: "Mostrando 1–10 de 32" + ‹ 1 2 3 4 › (con "…" a partir de 8 páginas)
@@ -1110,7 +1109,6 @@ function fillForms() {
   $("credList").innerHTML = creds.map(c => `<option value="${esc(c)}">`).join("");
   const fm = document.querySelector("#dlg-mov form");
   fm.elements["ID_Deuda"].innerHTML = `<option value="">— Ninguna —</option>` + debts().map(x => `<option value="${esc(x.ID_Deuda)}">${esc(x.Acreedor)} · ${esc(x.Descripción)}${x.paid ? " (pagada)" : ` (quedan ${eur(x.rest)})`}</option>`).join("");
-  fm.elements["Mes_Cuota_Final"].innerHTML = `<option value="">—</option>` + MESES.map(x => `<option>${x}</option>`).join("");
 }
 
 /* ---------- diálogos (crear / editar / eliminar) ---------- */
@@ -1152,6 +1150,8 @@ function openDialog(kind, opts = {}) {
     // «Pagar» desde una deuda: ya se sabe cuál es, así que solo se rellena el importe; el resto se ve pero no se edita
     const pay = !rec && !!opts.debtId, x = pay ? debts().find(d => d.ID_Deuda === opts.debtId) : null;
     f.classList.toggle("pay-mode", pay);
+    const imp = f.elements["Importe"].closest("label");
+    if (pay) $("debtHist").after(imp); else f.elements["Concepto"].closest("label").after(imp);
     ["Concepto", "Acreedor"].forEach(k => f.elements[k].readOnly = pay);
     f.elements["Importe"].placeholder = x && !x.paid ? `Quedan ${eur(x.rest)}` : "0,00";
     if (x) { fillDebtHist(x.ID_Deuda); $("debtHist").hidden = false; f.querySelector("h3").textContent = `Pagar ${x.Descripción}`; $("lblImporte").textContent = "A pagar este mes (€)"; }
