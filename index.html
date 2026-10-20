@@ -187,7 +187,7 @@ main > :first-child { margin-top: 0; }
 .sub-h > span { display: inline-flex; align-items: center; gap: 8px; }
 .sav-list, .var-list { margin-top: 14px; }
 .btn.add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; height: var(--ctl-h); box-sizing: border-box; padding-top: 0; padding-bottom: 0; border-color: var(--accent); color: var(--accent-ink); background: var(--accent); font-weight: 600; }
-.btn.add-btn:hover { background: var(--accent-2); }
+.btn.add-btn:hover { background: var(--accent-2); border-color: var(--accent-2); color: var(--accent-ink); }
 .add-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
@@ -447,13 +447,12 @@ dialog .btn.danger { padding-left: 0; }
 .dlg-label { font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: -10px !important; }
 .actions .sp { flex: 1; }
 .btn { border: 1px solid var(--border); padding: 9px 16px; border-radius: 8px; background: var(--surface); font-weight: 500; }
-.btn:hover { background: var(--soft); }
+.btn:hover { background: var(--tint); border-color: var(--accent); color: var(--accent); }  /* botones secundarios: mismo hover que «Pagar», visible también sobre fondos --soft */
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn.mini { padding: 4px 12px; font-size: 12.5px; font-weight: 600; border-color: var(--accent); color: var(--accent); background: var(--surface); white-space: nowrap; }
-.btn.mini:hover { background: var(--tint); }
 .btn.primary:hover { background: var(--accent-2); }
 .btn.danger { border: 0; background: none; color: var(--critical); padding-left: 0; }
-.btn.danger:hover { text-decoration: underline; }
+.btn.danger:hover { text-decoration: underline; background: none; }
 .err { color: var(--critical); font-size: 13px; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
