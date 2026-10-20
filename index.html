@@ -411,9 +411,12 @@ dialog form > :not(h3) { margin: 0 var(--dlg-pad); }
 dialog form > h3 { margin-bottom: calc(var(--dlg-pad) - var(--dlg-gap)); }
 @media (max-width: 560px) {
   :root { --dlg-pad: 18px; }
-  /* móvil: hoja que sube desde abajo, a todo el ancho */
-  dialog { width: 100%; max-width: 100%; margin: auto 0 0; max-height: 92vh; max-height: 92dvh; border-radius: var(--r-card) var(--r-card) 0 0; }
-  dialog form > .actions { padding: 12px var(--dlg-pad) calc(12px + env(safe-area-inset-bottom)); border-radius: 0; flex-wrap: wrap; }
+  /* móvil: centrada en la pantalla, con 12 px de aire a cada lado y sin pasar nunca del alto visible
+     (si el contenido no cabe, se desplaza dentro con la cabecera y los botones siempre a la vista) */
+  dialog { width: calc(100% - 24px); max-width: none; margin: auto;
+           max-height: calc(100vh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+           max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+  dialog form > .actions { padding: 12px var(--dlg-pad); flex-wrap: wrap; }
   dialog form > .actions .btn:not(.danger) { flex: 1; }
   dialog form > .actions .sp { display: none; }
   dialog form > .actions .btn.danger { flex-basis: 100%; text-align: left; padding: 2px 0; min-height: 0; }
