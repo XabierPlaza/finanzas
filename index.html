@@ -232,7 +232,7 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 /* KPIs en bloques azules (estilo de la plantilla) */
 
 /* paneles de ingresos y ahorro */
-.p-label { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.p-label { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
 .p-val { font-size: 28px; font-weight: 700; letter-spacing: -.02em; margin: 2px 0 12px; }
 .inc-list { list-style: none; margin: 0; padding: 0; }
 .inc-list li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--line); font-size: 14px; align-items: center; min-height: 40px; }
@@ -245,7 +245,7 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .edit-num:focus { border-color: var(--accent); outline: none; background: var(--surface); }
 .link { border: 0; background: none; color: var(--accent); padding: 8px 0 0; font-size: 13.5px; font-weight: 600; }
 .link:hover { text-decoration: underline; }
-.seg { display: inline-flex; gap: 2px; background: var(--soft); border-radius: 8px; padding: 3px; }
+.seg { display: inline-flex; gap: 3px; background: var(--soft); border-radius: 8px; padding: 3px; }
 .seg button { border: 0; background: none; padding: 3px 12px; border-radius: 6px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 /* misma respuesta al pasar el ratón que las flechas de Evolución, solo en la opción no elegida */
@@ -285,7 +285,7 @@ svg .val { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
 .dim .mark.hot { opacity: 1; }
 /* Evolución: ventana de meses con flechas (y deslizamiento en el móvil) */
 .sec-top { margin-bottom: 6px; }
-.trend-nav { display: flex; align-items: center; gap: 2px; background: var(--soft); border-radius: 6px; padding: 3px; flex: none; }
+.trend-nav { display: flex; align-items: center; gap: 3px; background: var(--soft); border-radius: 6px; padding: 3px; flex: none; }
 .trend-nav button { border: 0; background: none; width: 32px; height: 32px; padding: 0; border-radius: 3px; display: grid; place-items: center; color: var(--ink); cursor: pointer; transition: background .15s; }
 .trend-nav button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .trend-nav button:hover:not(:disabled) { background: var(--surface); }
