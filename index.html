@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ELoolkergxfrzEbgTy0d+WGoVmciPYSW1uEPoB9kjwk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JCprP9cxY6al3zAX5TCjjkZw4BrYsT3Nij1p8FajyN4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -214,7 +214,7 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 
 /* selector de tipo en el formulario */
 [hidden] { display: none !important; }
-.f2:has(> [hidden]) { grid-template-columns: 1fr; }
+.f2:has(> [hidden]), .f2:has(> :only-child) { grid-template-columns: 1fr; }
 /* vista lista del detalle */
 .dlist { list-style: none; margin: 0; padding: 0; }
 @media (max-width: 760px) { .dlist { columns: 1; } }
@@ -459,7 +459,7 @@ dialog .btn.danger { padding-left: 0; }
 .err { color: var(--critical); font-size: 13px; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
-.pay-mode .pay-hide { display: none !important; }
+.pay-mode .pay-hide, .pay-mode .dh-rest { display: none !important; }  /* en «Pagar» lo que queda ya lo dice el campo del importe */
 .fld input[readonly], .fld textarea[readonly] { background: var(--soft); border-color: transparent; color: var(--ink-2); cursor: default; }
 .fld input[readonly]:hover { border-color: transparent; }
 .fld input[readonly]:focus { box-shadow: none; border-color: transparent; }
@@ -1178,7 +1178,7 @@ function fillDebtHist(id) {
   const prev = n(x.Pagado_Previo);
   const rows = x.pagos.map(m => `<div class="dh-r"><span>${esc(perName(m.Periodo))}</span><span class="num">${eur(m.Importe)}</span></div>`).join("")
     + (prev ? `<div class="dh-r"><span>Antes de usar la app</span><span class="num">${eur(prev)}</span></div>` : "");
-  box.innerHTML = `<div class="dh-h"><span>Pagos</span><span class="num ${x.paid ? "dh-ok" : ""}">${x.paid ? "Pagada" : `Quedan ${eur(x.rest)}`}</span></div>`
+  box.innerHTML = `<div class="dh-h"><span>Pagos</span><span class="num dh-rest ${x.paid ? "dh-ok" : ""}">${x.paid ? "Pagada" : `Quedan ${eur(x.rest)}`}</span></div>`
     + (rows || `<div class="dh-r muted">Aún no hay pagos.</div>`)
     + (rows ? `<div class="dh-r dh-t"><span>Pagado</span><span class="num">${eur(x.pagado)} de ${eur(x.total)}</span></div>` : "");
 }
