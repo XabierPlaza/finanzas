@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1WS9NciXLlLzH8HOr68FQHTRr5gYYVveJYAwItu3HS0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-W8Y1i5EmJ0Cyrv9PsK2AdjytiMjh2TKhKAkL73i7ufY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -277,6 +277,7 @@ svg .val { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
 .dim .mark { opacity: var(--dim); }
 .dim .mark.hot { opacity: 1; }
 /* Evolución: ventana de meses con flechas (y deslizamiento en el móvil) */
+.sec-top { margin-bottom: 6px; }
 .trend-nav { display: flex; align-items: center; gap: 4px; background: var(--soft); border-radius: 10px; padding: 3px; flex: none; }
 .trend-nav button { border: 0; background: none; width: 30px; height: 30px; border-radius: 7px; font-size: 17px; color: var(--ink-2); cursor: pointer; }
 .trend-nav button:hover:not(:disabled) { background: var(--surface); }
@@ -519,7 +520,7 @@ dialog .btn.danger { padding-left: 0; }
 
   <section class="card" id="sec-reparto">
     <p class="eyebrow">Reparto</p>
-    <div class="sec-head"><div><h2 id="splitTitle"></h2><p class="lead">Fijos, deudas y ahorro primero; lo que queda es tu presupuesto para gastos variables. Pulsa una categoría para ir a su tarjeta.</p></div></div>
+    <div class="sec-head"><div><h2 id="splitTitle"></h2></div></div>
     <div class="chart-grid">
       <div id="donut"></div>
       <table class="legend" id="legend"></table>
@@ -527,9 +528,9 @@ dialog .btn.danger { padding-left: 0; }
   </section>
 
   <section class="card" id="sec-evolucion">
-    <p class="eyebrow">Evolución</p>
-    <div class="sec-head"><div><h2>Mes a mes</h2><p class="lead">Importes registrados por categoría. La línea marca los ingresos. Pulsa una columna para ir a ese mes.</p></div>
+    <div class="p-label sec-top"><p class="eyebrow" style="margin:0">Evolución</p>
       <div class="trend-nav"><button type="button" id="trendPrev" aria-label="Meses anteriores">‹</button><span id="trendRange"></span><button type="button" id="trendNext" aria-label="Meses siguientes">›</button></div></div>
+    <div class="sec-head"><div><h2>Mes a mes</h2></div></div>
     <div id="trend"></div>
     <div class="legend-inline" id="trendLegend"></div>
   </section>
@@ -537,7 +538,7 @@ dialog .btn.danger { padding-left: 0; }
   <section class="card" id="sec-deudas">
     <p class="eyebrow">Deudas</p>
     <div class="sec-head">
-      <div><h2 id="debtTitle"></h2><p class="lead" id="debtLead"></p></div>
+      <div><h2 id="debtTitle"></h2></div>
       <div class="filters"><select class="sel" id="debtCred" aria-label="Acreedor"></select><div class="chips" id="debtState"></div></div>
     </div>
     <div class="tbl-wrap"><table class="data" id="debtTbl"></table></div>
@@ -1002,7 +1003,6 @@ $("trendNext").addEventListener("click", () => shiftTrend(1));
 function renderDebts() {
   const all = debts(), pend = all.filter(x => !x.paid);
   $("debtTitle").textContent = pend.length ? `Te quedan ${eur(pend.reduce((a, x) => a + x.rest, 0))} por pagar` : "Sin deudas pendientes 🎉";
-  $("debtLead").textContent = `${pend.length} pendiente${pend.length === 1 ? "" : "s"} · ${all.length - pend.length} pagada${all.length - pend.length === 1 ? "" : "s"} · pulsa una fila para editarla`;
   const creds = [...new Set(all.map(x => x.Acreedor).filter(Boolean))].sort();
   if (S.debtCred !== "all" && !creds.includes(S.debtCred)) S.debtCred = "all";
   $("debtCred").innerHTML = `<option value="all">Todos los acreedores</option>` + creds.map(c => `<option${c === S.debtCred ? " selected" : ""}>${esc(c)}</option>`).join("");
