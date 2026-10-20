@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ohug4ss+9kaaTgr1V1gA6SlG87V4PkERjaLmxzC4bXk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-3AW9f7KcXND50hBmZS8HNnG48CGQUQiMcuOXlzC/kRY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -459,6 +459,10 @@ dialog .btn.danger { padding-left: 0; }
 .err { color: var(--critical); font-size: 13px; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
+.pay-mode .pay-hide { display: none !important; }
+.fld input[readonly], .fld textarea[readonly] { background: var(--soft); border-color: transparent; color: var(--ink-2); cursor: default; }
+.fld input[readonly]:hover { border-color: transparent; }
+.fld input[readonly]:focus { box-shadow: none; border-color: transparent; }
 .debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
 .debt-hist:empty { display: none; }
 .debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
@@ -614,13 +618,13 @@ dialog .btn.danger { padding-left: 0; }
     <label class="fld"><span id="lblConcepto">Concepto</span><input name="Concepto" required></label>
     <label class="fld"><span id="lblImporte">Importe (€)</span><input name="Importe" required inputmode="decimal" placeholder="0,00"></label>
   </div>
-  <label class="fld" data-show="Pago de Deudas">Deuda (opcional)<select name="ID_Deuda"></select></label>
+  <label class="fld pay-hide" data-show="Pago de Deudas">Deuda (opcional)<select name="ID_Deuda"></select></label>
   <label class="fld" data-show="Deuda">Mes cuota final<select name="Mes_Cuota_Final"></select></label>
   <!-- el mes no se pregunta: los apuntes nuevos van al mes que se está viendo (al editar se conserva el suyo) -->
   <input type="hidden" name="Periodo">
   <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<input name="Acreedor" list="credList"></label>
   <div class="debt-hist" id="debtHist" data-show="Deuda"></div>
-  <label class="fld">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
+  <label class="fld pay-hide">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <p class="hint" data-show="Deuda">Lo pagado se calcula solo: cada pago que apuntes con «Pagar» (o eligiendo esta deuda al añadir un pago) se suma aquí.</p>
   <div class="err"></div>
   <div class="actions"><button class="btn danger" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div>
@@ -1145,10 +1149,17 @@ function openDialog(kind, opts = {}) {
     fillDebtHist(rec && tabla === "deudas" ? opts.id : null);
     if (rec && tabla !== "movimientos") f.querySelector("h3").textContent = tabla === "ingresos" ? "Editar ingreso extra" : "Editar deuda";
     if (!rec && opts.debtId) { f.elements["ID_Deuda"].value = opts.debtId; f.elements["ID_Deuda"].dispatchEvent(new Event("change")); }
+    // «Pagar» desde una deuda: ya se sabe cuál es, así que solo se rellena el importe; el resto se ve pero no se edita
+    const pay = !rec && !!opts.debtId, x = pay ? debts().find(d => d.ID_Deuda === opts.debtId) : null;
+    f.classList.toggle("pay-mode", pay);
+    ["Concepto", "Acreedor"].forEach(k => f.elements[k].readOnly = pay);
+    f.elements["Importe"].placeholder = x && !x.paid ? `Quedan ${eur(x.rest)}` : "0,00";
+    if (x) { fillDebtHist(x.ID_Deuda); $("debtHist").hidden = false; f.querySelector("h3").textContent = `Pagar ${x.Descripción}`; $("lblImporte").textContent = "A pagar este mes (€)"; }
   }
   if (kind === "per") { syncPerForm(f); if (rec) updateRecurEdit(opts.id); }
   syncSelects();
   dlg.showModal(); dlg.focus(); dlg.querySelector("form").scrollTop = 0;
+  if (f.classList.contains("pay-mode")) f.elements["Importe"].focus();
 }
 // historial de una deuda: cada pago vinculado con su mes, lo apuntado antes de usar la app y lo que queda
 function fillDebtHist(id) {
@@ -1158,7 +1169,7 @@ function fillDebtHist(id) {
   const rows = x.pagos.map(m => `<div class="dh-r"><span>${esc(perName(m.Periodo))}</span><span class="num">${eur(m.Importe)}</span></div>`).join("")
     + (prev ? `<div class="dh-r"><span>Antes de usar la app</span><span class="num">${eur(prev)}</span></div>` : "");
   box.innerHTML = `<div class="dh-h"><span>Pagos</span><span class="num ${x.paid ? "dh-ok" : ""}">${x.paid ? "Pagada" : `Quedan ${eur(x.rest)}`}</span></div>`
-    + (rows || `<div class="dh-r muted">Aún no hay pagos. Usa «Pagar» en la tabla para apuntar uno.</div>`)
+    + (rows || `<div class="dh-r muted">Aún no hay pagos.</div>`)
     + (rows ? `<div class="dh-r dh-t"><span>Pagado</span><span class="num">${eur(x.pagado)} de ${eur(x.total)}</span></div>` : "");
 }
 function prepareNewPeriod(f, mes) {
