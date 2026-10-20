@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Irs8A++yYAi5w6mDZkKMxuElTfOuKBuH1q7C5qcae5U=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6xKKz1mi92aAhHP909dc/mvcvD/PeAWpsLSVUs4qbPA=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -23,9 +23,9 @@
   --bar: #ffffff; --kpi-border: transparent;
   --navy-1: #1f4e8c; --navy-2: #2f68b0; --dim: .3; --backdrop: rgba(15,30,60,.35);
   --c1: #2a78d6; --c2: #008300; --c3: #e34948; --c4: #eda100;
-  /* colores por categoría, como un semáforo: fijos = alto (rojo), deudas = precaución (ámbar),
-     ahorro = aparcado para el futuro (azul), variables = vía libre (verde). Siguen al modo oscuro. */
-  --cat-fij: var(--c3); --cat-deb: var(--c4); --cat-aho: var(--c1); --cat-var: var(--c2);
+  /* colores por categoría, en el orden de la nómina: fijos = alto (rojo), deudas = precaución (ámbar),
+     ahorro = dinero que crece (verde), variables = gasto sin presión (azul). Siguen al modo oscuro. */
+  --cat-fij: var(--c3); --cat-deb: var(--c4); --cat-aho: var(--c2); --cat-var: var(--c1);
   --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
 }
 @media (prefers-color-scheme: dark) {
@@ -607,7 +607,8 @@ dialog .btn.danger { padding-left: 0; }
 
 <script>
 "use strict";
-const CATS = ["Pago de Deudas", "Ahorro e Inversión", "Gastos Fijos", "Gastos Variables"];
+// orden de la nómina: es el que siguen el anillo, la tabla del reparto y las barras y la leyenda de Evolución
+const CATS = ["Gastos Fijos", "Pago de Deudas", "Ahorro e Inversión", "Gastos Variables"];
 const CAT_VAR = { "Gastos Fijos": "--cat-fij", "Pago de Deudas": "--cat-deb", "Ahorro e Inversión": "--cat-aho", "Gastos Variables": "--cat-var" };
 const KEY = { periodos: "Periodo", ingresos: "ID", movimientos: "ID", deudas: "ID_Deuda" };
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
@@ -779,10 +780,8 @@ function renderDonut(m) {
     <text x="${cx}" y="${cy + 18}" text-anchor="middle" style="font-size:12px">ingresos de ${esc(monthName(S.period))}</text></svg>`;
   $("splitTitle").textContent = m.ingresos ? `Así se reparten tus ${eur(m.ingresos)}` : "Sin ingresos este mes";
   const total = CATS.reduce((a, k) => a + m.budget[k], 0);
-  // en el orden de la nómina: fijos, deudas, ahorro y lo que queda
-  const ORDER = ["Gastos Fijos", "Pago de Deudas", "Ahorro e Inversión", "Gastos Variables"];
   $("legend").innerHTML = `<tr class="hd"><td>Categoría</td><td class="num">Importe</td><td class="num">% ingresos</td></tr>` +
-    ORDER.map(k => `<tr class="clk" data-cat="${esc(k)}"><td><span style="display:inline-flex;gap:8px;align-items:center"><span class="sw" style="background:${col(k)}"></span>${esc(lab(k))}</span></td>
+    CATS.map(k => `<tr class="clk" data-cat="${esc(k)}"><td><span style="display:inline-flex;gap:8px;align-items:center"><span class="sw" style="background:${col(k)}"></span>${esc(lab(k))}</span></td>
       <td class="num">${eur(m.budget[k])}</td><td class="num">${pct(m.ingresos ? m.budget[k] / m.ingresos : 0)}</td></tr>`).join("") +
     `<tr class="tot"><td>Total</td><td class="num">${eur(total)}</td><td class="num">${pct(m.ingresos ? total / m.ingresos : 0)}</td></tr>`;
   document.querySelectorAll("#donut [data-cat], #legend [data-cat]").forEach(el => el.addEventListener("click", () => {
