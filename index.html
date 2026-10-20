@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-CybKcTmcSli2HzUCFRGyMv6WuqwcEa86/m938zxxiEI=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7mulS6xaKM5yVFbdaMcbvRg6cp5u9NaKI/bAhTgbjXs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -464,6 +464,8 @@ dialog .btn.danger { padding-left: 0; }
 :is(.p-label, .sec-head) :is(.seg, .trend-nav) { height: var(--ctl-h); padding: 3px; box-sizing: border-box; align-items: stretch; }
 :is(.p-label, .sec-head) :is(.seg, .trend-nav) button { height: auto; display: inline-flex; align-items: center; justify-content: center; }
 .trend-nav button { width: calc(var(--ctl-h) - 6px); }
+.trend-nav #trendRange { align-self: center; }
+:is(.seg, .trend-nav) button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 :is(.p-label, .sec-head) :is(.sel, .chip, .btn) { height: var(--ctl-h); box-sizing: border-box; }
 </style>
 </head>
@@ -947,8 +949,7 @@ function niceStep(x) { const p = Math.pow(10, Math.floor(Math.log10(x || 1))), f
 const trendN = () => innerWidth <= 680 ? 4 : 6;
 function renderTrend() {
   const all = periods();
-  $("trendPrev").disabled = $("trendNext").disabled = true; $("trendRange").textContent = "";
-  if (!all.length) { $("trend").innerHTML = `<div class="empty">Sin datos.</div>`; return; }
+  if (!all.length) { $("trendPrev").disabled = $("trendNext").disabled = true; $("trendRange").textContent = ""; $("trend").innerHTML = `<div class="empty">Sin datos.</div>`; return; }
   const N = Math.min(trendN(), all.length), last = all.length - N;
   if (S.trendStart == null) S.trendStart = last;
   if (S.trendFor !== S.period) {
