@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-1KvEg2O7MfheaA54SqR0dq1UUrDKoCkAjkWJPryW/5U=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DP8XiL5MWvpW68r87iHG7kd9RMekbHaZhlC781Gdjeo=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -90,9 +90,6 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .tm-sep { height: 1px; background: var(--line); margin: 5px 4px; }
 .tm-theme { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 6px 6px 10px; font-size: 14px; color: var(--ink); }
 .tm-theme-l { display: flex; align-items: center; gap: 10px; }
-.top-menu .seg button { width: auto; padding: 4px 9px; font-size: 12.5px; border-radius: 6px; color: var(--ink-2); font-weight: 600; }
-.top-menu .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-.top-menu .seg { flex: none; }  /* que no se encoja: las opciones mantienen el mismo ancho */
 .tm-status { margin: 4px 10px 4px; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
 .tm-status:empty { display: none; }
 .ghost { border: 0; background: none; padding: 7px 10px; border-radius: 8px; color: var(--ink-2); font-size: 13.5px; display: inline-flex; align-items: center; gap: 7px; }
@@ -246,12 +243,6 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .edit-num:focus { border-color: var(--accent); outline: none; background: var(--surface); }
 .link { border: 0; background: none; color: var(--accent); padding: 8px 0 0; font-size: 13.5px; font-weight: 600; }
 .link:hover { text-decoration: underline; }
-.seg { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px;  /* opciones del mismo ancho */  background: var(--soft); border-radius: 8px; padding: 3px; }
-.seg button { border: 0; background: none; padding: 3px 12px; border-radius: 6px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
-.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
-/* misma respuesta al pasar el ratón que las flechas de Evolución, solo en la opción no elegida */
-.seg button { cursor: pointer; transition: background .15s; justify-content: center; text-align: center; }  /* texto centrado (los botones del menú lo traen a la izquierda) */
-.seg button:not([aria-pressed="true"]):hover:not(:disabled) { background: var(--surface); }
 .big-input { display: flex; align-items: baseline; gap: 4px; margin: 4px 0 10px; }
 .big-input input { width: 4em; min-width: 1.6em; max-width: 100%; font-size: 28px; font-weight: 700; letter-spacing: -.02em; border: 1px solid transparent; background: none; padding: 0 4px; border-radius: 8px; font-variant-numeric: tabular-nums; }
 .big-input input:hover { border-color: var(--line); }
@@ -286,11 +277,6 @@ svg .val { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
 .dim .mark.hot { opacity: 1; }
 /* Evolución: ventana de meses con flechas (y deslizamiento en el móvil) */
 .sec-top { margin-bottom: 6px; }
-.trend-nav { display: flex; align-items: center; gap: 3px; background: var(--soft); border-radius: 6px; padding: 3px; flex: none; }
-.trend-nav button { border: 0; background: none; width: 32px; height: 32px; padding: 0; border-radius: 3px; display: grid; place-items: center; color: var(--ink); cursor: pointer; transition: background .15s; }
-.trend-nav button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.trend-nav button:hover:not(:disabled) { background: var(--surface); }
-.trend-nav button:disabled { opacity: .25; cursor: default; }
 #trend { touch-action: pan-y; }
 .legend-inline { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
 .legend-inline span { display: inline-flex; align-items: center; gap: 6px; }
@@ -465,20 +451,30 @@ dialog .btn.danger { padding-left: 0; }
 /* radios anidados: un botón dentro de un contenedor lleva la mitad de su radio
    (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
 /* Radios unificados dentro de las secciones (tarjetas, menú lateral, avisos): todo lo que va dentro mide --r-in
-   y lo que va dentro de un grupo (botones de .seg y de las flechas), --r-in2. */
-.card :is(.btn, .dd-btn, .chip, .sel, .inp, .seg, .trend-nav, .notice, .recur, .icon-btn, .edit-num, .hero-stats > div, .pages button),
-.card .big-input input, .side-nav a, .news-item .th, .top-menu button, .top-menu .seg { border-radius: var(--r-in); }
-.card :is(.seg, .trend-nav) button, .top-menu .seg button { border-radius: var(--r-in2); }
+   y lo que va dentro de un grupo (botones de .switch), --r-in2. */
+.card :is(.btn, .dd-btn, .chip, .sel, .inp, .notice, .recur, .icon-btn, .edit-num, .hero-stats > div, .pages button),
+.card .big-input input, .side-nav a, .news-item .th, .top-menu button { border-radius: var(--r-in); }
 /* cabeceras de tablas: la fila entera se ve como una barra con esquinas --r-in */
 .card .legend tr.hd td:first-child, .card table.data th:first-child { border-radius: var(--r-in) 0 0 var(--r-in); }
 .card .legend tr.hd td:last-child, .card table.data th:last-child { border-radius: 0 var(--r-in) var(--r-in) 0; }
-/* Controles de cabecera de sección: todos miden --ctl-h. Los grupos (seg, flechas) tienen 3px de relleno
+/* Controles de cabecera de sección: todos miden --ctl-h. Los grupos (.switch) tienen 3px de relleno
    y sus botones ocupan el resto, así que un control nuevo solo necesita estar en .p-label o .sec-head. */
-:is(.p-label, .sec-head) :is(.seg, .trend-nav) { height: var(--ctl-h); padding: 3px; box-sizing: border-box; align-items: stretch; }
-:is(.p-label, .sec-head) :is(.seg, .trend-nav) button { height: auto; display: inline-flex; align-items: center; justify-content: center; }
-.trend-nav button { width: calc(var(--ctl-h) - 6px); }
-:is(.seg, .trend-nav) button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 :is(.p-label, .sec-head) :is(.sel, .chip, .btn) { height: var(--ctl-h); box-sizing: border-box; }
+/* ---------- Componente .switch ----------
+   Grupo de botones sobre fondo suave: opciones (la elegida lleva aria-pressed="true") o acciones como las flechas.
+   Todos los botones miden lo mismo: al menos --sw-btn de ancho, y si alguno necesita más, todos crecen igual.
+   Uso: <span class="switch" role="group" aria-label="…"><button type="button" aria-pressed="true">A</button><button type="button">B</button></span> */
+:root { --sw-btn: 34px; }
+.switch { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; padding: 3px; flex: none;
+          height: var(--ctl-h); box-sizing: border-box; background: var(--soft); border-radius: var(--r-in); }
+.switch > button { width: auto; min-width: var(--sw-btn); height: auto; padding: 0 8px; margin: 0; border: 0; border-radius: var(--r-in2);
+                   display: inline-flex; align-items: center; justify-content: center; gap: 0; text-align: center;
+                   background: none; color: var(--ink-2); font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.switch > button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.switch > button:not([aria-pressed="true"]):hover:not(:disabled) { background: var(--surface); }
+.switch > button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.switch > button:disabled { opacity: .3; cursor: default; }
+.switch > button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 </style>
 </head>
 <body>
@@ -500,7 +496,7 @@ dialog .btn.danger { padding-left: 0; }
         <button type="button" role="menuitem" id="btnDatos"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span id="btnDatosLbl">Ubicación de los datos</span></button>
         <div class="tm-sep" role="separator"></div>
         <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>Tema</span>
-          <span class="seg" role="group" aria-label="Tema" id="themeSeg"><button type="button" data-tema="auto" title="Según el móvil o el navegador">Auto</button><button type="button" data-tema="light">Claro</button><button type="button" data-tema="dark">Oscuro</button></span></div>
+          <span class="switch" role="group" aria-label="Tema" id="themeSeg"><button type="button" data-tema="auto" title="Según el móvil o el navegador">Auto</button><button type="button" data-tema="light">Claro</button><button type="button" data-tema="dark">Oscuro</button></span></div>
         <p class="tm-status" id="tmStatus"></p>
       </div>
     </div>
@@ -551,7 +547,7 @@ dialog .btn.danger { padding-left: 0; }
 
   <section class="card" id="sec-evolucion">
     <div class="p-label sec-top"><p class="eyebrow" style="margin:0">Evolución</p>
-      <div class="trend-nav"><button type="button" id="trendPrev" aria-label="Meses anteriores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><button type="button" id="trendNext" aria-label="Meses siguientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+      <div class="switch" role="group" aria-label="Desplazar meses"><button type="button" id="trendPrev" aria-label="Meses anteriores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><button type="button" id="trendNext" aria-label="Meses siguientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
     <div class="sec-head"><div><h2>Mes a mes</h2></div></div>
     <div id="trend"></div>
     <div class="legend-inline" id="trendLegend"></div>
@@ -878,7 +874,7 @@ function renderSaving(m) {
   const val = isPct ? Math.round(m.pctA * 1000) / 10 : Math.min(n(m.cfg?.Importe_Ahorro), max);
   $("saving").innerHTML = `
     <div class="p-label"><p class="eyebrow" style="margin:0"><span class="step-n">${S.steps?.aho || 3}</span>Ahorro e inversión</p>
-      <span class="seg" role="group" aria-label="Tipo de objetivo">
+      <span class="switch" role="group" aria-label="Tipo de objetivo">
         <button type="button" data-modo="Porcentaje" aria-pressed="${isPct}" ${dis}>%</button>
         <button type="button" data-modo="Importe" aria-pressed="${!isPct}" ${dis}>€</button></span></div>
     <div class="big-input"><input id="savInp" value="${dec(val)}" inputmode="decimal" aria-label="Objetivo de ahorro" ${dis}><span>${isPct ? "%" : "€"}</span></div>
