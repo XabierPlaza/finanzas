@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-aRkLtYlJWvWBETi6U1m8/XiEGK2ol5UgRCRHouTlJPg=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-i9uefn40UYk+pH0kORuy6PosYSN4risfRvgqEecKEiA=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -420,8 +420,6 @@ dialog form > h3 { margin-bottom: calc(var(--dlg-pad) - var(--dlg-gap)); }
   dialog form > .actions .btn:not(.danger) { flex: 1; }
   dialog form > .actions .sp { display: none; }
   dialog form > .actions .btn.danger { flex-basis: 100%; text-align: left; padding: 2px 0; min-height: 0; }
-  /* iPhone: con letra < 16 px Safari amplía la página al escribir y el diálogo deja de encajar */
-  .fld input, .fld select, .fld textarea, .edit-num { font-size: 16px; }
   /* campos de fecha/mes: en iOS tienen un ancho propio que se sale de la columna */
   .fld input[type="month"], .fld input[type="date"] { -webkit-appearance: none; appearance: none; width: 100%; display: block; line-height: var(--fld-h); text-align: left; }
 }
@@ -506,6 +504,11 @@ dialog .btn.danger { padding-left: 0; }
 @media (prefers-reduced-motion: reduce) { .switch.sw-ind::before, .switch.sw-ind > button { transition: none; } }
 .switch > button:disabled { opacity: .3; cursor: default; }
 .switch > button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* Pantallas táctiles: con letra < 16 px en un campo, iOS amplía la página al escribir (y no la devuelve al cerrar).
+   Va al final para que ninguna regla posterior la pise. */
+@media (pointer: coarse), (max-width: 560px) {
+  .fld input, .fld select, .fld textarea, .edit-num, .inp, .sel, .dd-fld .dd-btn { font-size: 16px; }
+}
 </style>
 </head>
 <body>
@@ -1538,6 +1541,12 @@ document.addEventListener("pointerdown", e => { const t = e.target instanceof El
 addEventListener("scroll", e => { if (ddOpen && performance.now() - ddOpen.at > 200 && !(e.target instanceof Element && e.target.closest(".dd-menu"))) ddOpen.close(false); }, true);
 addEventListener("resize", () => ddOpen?.close(false));
 document.querySelectorAll("dialog").forEach(d => d.addEventListener("close", () => ddOpen?.close(false)));
+// por si el navegador amplió la página al escribir: al cerrar una ventana vuelve al 100 % (fijar y soltar el zoom máximo)
+{ const vp = document.querySelector('meta[name="viewport"]'), base = vp.content;
+  document.querySelectorAll("dialog").forEach(d => d.addEventListener("close", () => {
+    if ((window.visualViewport?.scale || 1) <= 1.01) return;
+    vp.content = base + ", maximum-scale=1"; setTimeout(() => vp.content = base, 300);
+  })); }
 document.querySelectorAll("form").forEach(f => f.addEventListener("reset", () => setTimeout(syncSelects)));
 enhanceSelect($("periodSel"), "period");
 enhanceSelect($("debtCred"), "sel");
