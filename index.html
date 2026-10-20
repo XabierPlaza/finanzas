@@ -17,7 +17,8 @@
 <style>
 :root {
   color-scheme: light;
-  --ctl-h: 34px;  /* altura estándar de los controles de cabecera de sección (selectores, % / €, flechas, filtros) */
+  --ctl-h: 34px;
+  --r-card: 12px; --r-in: 6px; --r-in2: 3px;  /* radios: tarjeta, lo que va dentro (la mitad) y lo que va dentro de eso */  /* altura estándar de los controles de cabecera de sección (selectores, % / €, flechas, filtros) */
   --page: #f3f5f9; --surface: #ffffff; --soft: #f1f4f9; --tint: #e8eef7;
   --ink: #14213d; --ink-2: #4a5568; --muted: #8a94a6; --line: #e6ebf2; --axis: #c5cedb;
   --border: #e3e8f0; --accent: #1f4e8c; --accent-2: #2d65ad; --accent-ink: #ffffff;
@@ -189,7 +190,7 @@ main > :first-child { margin-top: 0; }
   .side .news, .side-foot { display: none !important; }
   .news-m { display: block; margin-bottom: 16px; }
 }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); padding: 22px; min-width: 0; }
 section.card { margin-top: 16px; }
 .row { display: grid; gap: 16px; margin-top: 16px; }
 .row-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -458,8 +459,14 @@ dialog .btn.danger { padding-left: 0; }
 .hint { font-size: 12.5px; color: var(--muted); margin-top: -8px !important; }
 /* radios anidados: un botón dentro de un contenedor lleva la mitad de su radio
    (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
-.card .btn, .card .dd-btn, .card .chip, .card .sel, .card .inp, .card .seg, .side-nav a, .top-menu button, .top-menu .seg { border-radius: 6px; }
-.card .seg button, .top-menu .seg button { border-radius: 3px; }
+/* Radios unificados dentro de las secciones (tarjetas, menú lateral, avisos): todo lo que va dentro mide --r-in
+   y lo que va dentro de un grupo (botones de .seg y de las flechas), --r-in2. */
+.card :is(.btn, .dd-btn, .chip, .sel, .inp, .seg, .trend-nav, .notice, .recur, .icon-btn, .edit-num, .hero-stats > div, .pages button),
+.card .big-input input, .side-nav a, .news-item .th, .top-menu button, .top-menu .seg { border-radius: var(--r-in); }
+.card :is(.seg, .trend-nav) button, .top-menu .seg button { border-radius: var(--r-in2); }
+/* cabeceras de tablas: la fila entera se ve como una barra con esquinas --r-in */
+.card .legend tr.hd td:first-child, .card table.data th:first-child { border-radius: var(--r-in) 0 0 var(--r-in); }
+.card .legend tr.hd td:last-child, .card table.data th:last-child { border-radius: 0 var(--r-in) var(--r-in) 0; }
 /* Controles de cabecera de sección: todos miden --ctl-h. Los grupos (seg, flechas) tienen 3px de relleno
    y sus botones ocupan el resto, así que un control nuevo solo necesita estar en .p-label o .sec-head. */
 :is(.p-label, .sec-head) :is(.seg, .trend-nav) { height: var(--ctl-h); padding: 3px; box-sizing: border-box; align-items: stretch; }
