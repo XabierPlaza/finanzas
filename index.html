@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-zl97PZmSTIz2gBdVtlwvEzPuNv8zxW7d/bLrco5pEuM=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Ro0vPvxAE+t2yc7y47NfYNtIJVkTjJwbvyUdhSJE0cY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -463,7 +463,7 @@ dialog .btn.danger { padding-left: 0; }
 .err { color: var(--critical); font-size: 13px; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
-.pay-mode .pay-hide, .pay-mode .dh-rest { display: none !important; }  /* en «Pagar» lo que queda ya lo dice el campo del importe */
+.pay-mode .pay-hide { display: none !important; }
 .fld input[readonly], .fld textarea[readonly] { background: var(--soft); border-color: transparent; color: var(--ink-2); cursor: default; }
 .fld input[readonly]:hover { border-color: transparent; }
 .fld input[readonly]:focus { box-shadow: none; border-color: transparent; }
@@ -473,7 +473,6 @@ dialog .btn.danger { padding-left: 0; }
 .debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
 .debt-hist .dh-h { font-weight: 650; color: var(--ink); margin-bottom: 2px; }
 .debt-hist .dh-t { border-top: 1px solid var(--line); padding-top: 7px; margin-top: 2px; font-weight: 650; color: var(--ink); }
-.debt-hist .dh-ok { color: var(--good); }
 .hint { font-size: 12.5px; color: var(--muted); margin-top: -8px !important; }
 /* radios anidados: un botón dentro de un contenedor lleva la mitad de su radio
    (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
@@ -1189,7 +1188,7 @@ function fillDebtHist(id) {
   const prev = n(x.Pagado_Previo);
   const rows = x.pagos.map(m => `<div class="dh-r"><span>${esc(perName(m.Periodo))}</span><span class="num">${eur(m.Importe)}</span></div>`).join("")
     + (prev ? `<div class="dh-r"><span>Antes de usar la app</span><span class="num">${eur(prev)}</span></div>` : "");
-  box.innerHTML = `<div class="dh-h"><span>Pagos</span><span class="num dh-rest ${x.paid ? "dh-ok" : ""}">${x.paid ? "Pagada" : `Quedan ${eur(x.rest)}`}</span></div>`
+  box.innerHTML = `<div class="dh-h"><span>Pagos</span></div>`
     + (rows || `<div class="dh-r muted">Aún no hay pagos.</div>`)
     + (rows ? `<div class="dh-r dh-t"><span>Pagado</span><span class="num">${eur(x.pagado)} de ${eur(x.total)}</span></div>` : "");
 }
