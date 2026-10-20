@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-MNQE8xeBK8j5NGtz8vyMXfeAB+osZWEQJ0clhL971c0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ohug4ss+9kaaTgr1V1gA6SlG87V4PkERjaLmxzC4bXk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -456,6 +456,12 @@ dialog .btn.danger { padding-left: 0; }
 .err { color: var(--critical); font-size: 13px; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
+.debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
+.debt-hist:empty { display: none; }
+.debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
+.debt-hist .dh-h { font-weight: 650; color: var(--ink); margin-bottom: 2px; }
+.debt-hist .dh-t { border-top: 1px solid var(--line); padding-top: 7px; margin-top: 2px; font-weight: 650; color: var(--ink); }
+.debt-hist .dh-ok { color: var(--good); }
 .hint { font-size: 12.5px; color: var(--muted); margin-top: -8px !important; }
 /* radios anidados: un botón dentro de un contenedor lleva la mitad de su radio
    (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
@@ -606,15 +612,13 @@ dialog .btn.danger { padding-left: 0; }
     <label class="fld"><span id="lblImporte">Importe (€)</span><input name="Importe" required inputmode="decimal" placeholder="0,00"></label>
   </div>
   <label class="fld" data-show="Pago de Deudas">Deuda (opcional)<select name="ID_Deuda"></select></label>
-  <div class="f2" data-show="Deuda">
-    <label class="fld">Ya pagado antes (€)<input name="Pagado_Previo" inputmode="decimal" placeholder="0"></label>
-    <label class="fld">Mes cuota final<select name="Mes_Cuota_Final"></select></label>
-  </div>
+  <label class="fld" data-show="Deuda">Mes cuota final<select name="Mes_Cuota_Final"></select></label>
   <!-- el mes no se pregunta: los apuntes nuevos van al mes que se está viendo (al editar se conserva el suyo) -->
   <input type="hidden" name="Periodo">
   <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<input name="Acreedor" list="credList"></label>
+  <div class="debt-hist" id="debtHist" data-show="Deuda"></div>
   <label class="fld">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
-  <p class="hint" data-show="Deuda">Los pagos de deuda vinculados a esta deuda se suman a «ya pagado».</p>
+  <p class="hint" data-show="Deuda">Lo pagado se calcula solo: cada pago que apuntes con «Pagar» (o eligiendo esta deuda al añadir un pago) se suma aquí.</p>
   <div class="err"></div>
   <div class="actions"><button class="btn danger" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div>
 </form></dialog>
@@ -767,9 +771,10 @@ function month(p) {
 function debts() {
   const d = S.data;
   return d.deudas.map(x => {
-    const linked = d.movimientos.filter(m => m.ID_Deuda && m.ID_Deuda === x.ID_Deuda).reduce((a, m) => a + n(m.Importe), 0);
+    const pagos = d.movimientos.filter(m => m.ID_Deuda && m.ID_Deuda === x.ID_Deuda).sort((a, b) => String(a.Periodo).localeCompare(String(b.Periodo)));
+    const linked = pagos.reduce((a, m) => a + n(m.Importe), 0);
     const total = n(x.Importe_Total), pagado = n(x.Pagado_Previo) + linked, rest = Math.max(0, total - pagado);
-    return { ...x, total, pagado, linked, rest, paid: rest <= 0.01, prog: total > 0 ? Math.min(1, pagado / total) : 1 };
+    return { ...x, pagos, total, pagado, linked, rest, paid: rest <= 0.01, prog: total > 0 ? Math.min(1, pagado / total) : 1 };
   });
 }
 
@@ -1045,7 +1050,7 @@ function renderDebts() {
   $("debtTbl").innerHTML = `<thead><tr><th>Acreedor</th><th>Descripción</th><th class="num">Total</th><th class="num">Pagado</th><th class="num">Restante</th><th>Progreso</th><th>Estado</th><th>Cuota final</th><th></th></tr></thead>
   <tbody>${rows.length ? rows.map(x => `<tr data-edit="deudas" data-id="${esc(x.ID_Deuda)}">
     <td>${esc(x.Acreedor)}</td><td>${esc(x.Descripción)}</td><td class="num">${eur(x.total)}</td>
-    <td class="num" title="Previo ${eur(x.Pagado_Previo)} + pagos vinculados ${eur(x.linked)}">${eur(x.pagado)}</td><td class="num">${eur(x.rest)}</td>
+    <td class="num" title="${n(x.Pagado_Previo) ? `Antes de usar la app ${eur(x.Pagado_Previo)} + pagos ${eur(x.linked)}` : `Suma de ${x.pagos.length} pago${x.pagos.length === 1 ? "" : "s"}`}">${eur(x.pagado)}</td><td class="num">${eur(x.rest)}</td>
     <td><span class="prog"><div style="width:${x.prog * 100}%;background:${x.paid ? "var(--good)" : "var(--cat-deb)"}"></div></span> <span class="muted num" style="font-size:12px">${pct(x.prog)}</span></td>
     <td><span class="state">${x.paid ? ICON.ok + "Pagada" : ICON.pend + "Pendiente"}</span></td><td>${esc(x.Mes_Cuota_Final || "—")}</td><td style="text-align:right">${x.paid ? "" : `<button class="btn mini" type="button" data-pay="${esc(x.ID_Deuda)}">Pagar</button>`}</td></tr>`).join("")
     : `<tr><td colspan="9" class="empty">No hay deudas para este filtro.</td></tr>`}</tbody>
@@ -1134,12 +1139,24 @@ function openDialog(kind, opts = {}) {
     [...$("movType").options].forEach(o => o.disabled = !!rec && typeTable(o.value) !== tabla);
     if (rec && tabla === "deudas") { f.elements["Concepto"].value = rec.Descripción ?? ""; f.elements["Importe"].value = dec(rec.Importe_Total); }
     setType(f, type);
+    fillDebtHist(rec && tabla === "deudas" ? opts.id : null);
     if (rec && tabla !== "movimientos") f.querySelector("h3").textContent = tabla === "ingresos" ? "Editar ingreso extra" : "Editar deuda";
     if (!rec && opts.debtId) { f.elements["ID_Deuda"].value = opts.debtId; f.elements["ID_Deuda"].dispatchEvent(new Event("change")); }
   }
   if (kind === "per") { syncPerForm(f); if (rec) updateRecurEdit(opts.id); }
   syncSelects();
   dlg.showModal(); dlg.focus(); dlg.querySelector("form").scrollTop = 0;
+}
+// historial de una deuda: cada pago vinculado con su mes, lo apuntado antes de usar la app y lo que queda
+function fillDebtHist(id) {
+  const box = $("debtHist"), x = id ? debts().find(d => d.ID_Deuda === id) : null;
+  if (!x) { box.innerHTML = ""; return; }
+  const prev = n(x.Pagado_Previo);
+  const rows = x.pagos.map(m => `<div class="dh-r"><span>${esc(perName(m.Periodo))}</span><span class="num">${eur(m.Importe)}</span></div>`).join("")
+    + (prev ? `<div class="dh-r"><span>Antes de usar la app</span><span class="num">${eur(prev)}</span></div>` : "");
+  box.innerHTML = `<div class="dh-h"><span>Pagos</span><span class="num ${x.paid ? "dh-ok" : ""}">${x.paid ? "Pagada" : `Quedan ${eur(x.rest)}`}</span></div>`
+    + (rows || `<div class="dh-r muted">Aún no hay pagos. Usa «Pagar» en la tabla para apuntar uno.</div>`)
+    + (rows ? `<div class="dh-r dh-t"><span>Pagado</span><span class="num">${eur(x.pagado)} de ${eur(x.total)}</span></div>` : "");
 }
 function prepareNewPeriod(f, mes) {
   const ps = S.data.periodos.map(p => p.Periodo).sort(), last = ps.at(-1);
