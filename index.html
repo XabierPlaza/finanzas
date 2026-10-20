@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-DP8XiL5MWvpW68r87iHG7kd9RMekbHaZhlC781Gdjeo=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ZYYnNwYY3mkxhU3mhex5ziPISPMQcCN+HR5pxngTa9g=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -163,8 +163,6 @@ main > :first-child { margin-top: 0; }
   .mes-cards > .card { display: flex; flex-direction: column; }
   .mes-cards #savList, .mes-cards .var-list { display: contents; }
   .mes-cards :is(#savList, .var-list) > :first-child { margin-top: 14px; }  /* el margen de la lista se pierde con display: contents */
-  .mes-cards .btn.add-btn { margin-top: auto; align-self: flex-start; }
-  .mes-cards .card *:has(+ .add-btn) { margin-bottom: 16px; }
 }
 .deb-sub { margin: -6px 0 10px; font-size: 12.5px; }
 .step-n { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--tint); color: var(--accent);
@@ -177,14 +175,16 @@ main > :first-child { margin-top: 0; }
          font-size: 13.5px; font-weight: 650; color: var(--ink); }
 .sub-h > span { display: inline-flex; align-items: center; gap: 8px; }
 .sav-list, .var-list { margin-top: 14px; }
-/* «Añadir …»: compacto y suave (misma altura que los controles de cabecera), ancho según el texto */
-.btn.add-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; height: var(--ctl-h); box-sizing: border-box; padding: 0 12px 0 10px;
-               border-color: transparent; background: var(--tint); color: var(--accent); font-size: 13.5px; font-weight: 600; align-self: flex-start; transition: background .15s; }
-.btn.add-btn:hover { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
-.add-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+/* «+ Añadir …»: última fila de la lista, con el mismo alto y separador que los registros */
+.add-row { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 5px 0; margin: 0; box-sizing: border-box;
+           border: 0; border-top: 1px solid var(--line); border-radius: 0; background: none; color: var(--accent);
+           font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.add-row:hover { background: var(--soft); }
+.add-row svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; flex: none; }
+.add-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
-  .inc-list li.clk { min-height: 46px; }
+  .inc-list li.clk, .add-row { min-height: 46px; }
 }
 @media (max-width: 680px) {
   .side .news, .side-foot { display: none !important; }
@@ -561,7 +561,7 @@ dialog .btn.danger { padding-left: 0; }
       <div class="filters"><select class="sel" id="debtCred" aria-label="Acreedor"></select><div class="chips" id="debtState"></div></div>
     </div>
     <div class="tbl-wrap"><table class="data" id="debtTbl"></table></div>
-    <button class="btn add-btn" type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir deuda</button>
+    <button class="add-row" type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir deuda</button>
   </section>
 
 
@@ -778,14 +778,14 @@ const byAmount = (a, b) => n(b.Importe) - n(a.Importe);
 const byNewest = (a, b) => String(b.ID).localeCompare(String(a.ID));
 // apuntes de una categoría dentro de su tarjeta: 5 a la vista y «Ver los N» para desplegar; al tocarlos se editan
 const itemRow = (tabla, id, concept, amount, extra = "") => `<li class="clk" data-edit="${tabla}" data-id="${esc(id)}" tabindex="0" role="button" title="Ver, editar o eliminar"><span>${esc(concept || "—")}${extra}</span><span class="r"><span class="num">${eur(amount)}</span></span></li>`;
-const addBtn = (cat, label) => `<button class="btn add-btn" type="button" data-open="mov" data-cat="${esc(cat)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>${label}</button>`;
+const addBtn = (cat, label) => `<button class="add-row" type="button" data-open="mov" data-cat="${esc(cat)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>${label}</button>`;
 function catList(m, cat, { sort, empty, add }) {
   const all = m.movs.filter(x => x.Categoría === cat).sort(sort), open = S.open[cat];
   const list = all.length
     ? `<ul class="inc-list">${(open ? all : all.slice(0, 5)).map(x => itemRow("movimientos", x.ID, x.Concepto, x.Importe)).join("")}</ul>`
     : (empty ? `<p class="muted c-empty">${empty}</p>` : "");
   const more = all.length > 5 ? `<div class="list-acts"><button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button></div>` : "";
-  return list + more + (add ? addBtn(cat, add) : "");
+  return list + (add ? addBtn(cat, add) : "") + more;
 }
 const CAT_CARD = { "Pago de Deudas": "cDeb", "Gastos Fijos": "cFij", "Ahorro e Inversión": "cAho", "Gastos Variables": "cVar" };
 function renderDonut(m) {
