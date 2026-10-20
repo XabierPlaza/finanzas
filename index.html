@@ -17,6 +17,7 @@
 <style>
 :root {
   color-scheme: light;
+  --ctl-h: 34px;  /* altura estándar de los controles de cabecera de sección (selectores, % / €, flechas, filtros) */
   --page: #f3f5f9; --surface: #ffffff; --soft: #f1f4f9; --tint: #e8eef7;
   --ink: #14213d; --ink-2: #4a5568; --muted: #8a94a6; --line: #e6ebf2; --axis: #c5cedb;
   --border: #e3e8f0; --accent: #1f4e8c; --accent-2: #2d65ad; --accent-ink: #ffffff;
@@ -458,6 +459,12 @@ dialog .btn.danger { padding-left: 0; }
    (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
 .card .btn, .card .dd-btn, .card .chip, .card .sel, .card .inp, .card .seg, .side-nav a, .top-menu button, .top-menu .seg { border-radius: 6px; }
 .card .seg button, .top-menu .seg button { border-radius: 3px; }
+/* Controles de cabecera de sección: todos miden --ctl-h. Los grupos (seg, flechas) tienen 3px de relleno
+   y sus botones ocupan el resto, así que un control nuevo solo necesita estar en .p-label o .sec-head. */
+:is(.p-label, .sec-head) :is(.seg, .trend-nav) { height: var(--ctl-h); padding: 3px; box-sizing: border-box; align-items: stretch; }
+:is(.p-label, .sec-head) :is(.seg, .trend-nav) button { height: auto; display: inline-flex; align-items: center; justify-content: center; }
+.trend-nav button { width: calc(var(--ctl-h) - 6px); }
+:is(.p-label, .sec-head) :is(.sel, .chip, .btn) { height: var(--ctl-h); box-sizing: border-box; }
 </style>
 </head>
 <body>
