@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-ocSYY024C66xGzkLeyyDlnzXYR1jhj8lzuSvWUHTslY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-NZTEn88Se6ekwYvA7x0z++cWqXq/b+FQWWaIjIsj4CA=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -591,7 +591,7 @@ dialog .btn.danger { padding-left: 0; }
   </div>
   <div class="f2" data-edit-only>
     <label class="fld">Ahorro objetivo<select name="Modo_Ahorro"><option value="Porcentaje">Porcentaje (%)</option><option value="Importe">Cantidad fija (€)</option></select></label>
-    <label class="fld" data-modo="Porcentaje">% de los ingresos<input name="Pct_Ahorro" inputmode="decimal"></label>
+    <label class="fld" data-modo="Porcentaje">% de lo que queda tras fijos y deudas<input name="Pct_Ahorro" inputmode="decimal"></label>
     <label class="fld" data-modo="Importe">Cantidad (€)<input name="Importe_Ahorro" inputmode="decimal"></label>
   </div>
   <label class="fld" data-edit-only>Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
@@ -712,11 +712,13 @@ function month(p) {
   const nomina = n(cfg?.["Nómina"]), extra = extras.reduce((a, i) => a + n(i.Importe), 0), ingresos = nomina + extra;
   const modo = cfg?.Modo_Ahorro === "Importe" ? "Importe" : "Porcentaje";
   let pctA = n(cfg?.Pct_Ahorro); if (pctA > 1) pctA /= 100;
-  const ahorro = modo === "Importe" ? n(cfg?.Importe_Ahorro) : ingresos * pctA;
   const sum = c => movs.filter(m => m.Categoría === c).reduce((a, m) => a + n(m.Importe), 0);
   const fijos = sum("Gastos Fijos"), deudas = sum("Pago de Deudas"), ahorroReal = sum("Ahorro e Inversión"), gastado = sum("Gastos Variables");
+  // el ahorro sale de lo que queda tras fijos y deudas: en % es un % de eso, y en € no puede superarlo
+  const margen = Math.max(0, ingresos - fijos - deudas);
+  const ahorro = modo === "Importe" ? Math.min(n(cfg?.Importe_Ahorro), margen) : margen * pctA;
   const variable = ingresos - fijos - ahorro - deudas;
-  return { cfg, movs, extras, nomina, extra, ingresos, modo, pctA, ahorro, fijos, deudas, ahorroReal, gastado, variable,
+  return { cfg, movs, extras, nomina, extra, ingresos, modo, pctA, margen, ahorro, fijos, deudas, ahorroReal, gastado, variable,
            budget: { "Gastos Fijos": fijos, "Ahorro e Inversión": ahorro, "Pago de Deudas": deudas, "Gastos Variables": variable } };
 }
 function debts() {
@@ -842,23 +844,29 @@ function renderVar(m) {
 
 function renderSaving(m) {
   const isPct = m.modo === "Porcentaje", dis = m.cfg ? "" : "disabled";
-  const val = isPct ? Math.round(m.pctA * 1000) / 10 : n(m.cfg?.Importe_Ahorro);
-  const max = isPct ? 100 : Math.max(100, Math.ceil(m.ingresos / 50) * 50);
+  const max = isPct ? 100 : Math.round(m.margen * 100) / 100, step = isPct ? 0.5 : 5;
+  const val = isPct ? Math.round(m.pctA * 1000) / 10 : Math.min(n(m.cfg?.Importe_Ahorro), max);
   $("saving").innerHTML = `
     <div class="p-label"><p class="eyebrow" style="margin:0"><span class="step-n">${S.steps?.aho || 3}</span>Ahorro e inversión</p>
       <span class="seg" role="group" aria-label="Tipo de objetivo">
         <button type="button" data-modo="Porcentaje" aria-pressed="${isPct}" ${dis}>%</button>
         <button type="button" data-modo="Importe" aria-pressed="${!isPct}" ${dis}>€</button></span></div>
     <div class="big-input"><input id="savInp" value="${dec(val)}" inputmode="decimal" aria-label="Objetivo de ahorro" ${dis}><span>${isPct ? "%" : "€"}</span></div>
-    <input type="range" id="savRange" min="0" max="${max}" step="${isPct ? 0.5 : 5}" value="${val}" aria-label="Objetivo de ahorro" ${dis}>
+    <input type="range" id="savRange" min="0" max="${max}" step="${step}" value="${val}" aria-label="Objetivo de ahorro" ${dis}>
     <div class="saving-note" id="savNote"></div>
     ${m.cfg && !m.movs.some(x => x.Categoría === "Ahorro e Inversión") && recurrentesPara(S.period).some(x => x.Categoría === "Ahorro e Inversión")
       ? `<div class="notice" style="margin-top:12px">Este mes no tiene aportaciones · <button class="link" type="button" style="padding:0" data-recur="${esc(S.period)}">Copiar del mes anterior</button></div>` : ""}`;
   const note = v => {
-    const obj = isPct ? m.ingresos * v / 100 : v;
+    const queda = `lo que queda (${eur(m.margen)})`;
     $("savNote").innerHTML = isPct
-      ? `De tus ingresos · aportado ${eur(m.ahorroReal)}`
-      : `${pct(m.ingresos ? obj / m.ingresos : 0)} de tus ingresos · aportado ${eur(m.ahorroReal)}`;
+      ? `De ${queda} · aportado ${eur(m.ahorroReal)}`
+      : `${pct(m.margen ? v / m.margen : 0)} de ${queda} · aportado ${eur(m.ahorroReal)}`;
+  };
+  // no se puede apartar más de lo que queda tras fijos y deudas (ni más del 100 %)
+  const clamp = v => {
+    if (v <= max) return v;
+    toast(isPct ? "Como máximo el 100 % de lo que queda" : `Como máximo ${eur(max)} (lo que queda tras fijos y deudas)`, "err");
+    return max;
   };
   note(val);
   const field = isPct ? "Pct_Ahorro" : "Importe_Ahorro";
@@ -876,18 +884,20 @@ function renderSaving(m) {
     inp.style.width = `${Math.ceil(text + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + 2 * parseFloat(cs.borderLeftWidth) + 4)}px`;
   };
   fit(); inp.addEventListener("input", fit);
-  range.addEventListener("input", () => { S.editing = true; inp.value = dec(+range.value); fit(); preview(+range.value); });
+  // la barra avanza de 5 en 5 €: el último tramo llega justo a lo que queda
+  const fromRange = () => { const v = +range.value; return v > max - step ? max : v; };
+  range.addEventListener("input", () => { S.editing = true; const v = fromRange(); inp.value = dec(v); fit(); preview(v); });
   const toStore = v => isPct ? Math.min(100, v) / 100 : v;  // el % se guarda como fracción (60,2 % → 0,602)
-  range.addEventListener("change", () => saveField("periodos", S.period, { [field]: toStore(+range.value) }));
-  bindEdit(inp, () => dec(val), v => saveField("periodos", S.period, { [field]: toStore(v) }),
-    v => { range.value = v; preview(v); });
+  range.addEventListener("change", () => saveField("periodos", S.period, { [field]: toStore(fromRange()) }));
+  bindEdit(inp, () => dec(val), v => saveField("periodos", S.period, { [field]: toStore(clamp(v)) }),
+    v => { const c = Math.min(v, max); range.value = c; preview(c); });
   $("saving").querySelectorAll("[data-modo]").forEach(b => b.addEventListener("click", () => {
     if (b.dataset.modo === m.modo) return;
     const campos = { Modo_Ahorro: b.dataset.modo };
     // al cambiar de modo se mantiene el mismo objetivo en euros / en porcentaje
     // al volver a € se conserva el importe guardado si equivale al %: el % redondeado no debe convertir 900 € en 899,73 €
     if (b.dataset.modo === "Importe") { const prev = n(m.cfg?.Importe_Ahorro); if (!(prev && Math.abs(prev - m.ahorro) < 0.5)) campos.Importe_Ahorro = Math.round(m.ahorro * 100) / 100; }
-    else campos.Pct_Ahorro = m.ingresos ? Math.round(m.ahorro / m.ingresos * 1e6) / 1e6 : 0;
+    else campos.Pct_Ahorro = m.margen ? Math.round(m.ahorro / m.margen * 1e6) / 1e6 : 0;
     saveField("periodos", S.period, campos);
   }));
 }
@@ -996,6 +1006,8 @@ function renderNotices(m) {
   if (!m.cfg) add("cal", "var(--accent)", "Mes sin configurar", `Crea ${monthName(S.period)} para fijar nómina y ahorro.`, `<button class="link" type="button" data-open="per" data-mes="${esc(S.period)}">Crear ${esc(monthName(S.period))}</button>`);
   else if (disp < 0) add("alert", "var(--critical)", "Presupuesto superado", `Te has pasado ${eur(-disp)} en gastos variables.`);
   else if (ratio >= .85) add("alert", "var(--warning)", "Cerca del límite", `Has gastado el ${pct(ratio)} del presupuesto variable.`);
+  if (m.cfg && m.modo === "Importe" && n(m.cfg.Importe_Ahorro) > m.margen + 0.005)
+    add("save", "var(--warning)", "El ahorro supera lo que queda", `Objetivo de ${eur(n(m.cfg.Importe_Ahorro))}; tras fijos y deudas quedan ${eur(m.margen)}, y se usa eso.`);
   const rec = m.cfg ? recurHint(S.period) : "";
   if (S.data.meta?.locked) add("lock", "var(--muted)", "El Excel está abierto", "Ciérralo para guardar cambios desde aquí.");
   if (rec) add("fixed", "var(--cat-fij)", "Faltan apuntes recurrentes", `Del mes anterior: ${rec}.`, `<button class="link" type="button" data-recur="${esc(S.period)}">Copiar ahora</button>`);

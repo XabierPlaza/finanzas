@@ -47,7 +47,7 @@
     "Reglas:",
     " • Periodo con formato AAAA-MM (p. ej. 2026-10).",
     " • Ingresos del mes = Nómina + ingresos extra de ese periodo.",
-    " • Ahorro objetivo = Ingresos × Pct_Ahorro (modo Porcentaje) o Importe_Ahorro en € (modo Importe).",
+    " • Ahorro objetivo = (Ingresos − Gastos fijos − Pagos de deudas) × Pct_Ahorro (modo Porcentaje) o Importe_Ahorro en € (modo Importe), sin superar esa cantidad.",
     " • Presupuesto de gastos variables = Ingresos − Fijos − Ahorro objetivo − Pagos de deudas.",
     " • Al crear un mes nuevo desde el dashboard se copian los gastos fijos y el ahorro/inversión del último mes.",
     " • En 'Pago de Deudas', si indicas el ID_Deuda, ese pago se suma al 'Total pagado' de la deuda.",
