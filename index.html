@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-6xKKz1mi92aAhHP909dc/mvcvD/PeAWpsLSVUs4qbPA=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-jGjyfo3updMjR47o6eJt6eEK6as1KlIuta8kOlalTL4=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -805,7 +805,7 @@ function renderSummary(m) {
     const inp = Object.assign(document.createElement("input"), { className: "edit-num", inputMode: "decimal", value: eur(m.nomina) });
     inp.setAttribute("aria-label", "Nómina");
     cell.replaceWith(inp);
-    bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }, "Nómina guardada"), () => {});
+    bindEdit(inp, () => eur(m.nomina), v => saveField("periodos", S.period, { "Nómina": v }), () => {});
     inp.focus();
   });
   // 2 · gastos fijos (y, si los hay, los pagos de deudas, que van antes del ahorro)
@@ -876,8 +876,8 @@ function renderSaving(m) {
   fit(); inp.addEventListener("input", fit);
   range.addEventListener("input", () => { S.editing = true; inp.value = dec(+range.value); fit(); preview(+range.value); });
   const toStore = v => isPct ? Math.min(100, v) / 100 : v;  // el % se guarda como fracción (60,2 % → 0,602)
-  range.addEventListener("change", () => saveField("periodos", S.period, { [field]: toStore(+range.value) }, "Objetivo de ahorro guardado"));
-  bindEdit(inp, () => dec(val), v => saveField("periodos", S.period, { [field]: toStore(v) }, "Objetivo de ahorro guardado"),
+  range.addEventListener("change", () => saveField("periodos", S.period, { [field]: toStore(+range.value) }));
+  bindEdit(inp, () => dec(val), v => saveField("periodos", S.period, { [field]: toStore(v) }),
     v => { range.value = v; preview(v); });
   $("saving").querySelectorAll("[data-modo]").forEach(b => b.addEventListener("click", () => {
     if (b.dataset.modo === m.modo) return;
@@ -886,12 +886,13 @@ function renderSaving(m) {
     // al volver a € se conserva el importe guardado si equivale al %: el % redondeado no debe convertir 900 € en 899,73 €
     if (b.dataset.modo === "Importe") { const prev = n(m.cfg?.Importe_Ahorro); if (!(prev && Math.abs(prev - m.ahorro) < 0.5)) campos.Importe_Ahorro = Math.round(m.ahorro * 100) / 100; }
     else campos.Pct_Ahorro = m.ingresos ? Math.round(m.ahorro / m.ingresos * 1e6) / 1e6 : 0;
-    saveField("periodos", S.period, campos, b.dataset.modo === "Importe" ? "Ahorro como cantidad fija en €" : "Ahorro como % de los ingresos");
+    saveField("periodos", S.period, campos);
   }));
 }
-async function saveField(tabla, id, campos, okMsg = "Guardado") {
+// ajustes en línea (nómina, ahorro, % / €): se guardan sin aviso; solo se avisa si hay un error
+async function saveField(tabla, id, campos) {
   S.editing = true;
-  try { await api("/api/actualizar", { tabla, id, campos }); toast(okMsg); }
+  try { await api("/api/actualizar", { tabla, id, campos }); }
   catch (e) { toast(e.message, "err"); }
   finally { S.editing = false; await load(); }
 }
@@ -1153,12 +1154,12 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
     try {
       if (id) {
         if (tabla === "periodos") delete body.Periodo;
-        await api("/api/actualizar", { tabla, id, campos: body }); toast("Cambios guardados");
+        await api("/api/actualizar", { tabla, id, campos: body });
       } else {
         if (f.elements["copiar_fijos"]) { body.copiar_fijos = f.elements["copiar_fijos"].checked; body.copiar_ahorro = f.elements["copiar_ahorro"].checked; }
         const r = await api(f.dataset.new, body);
         if (tabla === "periodos") { S.period = r.registro.Periodo; toast(`Mes creado${r.registro.copiados ? ` con ${r.registro.copiados} apunte${r.registro.copiados === 1 ? "" : "s"} copiado${r.registro.copiados === 1 ? "" : "s"}` : ""}`); }
-        else toast("Guardado");
+        else toast("Añadido");
       }
       f.closest("dialog").close(); await load();
     } catch (ex) { f.querySelector(".err").textContent = ex.message; }
