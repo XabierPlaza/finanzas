@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Ro0vPvxAE+t2yc7y47NfYNtIJVkTjJwbvyUdhSJE0cY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-PQjatjubhO0nxn/RDNqX9S7Kelb8jDfnHigzOMjpqYs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -894,7 +894,8 @@ function renderSummary(m) {
   renderSaving(m);
 }
 // color de la barra de lo gastado: avisa a medida que se acaba el presupuesto
-const barColor = r => r >= 1 ? "var(--critical)" : r >= .85 ? "color-mix(in srgb, var(--warning) 45%, var(--critical))" : r >= .6 ? "var(--warning)" : "var(--cat-var)";
+// color de la barra según lo consumido: azul (mucho margen) → verde (gasto controlado) → naranja (precaución) → rojo (agotado)
+const barColor = r => r >= 1 ? "var(--critical)" : r >= .85 ? "color-mix(in srgb, var(--warning) 45%, var(--critical))" : r >= .6 ? "var(--warning)" : r >= .35 ? "var(--good)" : "var(--cat-var)";
 // 4 · gastos variables: lo que queda, lo gastado y lo disponible
 function renderVar(m) {
   const disp = m.variable - m.gastado;
