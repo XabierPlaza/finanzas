@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-LXoM1830v2KCulHGWIEVUJqex7Asg4gWW7H5+d7mIWI=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Irs8A++yYAi5w6mDZkKMxuElTfOuKBuH1q7C5qcae5U=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -23,6 +23,9 @@
   --bar: #ffffff; --kpi-border: transparent;
   --navy-1: #1f4e8c; --navy-2: #2f68b0; --dim: .3; --backdrop: rgba(15,30,60,.35);
   --c1: #2a78d6; --c2: #008300; --c3: #e34948; --c4: #eda100;
+  /* colores por categoría, como un semáforo: fijos = alto (rojo), deudas = precaución (ámbar),
+     ahorro = aparcado para el futuro (azul), variables = vía libre (verde). Siguen al modo oscuro. */
+  --cat-fij: var(--c3); --cat-deb: var(--c4); --cat-aho: var(--c1); --cat-var: var(--c2);
   --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
 }
 @media (prefers-color-scheme: dark) {
@@ -216,7 +219,7 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .hero .big { font-size: clamp(40px, 7vw, 60px); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin: 4px 0 14px; color: var(--accent); }
 .hero .big.neg { color: var(--critical); }
 .hero-bar { height: 10px; border-radius: 5px; background: var(--soft); overflow: hidden; }
-.hero-bar div { height: 100%; border-radius: 5px; background: var(--c4); transition: width .4s; }
+.hero-bar div { height: 100%; border-radius: 5px; background: var(--cat-var); transition: width .4s; }
 .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
 .hero-stats div { background: var(--soft); border-radius: 9px; padding: 9px 12px; font-size: 12.5px; color: var(--ink-2); }
 .hero-stats b { display: block; color: var(--ink); font-size: 16px; font-weight: 650; margin-top: 1px; }
@@ -546,11 +549,11 @@ dialog .btn.danger { padding-left: 0; }
   <!-- el tipo lo fija el botón que abre el formulario (o el apunte que se edita): no se muestra ni se cambia aquí -->
   <label class="fld" hidden>Tipo<select id="movType">
     <option value="Ingreso extra" data-color="var(--accent)">Ingreso extra</option>
-    <option value="Gastos Fijos" data-color="var(--c1)">Gasto fijo</option>
-    <option value="Pago de Deudas" data-color="var(--c3)">Pago de deuda</option>
-    <option value="Ahorro e Inversión" data-color="var(--c2)">Ahorro e inversión</option>
-    <option value="Gastos Variables" data-color="var(--c4)">Gasto variable</option>
-    <option value="Deuda" data-color="var(--c3)">Nueva deuda</option>
+    <option value="Gastos Fijos" data-color="var(--cat-fij)">Gasto fijo</option>
+    <option value="Pago de Deudas" data-color="var(--cat-deb)">Pago de deuda</option>
+    <option value="Ahorro e Inversión" data-color="var(--cat-aho)">Ahorro e inversión</option>
+    <option value="Gastos Variables" data-color="var(--cat-var)">Gasto variable</option>
+    <option value="Deuda" data-color="var(--cat-deb)">Nueva deuda</option>
   </select></label>
   <input type="hidden" name="Categoría">
   <div class="f2">
@@ -605,7 +608,7 @@ dialog .btn.danger { padding-left: 0; }
 <script>
 "use strict";
 const CATS = ["Pago de Deudas", "Ahorro e Inversión", "Gastos Fijos", "Gastos Variables"];
-const CAT_VAR = { "Gastos Fijos": "--c1", "Ahorro e Inversión": "--c2", "Pago de Deudas": "--c3", "Gastos Variables": "--c4" };
+const CAT_VAR = { "Gastos Fijos": "--cat-fij", "Pago de Deudas": "--cat-deb", "Ahorro e Inversión": "--cat-aho", "Gastos Variables": "--cat-var" };
 const KEY = { periodos: "Periodo", ingresos: "ID", movimientos: "ID", deudas: "ID_Deuda" };
 const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 const fEur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", useGrouping: "always" });
@@ -955,7 +958,7 @@ function renderDebts() {
   <tbody>${rows.length ? rows.map(x => `<tr data-edit="deudas" data-id="${esc(x.ID_Deuda)}">
     <td>${esc(x.Acreedor)}</td><td>${esc(x.Descripción)}</td><td class="num">${eur(x.total)}</td>
     <td class="num" title="Previo ${eur(x.Pagado_Previo)} + pagos vinculados ${eur(x.linked)}">${eur(x.pagado)}</td><td class="num">${eur(x.rest)}</td>
-    <td><span class="prog"><div style="width:${x.prog * 100}%;background:${x.paid ? "var(--good)" : "var(--c3)"}"></div></span> <span class="muted num" style="font-size:12px">${pct(x.prog)}</span></td>
+    <td><span class="prog"><div style="width:${x.prog * 100}%;background:${x.paid ? "var(--good)" : "var(--cat-deb)"}"></div></span> <span class="muted num" style="font-size:12px">${pct(x.prog)}</span></td>
     <td><span class="state">${x.paid ? ICON.ok + "Pagada" : ICON.pend + "Pendiente"}</span></td><td>${esc(x.Mes_Cuota_Final || "—")}</td><td style="text-align:right">${x.paid ? "" : `<button class="btn mini" type="button" data-pay="${esc(x.ID_Deuda)}">Pagar</button>`}</td></tr>`).join("")
     : `<tr><td colspan="9" class="empty">No hay deudas para este filtro.</td></tr>`}</tbody>
   <tfoot><tr><td colspan="2">Total (${rows.length})</td><td class="num">${eur(t.t)}</td><td class="num">${eur(t.p)}</td><td class="num">${eur(t.r)}</td><td colspan="4"></td></tr></tfoot>`;
@@ -993,7 +996,7 @@ function renderNotices(m) {
   else if (ratio >= .85) add("alert", "var(--warning)", "Cerca del límite", `Has gastado el ${pct(ratio)} del presupuesto variable.`);
   const rec = m.cfg ? recurHint(S.period) : "";
   if (S.data.meta?.locked) add("lock", "var(--muted)", "El Excel está abierto", "Ciérralo para guardar cambios desde aquí.");
-  if (rec) add("fixed", "var(--c1)", "Faltan apuntes recurrentes", `Del mes anterior: ${rec}.`, `<button class="link" type="button" data-recur="${esc(S.period)}">Copiar ahora</button>`);
+  if (rec) add("fixed", "var(--cat-fij)", "Faltan apuntes recurrentes", `Del mes anterior: ${rec}.`, `<button class="link" type="button" data-recur="${esc(S.period)}">Copiar ahora</button>`);
   $("newsSide").classList.toggle("empty", !list.length); $("newsMob").classList.toggle("empty", !list.length);
   $("notices").innerHTML = $("noticesM").innerHTML = list.slice(0, 3).map(x => `<div class="news-item">
       <span class="th" style="background:color-mix(in srgb, ${x.color} 16%, var(--surface));color:${x.color}"><svg viewBox="0 0 24 24" aria-hidden="true">${NI[x.ic]}</svg></span>
