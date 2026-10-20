@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-PQjatjubhO0nxn/RDNqX9S7Kelb8jDfnHigzOMjpqYs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JfUn7Q6pnQgL5poY8nWgkgS+RP8A/he6w0sVwIyKFuY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -433,7 +433,7 @@ dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; lin
 .fld { display: grid; gap: 6px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
 .fld input, .fld select, .fld textarea { border: 1px solid var(--border); background: var(--surface); padding: 0 14px; height: var(--fld-h); border-radius: var(--r-in); font-size: 15px; color: var(--ink); min-width: 0; font-weight: 400; transition: border-color .12s, box-shadow .12s; }
 .fld input:hover, .fld textarea:hover { border-color: var(--axis); }
-.fld textarea { font: inherit; font-size: 14.5px; line-height: 1.5; resize: vertical; height: auto; min-height: 72px; padding: 10px 14px; }
+.fld textarea { font: inherit; font-weight: 400; font-size: 14.5px; line-height: 1.5; resize: vertical; height: auto; min-height: 72px; padding: 10px 14px; }
 .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--tint); }
 .f2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--dlg-gap); }
 @media (max-width: 560px) { .f2 { grid-template-columns: 1fr; } }
@@ -463,7 +463,7 @@ dialog .btn.danger { padding-left: 0; }
 .err { color: var(--critical); font-size: 13px; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
-.pay-mode .pay-hide { display: none !important; }
+.pay-mode .pay-hide, .actions [hidden] { display: none !important; }
 .fld input[readonly], .fld textarea[readonly] { background: var(--soft); border-color: transparent; color: var(--ink-2); cursor: default; }
 .fld input[readonly]:hover { border-color: transparent; }
 .fld input[readonly]:focus { box-shadow: none; border-color: transparent; }
@@ -639,7 +639,7 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
   <label class="fld pay-hide">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <p class="hint" data-show="Deuda">Lo pagado se calcula solo: cada pago que apuntes con «Pagar» (o eligiendo esta deuda al añadir un pago) se suma aquí.</p>
   <div class="err"></div>
-  <div class="actions"><button class="btn danger" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div>
+  <div class="actions"><button class="btn danger" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" type="button" data-reopen hidden>Reabrir deuda</button><button class="btn primary" value="ok">Guardar</button></div>
 </form></dialog>
 
 <dialog id="dlg-datos" tabindex="-1"><form method="dialog" class="plain">
@@ -1176,6 +1176,8 @@ function openDialog(kind, opts = {}) {
     $("credSel").closest(".dd").hidden = pay;
     f.elements["Importe"].placeholder = x && !x.paid ? `Quedan ${eur(x.rest)}` : "0,00";
     if (!rec && type === "Ahorro e Inversión") { const mm = month(S.period), libre = mm.ahorro - mm.ahorroReal; if (mm.cfg) f.elements["Importe"].placeholder = libre > 0.005 ? `Quedan ${eur(libre)} por asignar` : "Objetivo ya asignado"; }
+    const debtRec = rec && tabla === "deudas" ? debts().find(d => d.ID_Deuda === opts.id) : null;
+    lockDebt(f, !!debtRec?.paid);
     if (x) { fillDebtHist(x.ID_Deuda); $("debtHist").hidden = false; f.querySelector("h3").textContent = `Pagar ${x.Descripción}`; $("lblImporte").textContent = "A pagar este mes (€)"; }
   }
   if (kind === "per") { syncPerForm(f); if (rec) updateRecurEdit(opts.id); }
@@ -1183,6 +1185,17 @@ function openDialog(kind, opts = {}) {
   dlg.showModal(); dlg.focus(); dlg.querySelector("form").scrollTop = 0;
 }
 // historial de una deuda: cada pago vinculado con su mes, lo apuntado antes de usar la app y lo que queda
+// deuda ya pagada: el formulario se abre en solo lectura y «Reabrir deuda» ocupa el sitio de «Guardar»
+function lockDebt(f, on) {
+  ["Importe", "Notas"].forEach(k => f.elements[k].readOnly = on);
+  if (on) {
+    ["Concepto", "Acreedor"].forEach(k => f.elements[k].readOnly = true);
+    f.elements["Acreedor"].hidden = false; $("credSel").closest(".dd").hidden = true;
+    f.querySelector("h3").textContent = "Deuda pagada";
+  }
+  f.querySelector('button[value="ok"]').hidden = on;
+  f.querySelector("[data-reopen]").hidden = !on;
+}
 function fillDebtHist(id) {
   const box = $("debtHist"), x = id ? debts().find(d => d.ID_Deuda === id) : null;
   if (!x) { box.innerHTML = ""; return; }
@@ -1324,6 +1337,11 @@ document.querySelectorAll("dialog form[data-tabla]").forEach(f => {
   });
 });
 const movForm = document.querySelector("#dlg-mov form"), perForm = document.querySelector("#dlg-per form");
+movForm.querySelector("[data-reopen]").addEventListener("click", () => {
+  ["Concepto", "Acreedor"].forEach(k => movForm.elements[k].readOnly = false);
+  lockDebt(movForm, false); syncCred(true); $("credSel").closest(".dd").hidden = false;
+  movForm.querySelector("h3").textContent = "Editar deuda"; movForm.elements["Concepto"].focus();
+});
 // Acreedor: se elige de los que ya hay; «Otro…» muestra un campo para escribir uno nuevo
 function syncCred(fromText) {
   const sel = $("credSel"), inp = movForm.elements["Acreedor"], known = [...sel.options].some(o => o.value && o.value !== "__otro" && o.value === inp.value);
