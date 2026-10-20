@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-JfUn7Q6pnQgL5poY8nWgkgS+RP8A/he6w0sVwIyKFuY=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OiUa/XBCgsBAeNEyw4AQDOHq68WodQbkepzyzd+k4xE=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -96,6 +96,7 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .tm-sep { height: 1px; background: var(--line); margin: 5px 4px; }
 .tm-theme { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 6px 6px 10px; font-size: 14px; color: var(--ink); }
 .tm-theme-l { display: flex; align-items: center; gap: 10px; }
+.tm-fab { display: none; }  /* el ajuste del botón «+» solo tiene sentido en el móvil */
 .tm-status { margin: 4px 10px 4px; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
 .tm-status:empty { display: none; }
 .ghost { border: 0; background: none; padding: 7px 10px; border-radius: 8px; color: var(--ink-2); font-size: 13.5px; display: inline-flex; align-items: center; gap: 7px; }
@@ -520,6 +521,25 @@ dialog .fld :is(input, select, textarea), dialog .dd-fld .dd-btn, dialog .ds, di
 dialog .fld :is(input, textarea)[readonly] { background: var(--dlg-ro); }
 dialog .actions .btn:not(.primary):not(.danger) { background: var(--dlg-body); }
 dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft); }
+/* Botón «+» único (ajuste del Excel): solo en el móvil; oculta los «+ Añadir…» de las secciones */
+#fab { display: none; }
+#fab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+@media (max-width: 760px) {
+  .tm-fab { display: flex; }
+  body.fab-on #fab { display: grid; place-items: center; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 50;
+                     width: 56px; height: 56px; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+                     box-shadow: 0 6px 18px rgba(15, 30, 60, .3); cursor: pointer; transition: background-color .18s, transform .15s; }
+  body.fab-on #fab:hover { background: var(--accent-2); }
+  body.fab-on #fab:active { transform: scale(.94); }
+  body.fab-on .add-btn { display: none !important; }
+  body.fab-on main { padding-bottom: 88px; }
+}
+.tipo-list { display: grid; gap: 8px; }
+.tipo-list button { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 12px 0 14px; border: 1px solid var(--border); border-radius: var(--r-in);
+                    background: var(--dlg-fld); color: var(--ink); font-size: 15px; font-weight: 500; text-align: left; }
+.tipo-list button:hover { background: var(--soft); }
+.tipo-list .sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.tipo-list .chev { width: 18px; height: 18px; margin-left: auto; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 </style>
 </head>
 <body>
@@ -542,6 +562,8 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
         <div class="tm-sep" role="separator"></div>
         <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>Tema</span>
           <span class="switch" role="group" aria-label="Tema" id="themeSeg"><button type="button" data-tema="auto" title="Según el móvil o el navegador">Auto</button><button type="button" data-tema="light">Claro</button><button type="button" data-tema="dark">Oscuro</button></span></div>
+        <div class="tm-theme tm-fab"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg>Botón «+» único</span>
+          <span class="switch" role="group" aria-label="Botón flotante" id="fabSeg"><button type="button" data-fab="No">No</button><button type="button" data-fab="Sí">Sí</button></span></div>
         <p class="tm-status" id="tmStatus"></p>
       </div>
     </div>
@@ -610,6 +632,7 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
 
 
 </main>
+<button type="button" id="fab" aria-label="Añadir movimiento" title="Añadir movimiento"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </div>
 
 <div id="tip" role="tooltip"></div>
@@ -642,6 +665,11 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
   <div class="actions"><button class="btn danger" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" type="button" data-reopen hidden>Reabrir deuda</button><button class="btn primary" value="ok">Guardar</button></div>
 </form></dialog>
 
+<dialog id="dlg-tipo" tabindex="-1"><form method="dialog" class="plain">
+  <h3>¿Qué quieres añadir?</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="tipo-list" id="tipoList"></div>
+  <div class="actions"><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button></div>
+</form></dialog>
 <dialog id="dlg-datos" tabindex="-1"><form method="dialog" class="plain">
   <h3>Datos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div id="datosBody" style="display:grid;gap:14px"></div>
@@ -803,7 +831,36 @@ function render() {
   const m = month(S.period);
   renderPeriod(); renderSummary(m); renderDonut(m);
   renderTrend(); renderDebts(); renderNotices(m); renderFooter(); fillForms(); syncSelects(); window.navSpy?.();
+  renderFab();
 }
+// Ajuste «botón + único» (hoja Ajustes del Excel): en el móvil, un botón flotante sustituye a los «+ Añadir…» de las secciones
+const fabOn = () => (S.data?.ajustes || []).some(a => a.Clave === "boton_flotante" && a.Valor === "Sí");
+function renderFab() {
+  const on = fabOn();
+  document.body.classList.toggle("fab-on", on);
+  $("fabSeg").querySelectorAll("[data-fab]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.fab === "Sí") === on)));
+}
+$("fabSeg").addEventListener("click", async e => {
+  const b = e.target.closest("[data-fab]");
+  if (!b || b.getAttribute("aria-pressed") === "true") return;
+  try { await api("/api/ajuste", { clave: "boton_flotante", valor: b.dataset.fab }); toast(b.dataset.fab === "Sí" ? "Botón «+» activado" : "Botón «+» desactivado"); await load(); }
+  catch (err) { toast(err.message, "err"); }
+});
+// el «+» abre una ventana para elegir el tipo y luego el formulario de siempre
+const TIPOS = [["Ingreso extra", "Ingreso extra", "var(--accent)"], ["Gastos Fijos", "Gasto fijo", "var(--cat-fij)"],
+  ["Pago de Deudas", "Pago de deuda", "var(--cat-deb)"], ["Ahorro e Inversión", "Aportación de ahorro o inversión", "var(--cat-aho)"],
+  ["Gastos Variables", "Gasto variable", "var(--cat-var)"], ["Deuda", "Nueva deuda", "var(--cat-deb)"]];
+$("fab").addEventListener("click", () => {
+  if (!S.data) return;
+  const hayDeudas = debts().some(x => !x.paid);
+  $("tipoList").innerHTML = TIPOS.filter(([cat]) => cat !== "Pago de Deudas" || hayDeudas)
+    .map(([cat, label, color]) => `<button type="button" data-tipo="${esc(cat)}"><span class="sw" style="background:${color}"></span>${esc(label)}<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>`).join("");
+  const d = $("dlg-tipo"); d.showModal(); d.focus();
+});
+$("tipoList").addEventListener("click", e => {
+  const b = e.target.closest("[data-tipo]"); if (!b) return;
+  $("dlg-tipo").close(); openDialog("mov", { cat: b.dataset.tipo });
+});
 function renderPeriod() {
   const ps = periods(), i = ps.indexOf(S.period);
   $("periodSel").innerHTML = ps.map(p => `<option value="${esc(p)}"${p === S.period ? " selected" : ""}>${esc(perName(p))}</option>`).join("") +
@@ -1486,7 +1543,7 @@ function setMenu(open) {
   }
 }
 btnMenu.onclick = e => { e.stopPropagation(); setMenu(topMenu.hidden); };
-topMenu.addEventListener("click", e => { if (e.target.closest("button") && !e.target.closest("[data-tema]")) setMenu(false); });
+topMenu.addEventListener("click", e => { if (e.target.closest("button") && !e.target.closest("[data-tema], [data-fab]")) setMenu(false); });
 document.addEventListener("click", e => { if (!topMenu.hidden && !e.target.closest(".nav-right")) setMenu(false); });
 document.addEventListener("keydown", e => {
   if (topMenu.hidden) return;

@@ -31,7 +31,11 @@
     deudas: { sheet: "Deudas", table: "tDeudas", key: "ID_Deuda", id: ["D", 3],
       headers: ["ID_Deuda", "Acreedor", "Descripción", "Importe_Total", "Pagado_Previo", "Mes_Cuota_Final", "Notas"],
       widths: [11, 14, 42, 15, 15, 17, 55], formats: { Importe_Total: EUR_FMT, Pagado_Previo: EUR_FMT } },
+    ajustes: { sheet: "Ajustes", table: "tAjustes", key: "Clave",
+      headers: ["Clave", "Valor"], widths: [22, 12], formats: {} },
   };
+  // opciones de la app guardadas en el Excel (valen para todos los dispositivos); igual que AJUSTES en app.py
+  const AJUSTES = { boton_flotante: ["Sí", "No"] };
   const NUMERIC = new Set(["Nómina", "Pct_Ahorro", "Importe_Ahorro", "Importe", "Importe_Total", "Pagado_Previo", "Año"]);
   const INSTRUCCIONES = [
     "",
@@ -43,6 +47,7 @@
     "Movimientos  → importes del mes: gastos fijos, ahorro, pagos de deudas y gastos variables.",
     "Deudas       → registro de deudas. 'Pagado_Previo' es lo pagado antes de usar esta base de datos.",
     "Listas       → valores permitidos para los desplegables (categorías, meses, acreedores).",
+    "Ajustes      → opciones de la app (p. ej. boton_flotante = Sí/No: botón «+» único en el móvil).",
     "",
     "Reglas:",
     " • Periodo con formato AAAA-MM (p. ej. 2026-10).",
@@ -96,7 +101,7 @@
   };
 
   /* ------------------------------------------------------------ modelo */
-  const emptyModel = () => ({ periodos: [], ingresos: [], movimientos: [], deudas: [], extra: {}, updated: 0, name: DB_NAME });
+  const emptyModel = () => ({ periodos: [], ingresos: [], movimientos: [], deudas: [], ajustes: [], extra: {}, updated: 0, name: DB_NAME });
   let model = emptyModel();
   let pending = [];          // operaciones aún no subidas a Google Drive (las usa drive.js)
   const listeners = new Set();
@@ -176,6 +181,14 @@
       Object.assign(m[tabla][i], changes);
       return { [SHEETS[tabla].key]: String(p.id), ...changes };
     },
+    "/api/ajuste": (m, p) => {
+      const { clave, valor } = p;
+      if (!AJUSTES[clave]?.includes(valor)) throw new UserError("Ajuste no válido.");
+      m.ajustes ||= [];
+      const r = m.ajustes.find(a => a.Clave === clave);
+      if (r) r.Valor = valor; else m.ajustes.push({ Clave: clave, Valor: valor });
+      return { Clave: clave, Valor: valor };
+    },
     "/api/borrar": (m, p) => {
       const tabla = p.tabla, i = find(m, tabla, p.id), id = String(p.id);
       m[tabla].splice(i, 1);
@@ -233,7 +246,7 @@
     await ensureLoaded();
     if (body === undefined) {
       if (path === "/api/version") return meta();
-      if (path === "/api/data") return { meta: meta(), ...clone({ periodos: model.periodos, ingresos: model.ingresos, movimientos: model.movimientos, deudas: model.deudas }) };
+      if (path === "/api/data") return { meta: meta(), ...clone({ periodos: model.periodos, ingresos: model.ingresos, movimientos: model.movimientos, deudas: model.deudas, ajustes: model.ajustes || [] }) };
       throw new Error("No encontrado");
     }
     if (path === "/api/abrir-excel") { await downloadExcel(); return { ok: true }; }
@@ -336,7 +349,7 @@
     for (const [tabla, def] of Object.entries(SHEETS)) {
       const ws = wb.addWorksheet(def.sheet, { views: [{ state: "frozen", ySplit: 1 }] });
       const headers = [...def.headers, ...(m.extra?.[tabla] || [])];
-      const rows = m[tabla].map(r => headers.map(h => r[h] ?? null));
+      const rows = (m[tabla] || []).map(r => headers.map(h => r[h] ?? null));  // modelos antiguos sin «ajustes»
       ws.addTable({ name: def.table, ref: "A1", headerRow: true, totalsRow: false,
         style: { theme: "TableStyleMedium2", showRowStripes: true },
         columns: headers.map(h => ({ name: h, filterButton: true })),
