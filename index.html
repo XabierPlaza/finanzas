@@ -162,6 +162,7 @@ main > :first-child { margin-top: 0; }
 @media (min-width: 761px) {
   .mes-cards > .card { display: flex; flex-direction: column; }
   .mes-cards #savList, .mes-cards .var-list { display: contents; }
+  .mes-cards :is(#savList, .var-list) > :first-child { margin-top: 14px; }  /* el margen de la lista se pierde con display: contents */
   .mes-cards .btn.add-btn { margin-top: auto; align-self: flex-start; }
   .mes-cards .card *:has(+ .add-btn) { margin-bottom: 16px; }
 }
@@ -222,7 +223,7 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .hero-bar { height: 10px; border-radius: 5px; background: var(--soft); overflow: hidden; }
 .hero-bar div { height: 100%; border-radius: 5px; background: var(--cat-var); transition: width .4s; }
 .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
-.hero-stats div { background: var(--soft); border-radius: 9px; padding: 9px 12px; font-size: 12.5px; color: var(--ink-2); }
+.hero-stats div { background: var(--soft); border-radius: 6px; padding: 9px 12px; font-size: 12.5px; color: var(--ink-2); }
 .hero-stats b { display: block; color: var(--ink); font-size: 16px; font-weight: 650; margin-top: 1px; }
 .notice { display: inline-flex; gap: 8px; align-items: center; margin-top: 14px; font-size: 13.5px; color: var(--ink-2); background: var(--tint); padding: 7px 12px; border-radius: 8px; }
 
