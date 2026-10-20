@@ -25,6 +25,7 @@
   --ink: #14213d; --ink-2: #4a5568; --muted: #8a94a6; --line: #e6ebf2; --axis: #c5cedb;
   --border: #e3e8f0; --accent: #1f4e8c; --accent-2: #2d65ad; --accent-ink: #ffffff;
   --bar: #ffffff; --kpi-border: transparent;
+  --dlg-head: linear-gradient(135deg, var(--navy-1), var(--navy-2)); --dlg-body: var(--surface); --dlg-foot: var(--soft); --dlg-fld: var(--surface); --dlg-ro: var(--soft);  /* ventanas */
   --navy-1: #1f4e8c; --navy-2: #2f68b0; --dim: .3; --backdrop: rgba(15,30,60,.35);
   --c1: #2a78d6; --c2: #008300; --c3: #e34948; --c4: #eda100;
   /* colores por categoría, en el orden de la nómina: fijos = alto (rojo), deudas = precaución (ámbar),
@@ -38,6 +39,7 @@
     --page: #23252d; --bar: #18191f; --surface: #353a47; --soft: #3e4352; --tint: #3a4669;
     --ink: #ffffff; --ink-2: #d6d8e0; --muted: #a6aab8; --line: #474c5a; --axis: #626878;
     --border: #444a59; --accent: #84a7ff; --accent-2: #a3bdff; --accent-ink: #10183a;
+    --dlg-head: #262a33; --dlg-body: #3c4150; --dlg-foot: #2c3039; --dlg-fld: #323643; --dlg-ro: #2f333e;
     --navy-1: #353a47; --navy-2: #3b4150; --kpi-border: #444a59; --dim: .42; --backdrop: rgba(8,9,14,.68);
     --c1: #4f93ef; --c2: #1f9d6e; --c3: #e85d6d; --c4: #c08a1a;
     --good: #2fb27f; --warning: #d9a22c; --critical: #ef6b78;
@@ -48,7 +50,8 @@
   --page: #23252d; --bar: #18191f; --surface: #353a47; --soft: #3e4352; --tint: #3a4669;
   --ink: #ffffff; --ink-2: #d6d8e0; --muted: #a6aab8; --line: #474c5a; --axis: #626878;
   --border: #444a59; --accent: #84a7ff; --accent-2: #a3bdff; --accent-ink: #10183a;
-  --navy-1: #353a47; --navy-2: #3b4150; --kpi-border: #444a59; --dim: .42; --backdrop: rgba(8,9,14,.68);
+  --dlg-head: #262a33; --dlg-body: #3c4150; --dlg-foot: #2c3039; --dlg-fld: #323643; --dlg-ro: #2f333e;
+    --navy-1: #353a47; --navy-2: #3b4150; --kpi-border: #444a59; --dim: .42; --backdrop: rgba(8,9,14,.68);
   --c1: #4f93ef; --c2: #1f9d6e; --c3: #e85d6d; --c4: #c08a1a;
   --good: #2fb27f; --warning: #d9a22c; --critical: #ef6b78;
 }
@@ -397,7 +400,7 @@ tbody tr:hover .prog { background: var(--surface); }
 #errorBox { display: none; margin-top: 16px; padding: 14px 18px; border-radius: 12px; background: color-mix(in srgb, var(--critical) 10%, var(--surface)); font-size: 14px; }
 
 /* diálogos */
-dialog { border: 0; outline: none; border-radius: var(--r-card); padding: 0; background: var(--surface); color: var(--ink); width: min(560px, calc(100% - 32px)); max-width: none; max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); overflow: hidden; box-shadow: 0 20px 60px rgba(15,30,60,.25); }
+dialog { border: 0; outline: none; border-radius: var(--r-card); padding: 0; background: var(--dlg-body); color: var(--ink); width: min(560px, calc(100% - 32px)); max-width: none; max-height: calc(100vh - 40px); max-height: calc(100dvh - 40px); overflow: hidden; box-shadow: 0 20px 60px rgba(15,30,60,.25); }
 /* el contenido se desplaza dentro; título (con la X) y botones quedan siempre a la vista */
 dialog[open] { display: flex; flex-direction: column; }
 dialog > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
@@ -425,7 +428,7 @@ dialog form > h3 { margin-bottom: calc(var(--dlg-pad) - var(--dlg-gap)); }
   /* campos de fecha/mes: en iOS tienen un ancho propio que se sale de la columna */
   .fld input[type="month"], .fld input[type="date"] { -webkit-appearance: none; appearance: none; width: 100%; display: block; line-height: var(--fld-h); text-align: left; }
 }
-dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; line-height: 22px; padding: 18px calc(var(--dlg-pad) + 44px) 18px var(--dlg-pad); background: linear-gradient(135deg, var(--navy-1), var(--navy-2)); color: #fff; border-radius: var(--r-card) var(--r-card) 0 0; }
+dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; line-height: 22px; padding: 18px calc(var(--dlg-pad) + 44px) 18px var(--dlg-pad); background: var(--dlg-head); color: #fff; border-radius: var(--r-card) var(--r-card) 0 0; }
 .fld { display: grid; gap: 6px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; }
 .fld input, .fld select, .fld textarea { border: 1px solid var(--border); background: var(--surface); padding: 0 14px; height: var(--fld-h); border-radius: var(--r-in); font-size: 15px; color: var(--ink); min-width: 0; font-weight: 400; transition: border-color .12s, box-shadow .12s; }
 .fld input:hover, .fld textarea:hover { border-color: var(--axis); }
@@ -439,7 +442,7 @@ dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; lin
 .check input { width: 17px; height: 17px; accent-color: var(--accent); }
 .actions { display: flex; gap: 10px; margin-top: 4px; align-items: center; }
 /* pie del formulario: franja separada con las acciones */
-dialog form > .actions { margin: calc(var(--dlg-pad) - var(--dlg-gap)) 0 0; padding: 14px var(--dlg-pad); border-top: 1px solid var(--border); background: var(--soft); border-radius: 0 0 var(--r-card) var(--r-card); }
+dialog form > .actions { margin: calc(var(--dlg-pad) - var(--dlg-gap)) 0 0; padding: 14px var(--dlg-pad); border-top: 1px solid var(--border); background: var(--dlg-foot); border-radius: 0 0 var(--r-card) var(--r-card); }
 dialog .btn { min-height: var(--fld-h); padding: 0 20px; font-weight: 600; border-radius: var(--r-in); }
 dialog .btn.danger { padding-left: 0; }
 .dlg-x { position: absolute; top: 11px; right: calc(var(--dlg-pad) - 9px); margin: 0 !important; width: 36px; height: 36px; border: 0; border-radius: var(--r-in); background: transparent; color: #fff; display: grid; place-items: center; opacity: .85; }
@@ -512,6 +515,11 @@ dialog .btn.danger { padding-left: 0; }
 @media (pointer: coarse), (max-width: 560px) {
   .fld input, .fld select, .fld textarea, .edit-num, .inp, .sel, .dd-fld .dd-btn { font-size: 16px; }
 }
+/* fondos dentro de las ventanas (en claro coinciden con los de siempre; en oscuro, capas para separar cabecera, cuerpo y pie) */
+dialog .fld :is(input, select, textarea), dialog .dd-fld .dd-btn, dialog .ds, dialog .debt-hist { background: var(--dlg-fld); }
+dialog .fld :is(input, textarea)[readonly] { background: var(--dlg-ro); }
+dialog .actions .btn:not(.primary):not(.danger) { background: var(--dlg-body); }
+dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft); }
 </style>
 </head>
 <body>
