@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OiUa/XBCgsBAeNEyw4AQDOHq68WodQbkepzyzd+k4xE=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-+OQ2ewgFb4Uy3N6se7IRrQqWR1jNKbhoZcOxxvxYVrU=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -469,6 +469,9 @@ dialog .btn.danger { padding-left: 0; }
 .fld input[readonly]:hover { border-color: transparent; }
 .fld input[readonly]:focus { box-shadow: none; border-color: transparent; }
 .sav-over { color: var(--critical); font-weight: 600; }
+/* botón con icono en la cabecera de una tarjeta (p. ej. «Importar CSV» en Gastos variables) */
+.btn.btn-ico { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 13px; font-weight: 600; white-space: nowrap; flex: none; }
+.btn-ico svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
 .debt-hist:empty { display: none; }
 .debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
@@ -958,7 +961,8 @@ function renderVar(m) {
   const disp = m.variable - m.gastado;
   const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
   $("cVar").innerHTML = `
-    <p class="eyebrow"><span class="step-n">${S.steps?.var || 4}</span>Gastos variables</p>
+    <div class="p-label sec-top"><p class="eyebrow" style="margin:0"><span class="step-n">${S.steps?.var || 4}</span>Gastos variables</p>
+      <button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>Importar CSV</button></div>
     <div class="label">Disponible para gastar en ${esc(monthName(S.period))}</div>
     <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar" title="${pct(ratio)} del presupuesto consumido"><div style="width:${Math.min(1, ratio) * 100}%;background:${barColor(ratio)}"></div></div>
@@ -1419,6 +1423,8 @@ perForm.elements["Periodo"].addEventListener("change", () => updateFijosHint(per
 $("btnRecur").addEventListener("click", async () => { if (await copyRecurrentes(perForm.dataset.id)) $("dlg-per").close(); });
 
 /* ---------- eventos ---------- */
+// «Importar CSV» (Gastos variables): de momento solo el botón; la importación llegará más adelante
+document.addEventListener("click", e => { if (e.target.closest("[data-csv]")) toast("La importación de CSV estará disponible pronto"); });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches?.("li.clk")) e.target.click(); });
 const DLG = { movimientos: "mov", ingresos: "mov", deudas: "mov", periodos: "per" };
 document.addEventListener("click", e => {
