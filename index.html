@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7Vs6jn0WaKjdIOzc63EohgkoN9oHMdoYAE+uLmqRAUw=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-STWiYjnF1uJ1LTP2Pyzw6s2SZ32IJ+WIx1LgHW/5ss8=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -178,8 +178,8 @@ main > :first-child { margin-top: 0; }
   .mes-cards > .card { display: flex; flex-direction: column; }
   .mes-cards #savList, .mes-cards .var-list { display: contents; }
   .mes-cards :is(#savList, .var-list) > :first-child { margin-top: 14px; }  /* el margen de la lista se pierde con display: contents */
-  .mes-cards .btn.add-btn { margin-top: auto; align-self: flex-start; }
-  .mes-cards .card *:has(+ .add-btn) { margin-bottom: 16px; }
+  .mes-cards .btn.add-btn, .mes-cards .add-actions { margin-top: auto; align-self: flex-start; }
+  .mes-cards .card *:has(+ .add-btn), .mes-cards .card *:has(+ .add-actions) { margin-bottom: 16px; }
 }
 .deb-sub { margin: -6px 0 10px; font-size: 12.5px; }
 .step-n { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--tint); color: var(--accent);
@@ -198,6 +198,8 @@ main > :first-child { margin-top: 0; }
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
   .btn.add-btn { width: 100%; justify-content: center; }
+  .add-actions { align-self: stretch !important; }
+  .add-actions .btn.add-btn { width: auto; flex: 1; min-width: 0; }
   .inc-list li.clk { min-height: 46px; }
 }
 @media (max-width: 680px) {
@@ -473,6 +475,9 @@ dialog .btn.danger { padding-left: 0; }
 .fld input[readonly]:focus { box-shadow: none; border-color: transparent; }
 .sav-over { color: var(--critical); font-weight: 600; }
 /* botón con icono en la cabecera de una tarjeta (p. ej. «Importar CSV» en Gastos variables) */
+.add-actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
+.add-actions .btn.add-btn { margin-top: 0; }
+.add-actions .btn-ico { height: var(--ctl-h); box-sizing: border-box; }
 .btn.btn-ico { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 13px; font-weight: 600; white-space: nowrap; flex: none; }
 .btn-ico svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
@@ -537,7 +542,7 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
                      box-shadow: 0 6px 18px rgba(15, 30, 60, .3); cursor: pointer; transition: background-color .18s, transform .15s; }
   body.fab-on #fab:hover { background: var(--accent-2); }
   body.fab-on #fab:active { transform: scale(.94); }
-  body.fab-on .add-btn { display: none !important; }
+  body.fab-on .add-btn, body.fab-on .add-actions { display: none !important; }
   body.fab-on main { padding-bottom: 88px; }
 }
 .tipo-list { display: grid; gap: 8px; }
@@ -857,7 +862,7 @@ $("fabSeg").addEventListener("click", async e => {
 // el «+» abre una ventana para elegir el tipo y luego el formulario de siempre
 const TIPOS = [["Ingreso extra", "Ingreso extra", "var(--accent)"], ["Gastos Fijos", "Gasto fijo", "var(--cat-fij)"],
   ["Pago de Deudas", "Pago de deuda", "var(--cat-deb)"], ["Ahorro e Inversión", "Aportación de ahorro o inversión", "var(--cat-aho)"],
-  ["Gastos Variables", "Gasto variable", "var(--cat-var)"], ["Deuda", "Nueva deuda", "var(--cat-deb)"]];
+  ["Gastos Variables", "Gasto variable", "var(--cat-var)"], ["__csv", "Importar gastos variables (CSV)", "var(--cat-var)"], ["Deuda", "Nueva deuda", "var(--cat-deb)"]];
 $("fab").addEventListener("click", () => {
   if (!S.data) return;
   const hayDeudas = debts().some(x => !x.paid);
@@ -867,7 +872,9 @@ $("fab").addEventListener("click", () => {
 });
 $("tipoList").addEventListener("click", e => {
   const b = e.target.closest("[data-tipo]"); if (!b) return;
-  $("dlg-tipo").close(); openDialog("mov", { cat: b.dataset.tipo });
+  $("dlg-tipo").close();
+  if (b.dataset.tipo === "__csv") toast("La importación de CSV estará disponible pronto", "info");
+  else openDialog("mov", { cat: b.dataset.tipo });
 });
 function renderPeriod() {
   const ps = periods(), i = ps.indexOf(S.period);
@@ -884,13 +891,14 @@ const byNewest = (a, b) => String(b.ID).localeCompare(String(a.ID));
 // apuntes de una categoría dentro de su tarjeta: 5 a la vista y «Ver los N» para desplegar; al tocarlos se editan
 const itemRow = (tabla, id, concept, amount, extra = "") => `<li class="clk" data-edit="${tabla}" data-id="${esc(id)}" tabindex="0" role="button" title="Ver, editar o eliminar"><span>${esc(concept || "—")}${extra}</span><span class="r"><span class="num">${eur(amount)}</span></span></li>`;
 const addBtn = (cat, label) => `<button class="btn add-btn" type="button" data-open="mov" data-cat="${esc(cat)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>${label}</button>`;
-function catList(m, cat, { sort, empty, add }) {
+function catList(m, cat, { sort, empty, add, side = "" }) {
   const all = m.movs.filter(x => x.Categoría === cat).sort(sort), open = S.open[cat];
   const list = all.length
     ? `<ul class="inc-list">${(open ? all : all.slice(0, 5)).map(x => itemRow("movimientos", x.ID, x.Concepto, x.Importe)).join("")}</ul>`
     : (empty ? `<p class="muted c-empty">${empty}</p>` : "");
   const more = all.length > 5 ? `<div class="list-acts"><button class="link" type="button" data-more="${esc(cat)}">${open ? "Ver menos" : `Ver los ${all.length}`}</button></div>` : "";
-  return list + more + (add ? addBtn(cat, add) : "");
+  // «side»: otro botón junto a «Añadir…» (p. ej. «Importar» en Gastos variables)
+  return list + more + (add ? (side ? `<div class="add-actions">${addBtn(cat, add)}${side}</div>` : addBtn(cat, add)) : "");
 }
 const CAT_CARD = { "Pago de Deudas": "cDeb", "Gastos Fijos": "cFij", "Ahorro e Inversión": "cAho", "Gastos Variables": "cVar" };
 function renderDonut(m) {
@@ -966,13 +974,13 @@ function renderVar(m) {
   const disp = m.variable - m.gastado;
   const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
   $("cVar").innerHTML = `
-    <div class="p-label sec-top"><p class="eyebrow" style="margin:0"><span class="step-n">${S.steps?.var || 4}</span>Gastos variables</p>
-      <button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/></svg>Importar</button></div>
+    <p class="eyebrow"><span class="step-n">${S.steps?.var || 4}</span>Gastos variables</p>
     <div class="label">Disponible para gastar en ${esc(monthName(S.period))}</div>
     <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar" title="${pct(ratio)} del presupuesto consumido"><div style="width:${Math.min(1, ratio) * 100}%;background:${barColor(ratio)}"></div></div>
     <div class="hero-stats"><div>Presupuesto<b class="num">${eur(m.variable)}</b></div><div>Gastado<b class="num">${eur(m.gastado)}</b></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>
-    <div class="var-list">${catList(m, "Gastos Variables", { sort: byNewest, empty: "Aún no hay gastos variables este mes.", add: "Añadir gasto variable" })}</div>`;
+    <div class="var-list">${catList(m, "Gastos Variables", { sort: byNewest, empty: "Aún no hay gastos variables este mes.", add: "Añadir gasto variable",
+      side: `<button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/></svg>Importar</button>` })}</div>`;
 }
 
 
