@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-+OQ2ewgFb4Uy3N6se7IRrQqWR1jNKbhoZcOxxvxYVrU=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hNQcZKrgH6CY9B6r6cg1CZEzAVVStylgPj1JYCbtURw=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -398,6 +398,9 @@ tbody tr:hover .prog { background: var(--surface); }
 #toast.err { background: color-mix(in srgb, var(--critical) 8%, var(--surface)); border-color: color-mix(in srgb, var(--critical) 30%, var(--surface)); }
 #toast .ti { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--good); }
 #toast.err .ti { background: var(--critical); }
+#toast.info { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); border-color: color-mix(in srgb, var(--accent) 30%, var(--surface)); }
+#toast.info .ti { background: var(--accent); }
+#toast.info .ti svg { stroke: var(--accent-ink); }
 #toast .ti svg { width: 12px; height: 12px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 #errorBox { display: none; margin-top: 16px; padding: 14px 18px; border-radius: 12px; background: color-mix(in srgb, var(--critical) 10%, var(--surface)); font-size: 14px; }
 
@@ -745,10 +748,12 @@ function showTip(e, html) {
 const hideTip = () => { tip.style.opacity = 0; };
 function bindTips(root) { root.querySelectorAll("[data-tip]").forEach(el => { el.addEventListener("mousemove", e => showTip(e, el.dataset.tip)); el.addEventListener("mouseleave", hideTip); }); }
 // aviso breve abajo: ✓ verde si salió bien, ! roja si hubo un error (estos duran algo más)
+// kind: "ok" (✓ verde), "err" (! rojo, dura más) o "info" (i azul, avisos neutros)
 function toast(msg, kind = "ok") {
   const t = $("toast"), err = kind === "err";
-  t.className = err ? "err" : "";
-  t.innerHTML = `<span class="ti" aria-hidden="true"><svg viewBox="0 0 12 12">${err ? '<path d="M6 3v3.6M6 9h.01"/>' : '<path d="m2.6 6.2 2.2 2.2 4.6-4.8"/>'}</svg></span><span></span>`;
+  t.className = err ? "err" : kind === "info" ? "info" : "";
+  const icon = err ? '<path d="M6 3v3.6M6 9h.01"/>' : kind === "info" ? '<path d="M6 5.4v3.4M6 3.2h.01"/>' : '<path d="m2.6 6.2 2.2 2.2 4.6-4.8"/>';
+  t.innerHTML = `<span class="ti" aria-hidden="true"><svg viewBox="0 0 12 12">${icon}</svg></span><span></span>`;
   t.lastChild.textContent = msg;
   void t.offsetWidth; t.classList.add("show");
   clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), err ? 4500 : 2800);
@@ -962,7 +967,7 @@ function renderVar(m) {
   const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
   $("cVar").innerHTML = `
     <div class="p-label sec-top"><p class="eyebrow" style="margin:0"><span class="step-n">${S.steps?.var || 4}</span>Gastos variables</p>
-      <button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>Importar CSV</button></div>
+      <button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H8a2 2 0 0 0-2 2v4M6 15v4a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8l-5-5v5h5"/><path d="M2 12h10M9 9l3 3-3 3"/></svg>Importar CSV</button></div>
     <div class="label">Disponible para gastar en ${esc(monthName(S.period))}</div>
     <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar" title="${pct(ratio)} del presupuesto consumido"><div style="width:${Math.min(1, ratio) * 100}%;background:${barColor(ratio)}"></div></div>
@@ -1424,7 +1429,7 @@ $("btnRecur").addEventListener("click", async () => { if (await copyRecurrentes(
 
 /* ---------- eventos ---------- */
 // «Importar CSV» (Gastos variables): de momento solo el botón; la importación llegará más adelante
-document.addEventListener("click", e => { if (e.target.closest("[data-csv]")) toast("La importación de CSV estará disponible pronto"); });
+document.addEventListener("click", e => { if (e.target.closest("[data-csv]")) toast("La importación de CSV estará disponible pronto", "info"); });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches?.("li.clk")) e.target.click(); });
 const DLG = { movimientos: "mov", ingresos: "mov", deudas: "mov", periodos: "per" };
 document.addEventListener("click", e => {
