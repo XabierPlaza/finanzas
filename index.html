@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-hNQcZKrgH6CY9B6r6cg1CZEzAVVStylgPj1JYCbtURw=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7Vs6jn0WaKjdIOzc63EohgkoN9oHMdoYAE+uLmqRAUw=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -967,7 +967,7 @@ function renderVar(m) {
   const ratio = m.variable > 0 ? m.gastado / m.variable : (m.gastado > 0 ? 1 : 0);
   $("cVar").innerHTML = `
     <div class="p-label sec-top"><p class="eyebrow" style="margin:0"><span class="step-n">${S.steps?.var || 4}</span>Gastos variables</p>
-      <button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H8a2 2 0 0 0-2 2v4M6 15v4a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8l-5-5v5h5"/><path d="M2 12h10M9 9l3 3-3 3"/></svg>Importar CSV</button></div>
+      <button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/></svg>Importar</button></div>
     <div class="label">Disponible para gastar en ${esc(monthName(S.period))}</div>
     <div class="big num${disp < 0 ? " neg" : ""}">${eur(disp)}</div>
     <div class="hero-bar" title="${pct(ratio)} del presupuesto consumido"><div style="width:${Math.min(1, ratio) * 100}%;background:${barColor(ratio)}"></div></div>
