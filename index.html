@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-yQzcpJZ18viD0fsvEg6dm6eYAS/rnh771esm2I729hs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8k30YZwzu4IzBVMYrQk5ZiLaiI6CSjEJAy/fZAKoEVU=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -65,7 +65,7 @@ body { background: var(--page); color: var(--ink); font: 14.5px/1.5 system-ui, -
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 /* todos los efectos hover de los botones (y de lo que se comporta como tal) entran y salen suavemente */
-button, .chip, .link, .side-nav a, .dd-opt { transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease; }
+button, .link, .side-nav a, .dd-opt { transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease; }
 button:focus:not(:focus-visible) { outline: none; }
 button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -276,10 +276,6 @@ input[type=range] { width: 100%; accent-color: var(--accent); margin: 0 0 8px; }
 .legend tr.clk { cursor: pointer; }
 .legend tr.clk:hover td, .legend tr.sel td { background: var(--soft); }
 .legend .num { text-align: right; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; }
-.chip:hover { background: var(--soft); }
-.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
 svg .grid { stroke: var(--line); }
 svg .base { stroke: var(--axis); }
@@ -475,14 +471,14 @@ dialog form > .actions .btn--danger { margin-left: calc(-1 * var(--btn-px-lg)); 
    (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
 /* Radios unificados dentro de las secciones (tarjetas, menú lateral, avisos): todo lo que va dentro mide --r-in
    y lo que va dentro de un grupo (botones de .switch), --r-in2. */
-.card :is(.btn, .dd-btn, .chip, .sel, .inp, .notice, .recur, .edit-num, .hero-stats > div, .pages button),
+.card :is(.btn, .dd-btn, .sel, .inp, .notice, .recur, .edit-num, .hero-stats > div, .pages button),
 .card .big-input input, .side-nav a, .news-item .th, .top-menu button { border-radius: var(--r-in); }
 /* cabeceras de tablas: la fila entera se ve como una barra con esquinas --r-in */
 .card .legend tr.hd td:first-child, .card table.data th:first-child { border-radius: var(--r-in) 0 0 var(--r-in); }
 .card .legend tr.hd td:last-child, .card table.data th:last-child { border-radius: 0 var(--r-in) var(--r-in) 0; }
 /* Controles de cabecera de sección: todos miden --ctl-h. Los grupos (.switch) tienen 3px de relleno
    y sus botones ocupan el resto, así que un control nuevo solo necesita estar en .p-label o .sec-head. */
-:is(.p-label, .sec-head) :is(.sel, .chip, .btn) { height: var(--ctl-h); box-sizing: border-box; }
+:is(.p-label, .sec-head) :is(.sel, .btn) { height: var(--ctl-h); box-sizing: border-box; }
 /* ---------- Componente .switch ----------
    Grupo de botones sobre fondo suave: opciones (la elegida lleva aria-pressed="true") o acciones como las flechas.
    Todos los botones miden lo mismo: al menos --sw-btn de ancho, y si alguno necesita más, todos crecen igual.
@@ -543,7 +539,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
    Tamaño: --sm 28 px (acciones en filas o tablas) · md 34 px por defecto (tarjetas, cabeceras) · --lg 40 px (pie de ventanas).
    Modificadores: --block (todo el ancho) · --icon (solo icono, cuadrado: necesita aria-label).
    Estados: hover, :active, :focus-visible, :disabled o [aria-disabled="true"], [aria-busy="true"] (cargando).
-   La jerarquía la da la variante, nunca el tamaño de letra. No son .btn: .switch (selector), .chip (filtro), .dd-btn
+   La jerarquía la da la variante, nunca el tamaño de letra. No son .btn: .switch (selector u opciones, p. ej. % / € o el estado de las deudas), .dd-btn
    (desplegable), .pages (paginación), .link (enlace dentro de un texto), la barra superior, .dlg-x y #fab. */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; position: relative; box-sizing: border-box;
        height: var(--btn-h-md); padding: 0 var(--btn-px-md); border: 1px solid var(--border); border-radius: var(--r-in);
@@ -666,7 +662,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
     <p class="eyebrow">Deudas</p>
     <div class="sec-head">
       <div><h2 id="debtTitle"></h2></div>
-      <div class="filters"><select class="sel" id="debtCred" aria-label="Acreedor"></select><div class="chips" id="debtState"></div></div>
+      <div class="filters"><select class="sel" id="debtCred" aria-label="Acreedor"></select><span class="switch" role="group" aria-label="Estado de las deudas" id="debtState"></span></div>
     </div>
     <div class="tbl-wrap"><table class="data" id="debtTbl"></table></div>
     <button class="btn btn--primary add-btn" type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir deuda</button>
@@ -1183,8 +1179,8 @@ function renderDebts() {
   const creds = [...new Set(all.map(x => x.Acreedor).filter(Boolean))].sort();
   if (S.debtCred !== "all" && !creds.includes(S.debtCred)) S.debtCred = "all";
   $("debtCred").innerHTML = `<option value="all">Todos los acreedores</option>` + creds.map(c => `<option${c === S.debtCred ? " selected" : ""}>${esc(c)}</option>`).join("");
-  $("debtState").innerHTML = [["pend", "Pendientes"], ["paid", "Pagadas"], ["all", "Todas"]].map(([k, l]) => `<button class="chip" type="button" aria-pressed="${S.debtState === k}" data-k="${k}">${l}</button>`).join("");
-  $("debtState").querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => { S.debtState = b.dataset.k; renderDebts(); }));
+  $("debtState").innerHTML = [["pend", "Pendientes"], ["paid", "Pagadas"], ["all", "Todas"]].map(([k, l]) => `<button type="button" aria-pressed="${S.debtState === k}" data-k="${k}">${l}</button>`).join("");
+  $("debtState").querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => { S.debtState = b.dataset.k; renderDebts(); }));
   const rows = all.filter(x => (S.debtCred === "all" || x.Acreedor === S.debtCred) && (S.debtState === "all" || (S.debtState === "paid") === x.paid));
   const t = rows.reduce((a, x) => ({ t: a.t + x.total, p: a.p + x.pagado, r: a.r + x.rest }), { t: 0, p: 0, r: 0 });
   $("debtTbl").innerHTML = `<thead><tr><th>Acreedor</th><th>Descripción</th><th class="num">Total</th><th class="num">Pagado</th><th class="num">Restante</th><th>Progreso</th><th>Estado</th><th></th></tr></thead>
