@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-STWiYjnF1uJ1LTP2Pyzw6s2SZ32IJ+WIx1LgHW/5ss8=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-yQzcpJZ18viD0fsvEg6dm6eYAS/rnh771esm2I729hs=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -18,6 +18,10 @@
 :root {
   color-scheme: light;
   --ctl-h: 34px;
+  /* botones (.btn): alto, letra y relleno por tamaño; el mismo grosor en todas las variantes */
+  --btn-h-sm: 28px; --btn-h-md: var(--ctl-h); --btn-h-lg: var(--fld-h);
+  --btn-fs-sm: 12.5px; --btn-fs-md: 13px; --btn-fs-lg: 14px;
+  --btn-px-sm: 10px; --btn-px-md: 12px; --btn-px-lg: 18px; --btn-fw: 600;
   --dlg-pad: 24px; --dlg-gap: 16px; --fld-h: 40px;  /* ventanas: margen interior, separación entre campos y alto de campos y botones */
   --nav-h: 36px; --r-nav: 6px;  /* barra superior: icono, selector de mes y ajustes miden lo mismo */
   --r-card: 12px; --r-in: 6px; --r-in2: 3px;  /* radios: tarjeta, lo que va dentro (la mitad) y lo que va dentro de eso */  /* altura estándar de los controles de cabecera de sección (selectores, % / €, flechas, filtros) */
@@ -99,12 +103,9 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .tm-fab { display: none; }  /* el ajuste del botón «+» solo tiene sentido en el móvil */
 .tm-status { margin: 4px 10px 4px; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
 .tm-status:empty { display: none; }
-.ghost { border: 0; background: none; padding: 7px 10px; border-radius: 8px; color: var(--ink-2); font-size: 13.5px; display: inline-flex; align-items: center; gap: 7px; }
-.ghost:hover { background: var(--soft); color: var(--ink); }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); display: inline-block; }
 .dot.off { background: var(--critical); }
 .dot.wait { background: var(--warning); }
-.ghost .lbl.keep { display: inline !important; }
 .g-ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 /* diálogo «Datos» */
 .ds { border: 1px solid var(--border); border-radius: var(--r-in); padding: 14px 16px; display: grid; gap: 10px; }
@@ -119,7 +120,7 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .welcome { margin: 16px 0; }
 main > .welcome:nth-child(2) { margin-top: 0; }
 .welcome .row-b { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-@media (max-width: 680px) { .logo span, .ghost .lbl { display: none; } .nav-in { grid-template-columns: auto 1fr auto; } .period { justify-self: center; } }
+@media (max-width: 680px) { .logo span { display: none; } .nav-in { grid-template-columns: auto 1fr auto; } .period { justify-self: center; } }
 
 .shell { max-width: 1360px; margin: 0 auto; padding: 20px 20px 60px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; align-items: start; }
 main { min-width: 0; }
@@ -192,9 +193,7 @@ main > :first-child { margin-top: 0; }
          font-size: 13.5px; font-weight: 650; color: var(--ink); }
 .sub-h > span { display: inline-flex; align-items: center; gap: 8px; }
 .sav-list, .var-list { margin-top: 14px; }
-.btn.add-btn { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; height: var(--ctl-h); box-sizing: border-box; padding-top: 0; padding-bottom: 0; border-color: var(--accent); color: var(--accent-ink); background: var(--accent); font-weight: 600; }
-.btn.add-btn:hover { background: var(--accent-2); border-color: var(--accent-2); color: var(--accent-ink); }
-.add-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.btn.add-btn { margin-top: 14px; }  /* «+ Añadir…»: solo la colocación; el aspecto es .btn--primary */
 @media (max-width: 760px) {
   .mes-cards { grid-template-columns: minmax(0, 1fr); }
   .btn.add-btn { width: 100%; justify-content: center; }
@@ -252,9 +251,6 @@ h2 { font-size: 19px; letter-spacing: -.01em; margin: 0 0 4px; font-weight: 650;
 .inc-list { list-style: none; margin: 0; padding: 0; }
 .inc-list li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--line); font-size: 14px; align-items: center; min-height: 40px; }
 .inc-list .r { display: flex; align-items: center; gap: 2px; }
-.icon-btn { border: 0; background: none; width: 28px; height: 28px; border-radius: 7px; color: var(--muted); font-size: 14px; }
-.icon-btn:hover { background: var(--tint); color: var(--accent); }
-.icon-btn.del:hover { background: color-mix(in srgb, var(--critical) 10%, transparent); color: var(--critical); }
 .edit-num { border: 1px solid transparent; background: none; text-align: right; width: 130px; padding: 4px 6px; border-radius: 7px; font-variant-numeric: tabular-nums; }
 .edit-num:hover { border-color: var(--line); }
 .edit-num:focus { border-color: var(--accent); outline: none; background: var(--surface); }
@@ -429,9 +425,9 @@ dialog form > h3 { margin-bottom: calc(var(--dlg-pad) - var(--dlg-gap)); }
            max-height: calc(100vh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
            max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
   dialog form > .actions { padding: 12px var(--dlg-pad); flex-wrap: wrap; }
-  dialog form > .actions .btn:not(.danger) { flex: 1; }
+  dialog form > .actions .btn:not(.btn--danger) { flex: 1; }
   dialog form > .actions .sp { display: none; }
-  dialog form > .actions .btn.danger { flex-basis: 100%; text-align: left; padding: 2px 0; min-height: 0; }
+  dialog form > .actions .btn--danger { flex-basis: 100%; justify-content: flex-start; }
   /* campos de fecha/mes: en iOS tienen un ancho propio que se sale de la columna */
   .fld input[type="month"], .fld input[type="date"] { -webkit-appearance: none; appearance: none; width: 100%; display: block; line-height: var(--fld-h); text-align: left; }
 }
@@ -450,8 +446,7 @@ dialog h3 { user-select: none; margin: 0; font-size: 17px; font-weight: 650; lin
 .actions { display: flex; gap: 10px; margin-top: 4px; align-items: center; }
 /* pie del formulario: franja separada con las acciones */
 dialog form > .actions { margin: calc(var(--dlg-pad) - var(--dlg-gap)) 0 0; padding: 14px var(--dlg-pad); border-top: 1px solid var(--border); background: var(--dlg-foot); border-radius: 0 0 var(--r-card) var(--r-card); }
-dialog .btn { min-height: var(--fld-h); padding: 0 20px; font-weight: 600; border-radius: var(--r-in); }
-dialog .btn.danger { padding-left: 0; }
+dialog form > .actions .btn--danger { margin-left: calc(-1 * var(--btn-px-lg)); }  /* el texto queda alineado con el contenido; el relleno es solo para el hover */
 .dlg-x { position: absolute; top: 11px; right: calc(var(--dlg-pad) - 9px); margin: 0 !important; width: 36px; height: 36px; border: 0; border-radius: var(--r-in); background: transparent; color: #fff; display: grid; place-items: center; opacity: .85; }
 .dlg-x:hover { background: rgba(255,255,255,.14); opacity: 1; }
 .dlg-x:focus { outline: none; }
@@ -459,13 +454,6 @@ dialog .btn.danger { padding-left: 0; }
 .dlg-x svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .dlg-label { font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: -10px !important; }
 .actions .sp { flex: 1; }
-.btn { border: 1px solid var(--border); padding: 9px 16px; border-radius: 8px; background: var(--surface); font-weight: 500; }
-.btn:hover { background: var(--soft); }  /* botones blancos: al pasar por encima toman el color del fondo */
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.btn.mini { padding: 4px 12px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }  /* solo cambia el tamaño: colores y hover, los de cualquier .btn */
-.btn.primary:hover { background: var(--accent-2); }
-.btn.danger { border: 0; background: none; color: var(--critical); padding-left: 0; }
-.btn.danger:hover { text-decoration: underline; background: none; }
 .err { color: var(--critical); font-size: 13px; }
 .err:empty { display: none; }
 .recur { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; font-size: 13px; background: var(--tint); padding: 9px 12px; border-radius: 8px; }
@@ -477,9 +465,6 @@ dialog .btn.danger { padding-left: 0; }
 /* botón con icono en la cabecera de una tarjeta (p. ej. «Importar CSV» en Gastos variables) */
 .add-actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
 .add-actions .btn.add-btn { margin-top: 0; }
-.add-actions .btn-ico { height: var(--ctl-h); box-sizing: border-box; }
-.btn.btn-ico { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 13px; font-weight: 600; white-space: nowrap; flex: none; }
-.btn-ico svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
 .debt-hist:empty { display: none; }
 .debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
@@ -490,7 +475,7 @@ dialog .btn.danger { padding-left: 0; }
    (tarjetas, menú lateral y menú ⋯ = 12px → botones 6px; selector % / € = 6px → sus botones 3px) */
 /* Radios unificados dentro de las secciones (tarjetas, menú lateral, avisos): todo lo que va dentro mide --r-in
    y lo que va dentro de un grupo (botones de .switch), --r-in2. */
-.card :is(.btn, .dd-btn, .chip, .sel, .inp, .notice, .recur, .icon-btn, .edit-num, .hero-stats > div, .pages button),
+.card :is(.btn, .dd-btn, .chip, .sel, .inp, .notice, .recur, .edit-num, .hero-stats > div, .pages button),
 .card .big-input input, .side-nav a, .news-item .th, .top-menu button { border-radius: var(--r-in); }
 /* cabeceras de tablas: la fila entera se ve como una barra con esquinas --r-in */
 .card .legend tr.hd td:first-child, .card table.data th:first-child { border-radius: var(--r-in) 0 0 var(--r-in); }
@@ -530,8 +515,8 @@ dialog .btn.danger { padding-left: 0; }
 /* fondos dentro de las ventanas (en claro coinciden con los de siempre; en oscuro, capas para separar cabecera, cuerpo y pie) */
 dialog .fld :is(input, select, textarea), dialog .dd-fld .dd-btn, dialog .ds, dialog .debt-hist { background: var(--dlg-fld); }
 dialog .fld :is(input, textarea)[readonly] { background: var(--dlg-ro); }
-dialog .actions .btn:not(.primary):not(.danger) { background: var(--dlg-body); }
-dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft); }
+dialog .actions .btn--secondary { background: var(--dlg-body); }
+dialog .actions .btn--secondary:hover { background: var(--soft); }
 /* Botón «+» único (ajuste del Excel): solo en el móvil; oculta los «+ Añadir…» de las secciones */
 #fab { display: none; }
 #fab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
@@ -551,6 +536,52 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
 .tipo-list button:hover { background: var(--soft); }
 .tipo-list .sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
 .tipo-list .chev { width: 18px; height: 18px; margin-left: auto; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* ---------- Componente .btn ----------
+   Uso: <button class="btn btn--primary">Texto</button> · con icono: <button class="btn btn--secondary"><svg …/>Texto</button>
+   Variante (una): --primary (acción principal, una por grupo) · --secondary (por defecto) · --ghost (terciaria, sin borde)
+                   · --danger (destructiva, texto rojo) · --danger-solid (confirmación destructiva).
+   Tamaño: --sm 28 px (acciones en filas o tablas) · md 34 px por defecto (tarjetas, cabeceras) · --lg 40 px (pie de ventanas).
+   Modificadores: --block (todo el ancho) · --icon (solo icono, cuadrado: necesita aria-label).
+   Estados: hover, :active, :focus-visible, :disabled o [aria-disabled="true"], [aria-busy="true"] (cargando).
+   La jerarquía la da la variante, nunca el tamaño de letra. No son .btn: .switch (selector), .chip (filtro), .dd-btn
+   (desplegable), .pages (paginación), .link (enlace dentro de un texto), la barra superior, .dlg-x y #fab. */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; position: relative; box-sizing: border-box;
+       height: var(--btn-h-md); padding: 0 var(--btn-px-md); border: 1px solid var(--border); border-radius: var(--r-in);
+       background: var(--surface); color: var(--ink); font: inherit; font-size: var(--btn-fs-md); font-weight: var(--btn-fw);
+       line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer; }
+.btn svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.btn:hover { background: var(--soft); }
+.btn:active:not(:disabled):not([aria-disabled="true"]) { transform: scale(.98); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn--primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn--primary:hover { background: var(--accent-2); border-color: var(--accent-2); }
+.btn--ghost { background: none; border-color: transparent; color: var(--ink-2); }
+.btn--ghost:hover { background: var(--soft); color: var(--ink); }
+.btn--danger { background: none; border-color: transparent; color: var(--critical); }
+.btn--danger:hover { background: color-mix(in srgb, var(--critical) 10%, transparent); }
+.btn--danger-solid { background: var(--critical); border-color: var(--critical); color: #fff; }
+.btn--danger-solid:hover { background: color-mix(in srgb, var(--critical) 85%, #000); border-color: color-mix(in srgb, var(--critical) 85%, #000); }
+.btn--sm { height: var(--btn-h-sm); padding: 0 var(--btn-px-sm); font-size: var(--btn-fs-sm); }
+.btn--sm svg { width: 14px; height: 14px; }
+.btn--lg { height: var(--btn-h-lg); padding: 0 var(--btn-px-lg); font-size: var(--btn-fs-lg); }
+.btn--lg svg { width: 18px; height: 18px; }
+.btn--block { display: flex; width: 100%; }
+.btn--icon { width: var(--btn-h-md); padding: 0; }
+.btn--icon.btn--sm { width: var(--btn-h-sm); }
+.btn--icon.btn--lg { width: var(--btn-h-lg); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.btn[aria-busy="true"] { color: transparent !important; pointer-events: none; }
+.btn[aria-busy="true"] > * { visibility: hidden; }
+.btn[aria-busy="true"]::before { content: ""; position: absolute; inset: 0; margin: auto; width: 16px; height: 16px; box-sizing: border-box;
+                                 border-radius: 50%; border: 2px solid var(--btn-spin, var(--accent)); border-right-color: transparent;
+                                 animation: btn-spin .7s linear infinite; }
+.btn--primary[aria-busy="true"], .btn--danger-solid[aria-busy="true"] { --btn-spin: var(--accent-ink); }
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .btn[aria-busy="true"]::before { animation-duration: 2s; } .btn:active { transform: none !important; } }
+/* pantallas táctiles: zona de pulsación de al menos 44 px de alto, sin cambiar el aspecto */
+@media (pointer: coarse) {
+  .btn::after { content: ""; position: absolute; left: 0; right: 0; top: min(0px, calc((100% - 44px) / 2)); bottom: min(0px, calc((100% - 44px) / 2)); }
+}
 </style>
 </head>
 <body>
@@ -599,9 +630,9 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
     <h2>Empieza con tus datos</h2>
     <p class="lead">Todo se guarda en este dispositivo y funciona sin conexión. Puedes traer tu Excel del PC o conectar Google Drive para usar la misma base de datos en ambos.</p>
     <div class="row-b">
-      <button class="btn primary" type="button" data-act="import">Importar mi Excel</button>
-      <button class="btn" type="button" data-act="datos">Conectar Google Drive</button>
-      <button class="btn" type="button" data-open="per">Empezar con un mes nuevo</button>
+      <button class="btn btn--primary" type="button" data-act="import">Importar mi Excel</button>
+      <button class="btn btn--secondary" type="button" data-act="datos">Conectar Google Drive</button>
+      <button class="btn btn--secondary" type="button" data-open="per">Empezar con un mes nuevo</button>
     </div>
   </div>
 
@@ -638,7 +669,7 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
       <div class="filters"><select class="sel" id="debtCred" aria-label="Acreedor"></select><div class="chips" id="debtState"></div></div>
     </div>
     <div class="tbl-wrap"><table class="data" id="debtTbl"></table></div>
-    <button class="btn add-btn" type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir deuda</button>
+    <button class="btn btn--primary add-btn" type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir deuda</button>
   </section>
 
 
@@ -673,19 +704,19 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
   <label class="fld pay-hide">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <p class="hint" data-show="Deuda">Lo pagado se calcula solo: cada pago que apuntes con «Pagar» (o eligiendo esta deuda al añadir un pago) se suma aquí.</p>
   <div class="err"></div>
-  <div class="actions"><button class="btn danger" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" type="button" data-reopen hidden>Reabrir deuda</button><button class="btn primary" value="ok">Guardar</button></div>
+  <div class="actions"><button class="btn btn--danger btn--lg" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button><button class="btn btn--primary btn--lg" type="button" data-reopen hidden>Reabrir deuda</button><button class="btn btn--primary btn--lg" value="ok">Guardar</button></div>
 </form></dialog>
 
 <dialog id="dlg-tipo" tabindex="-1"><form method="dialog" class="plain">
   <h3>¿Qué quieres añadir?</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="tipo-list" id="tipoList"></div>
-  <div class="actions"><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button></div>
+  <div class="actions"><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button></div>
 </form></dialog>
 <dialog id="dlg-datos" tabindex="-1"><form method="dialog" class="plain">
   <h3>Datos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div id="datosBody" style="display:grid;gap:14px"></div>
   <div class="err" id="datosErr"></div>
-  <div class="actions"><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cerrar</button></div>
+  <div class="actions"><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cerrar</button></div>
 </form></dialog>
 <input type="file" id="fileImport" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
 
@@ -708,7 +739,7 @@ dialog .actions .btn:not(.primary):not(.danger):hover { background: var(--soft);
   <div class="recur" data-edit-only><span id="recurHint" class="muted"></span><button class="link" type="button" id="btnRecur" style="padding:0">Copiar del mes anterior</button></div>
   <p class="hint" data-edit-only>Eliminar el mes borra también sus movimientos e ingresos extra.</p>
   <div class="err"></div>
-  <div class="actions"><button class="btn danger" type="button" data-del>Eliminar mes</button><span class="sp"></span><button class="btn" value="cancel" formnovalidate>Cancelar</button><button class="btn primary" value="ok">Guardar</button></div>
+  <div class="actions"><button class="btn btn--danger btn--lg" type="button" data-del>Eliminar mes</button><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button><button class="btn btn--primary btn--lg" value="ok">Guardar</button></div>
 </form></dialog>
 
 <script>
@@ -890,7 +921,18 @@ const byAmount = (a, b) => n(b.Importe) - n(a.Importe);
 const byNewest = (a, b) => String(b.ID).localeCompare(String(a.ID));
 // apuntes de una categoría dentro de su tarjeta: 5 a la vista y «Ver los N» para desplegar; al tocarlos se editan
 const itemRow = (tabla, id, concept, amount, extra = "") => `<li class="clk" data-edit="${tabla}" data-id="${esc(id)}" tabindex="0" role="button" title="Ver, editar o eliminar"><span>${esc(concept || "—")}${extra}</span><span class="r"><span class="num">${eur(amount)}</span></span></li>`;
-const addBtn = (cat, label) => `<button class="btn add-btn" type="button" data-open="mov" data-cat="${esc(cat)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>${label}</button>`;
+// Componente .btn desde JS: siempre una variante y un tamaño; los de solo icono llevan aria-label (ver «Componente .btn» en el CSS)
+const BTN_ICONS = {
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  upload: '<path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/>',
+};
+function btn({ label = "", variant = "secondary", size = "md", icon = "", block = false, iconOnly = false, cls = "", attrs = "" } = {}) {
+  const c = ["btn", `btn--${variant}`, size !== "md" && `btn--${size}`, block && "btn--block", iconOnly && "btn--icon", cls].filter(Boolean).join(" ");
+  const svg = icon ? `<svg viewBox="0 0 24 24" aria-hidden="true">${BTN_ICONS[icon] || icon}</svg>` : "";
+  const aria = iconOnly ? ` aria-label="${esc(label)}" title="${esc(label)}"` : "";
+  return `<button type="button" class="${c}"${aria} ${attrs}>${svg}${iconOnly ? "" : esc(label)}</button>`;
+}
+const addBtn = (cat, label) => btn({ label, variant: "primary", icon: "plus", cls: "add-btn", attrs: `data-open="mov" data-cat="${esc(cat)}"` });
 function catList(m, cat, { sort, empty, add, side = "" }) {
   const all = m.movs.filter(x => x.Categoría === cat).sort(sort), open = S.open[cat];
   const list = all.length
@@ -980,7 +1022,7 @@ function renderVar(m) {
     <div class="hero-bar" title="${pct(ratio)} del presupuesto consumido"><div style="width:${Math.min(1, ratio) * 100}%;background:${barColor(ratio)}"></div></div>
     <div class="hero-stats"><div>Presupuesto<b class="num">${eur(m.variable)}</b></div><div>Gastado<b class="num">${eur(m.gastado)}</b></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>
     <div class="var-list">${catList(m, "Gastos Variables", { sort: byNewest, empty: "Aún no hay gastos variables este mes.", add: "Añadir gasto variable",
-      side: `<button class="btn btn-ico" type="button" data-csv title="Importar gastos variables desde un archivo CSV"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/></svg>Importar</button>` })}</div>`;
+      side: btn({ label: "Importar", icon: "upload", attrs: 'data-csv title="Importar gastos variables desde un archivo CSV"' }) })}</div>`;
 }
 
 
@@ -1150,7 +1192,7 @@ function renderDebts() {
     <td>${esc(x.Acreedor)}</td><td>${esc(x.Descripción)}</td><td class="num">${eur(x.total)}</td>
     <td class="num" title="${n(x.Pagado_Previo) ? `Antes de usar la app ${eur(x.Pagado_Previo)} + pagos ${eur(x.linked)}` : `Suma de ${x.pagos.length} pago${x.pagos.length === 1 ? "" : "s"}`}">${eur(x.pagado)}</td><td class="num">${eur(x.rest)}</td>
     <td><span class="prog"><div style="width:${x.prog * 100}%;background:${x.paid ? "var(--good)" : "var(--cat-deb)"}"></div></span> <span class="muted num" style="font-size:12px">${pct(x.prog)}</span></td>
-    <td><span class="state">${x.paid ? ICON.ok + "Pagada" : ICON.pend + "Pendiente"}</span></td><td style="text-align:right">${x.paid ? "" : `<button class="btn mini" type="button" data-pay="${esc(x.ID_Deuda)}">Pagar</button>`}</td></tr>`).join("")
+    <td><span class="state">${x.paid ? ICON.ok + "Pagada" : ICON.pend + "Pendiente"}</span></td><td style="text-align:right">${x.paid ? "" : btn({ label: "Pagar", size: "sm", attrs: `data-pay="${esc(x.ID_Deuda)}"` })}</td></tr>`).join("")
     : `<tr><td colspan="8" class="empty">No hay deudas para este filtro.</td></tr>`}</tbody>
   <tfoot><tr><td colspan="2">Total (${rows.length})</td><td class="num">${eur(t.t)}</td><td class="num">${eur(t.p)}</td><td class="num">${eur(t.r)}</td><td colspan="3"></td></tr></tfoot>`;
 }
@@ -1477,18 +1519,18 @@ async function renderDatos() {
     body.innerHTML = `<div class="ds">
         <h4>${DB_ICON}Base de datos en uso ${c.in_drive ? '<span class="badge2 ok">Google Drive</span>' : c.is_default ? '<span class="badge2">Carpeta del programa</span>' : '<span class="badge2">Otra carpeta</span>'}</h4>
         <div class="path">${esc(c.path)}</div>
-        <div class="row-b"><button class="btn" type="button" data-db="abrir">Abrir carpeta</button></div>
+        <div class="row-b"><button class="btn btn--secondary" type="button" data-db="abrir">Abrir carpeta</button></div>
       </div>
       <div class="ds">
         <h4>${DRIVE_ICON}Guardar en Google Drive</h4>
         <p>Con <b>Google Drive para escritorio</b> instalado, elige una carpeta de «Mi unidad». El Excel se sincroniza solo y puedes usar la misma base de datos en el móvil.</p>
-        ${c.drive.length ? `<div class="row-b">${c.drive.map(f => `<button class="btn primary" type="button" data-db="usar" data-folder="${esc(f)}">Usar ${esc(f)}</button>`).join("")}</div>`
+        ${c.drive.length ? `<div class="row-b">${c.drive.map(f => `<button class="btn btn--primary" type="button" data-db="usar" data-folder="${esc(f)}">Usar ${esc(f)}</button>`).join("")}</div>`
           : `<p class="muted">No se ha encontrado Google Drive para escritorio en este PC. Instálalo desde google.com/drive/download y vuelve a abrir este diálogo.</p>`}
       </div>
       <div class="ds">
         <h4>Otra ubicación</h4>
         <p>Si la carpeta elegida ya tiene un <b>Base_Datos_Finanzas.xlsx</b>, se usará ese. Si no, se copiará allí el actual (el original no se borra).</p>
-        <div class="row-b"><button class="btn" type="button" data-db="elegir">Elegir carpeta…</button>${c.is_default ? "" : '<button class="btn" type="button" data-db="defecto">Volver a la carpeta del programa</button>'}</div>
+        <div class="row-b"><button class="btn btn--secondary" type="button" data-db="elegir">Elegir carpeta…</button>${c.is_default ? "" : '<button class="btn btn--secondary" type="button" data-db="defecto">Volver a la carpeta del programa</button>'}</div>
         ${c.env ? '<p class="muted">Aviso: la ubicación está fijada por la variable FINANZAS_DB; se aplicará solo en esta sesión.</p>' : ""}
       </div>`;
     body.querySelectorAll("[data-db]").forEach(b => b.onclick = async () => {
@@ -1505,19 +1547,19 @@ async function renderDatos() {
   body.innerHTML = `<div class="ds">
       <h4>${DB_ICON}En este dispositivo <span class="badge2">${nMes} meses · ${nMov} movimientos</span></h4>
       <p>La app funciona siempre en local, también sin conexión. Puedes traer el Excel del PC o guardar una copia.</p>
-      <div class="row-b"><button class="btn" type="button" data-dt="import">Importar Excel</button><button class="btn" type="button" data-dt="export">Exportar Excel</button></div>
+      <div class="row-b"><button class="btn btn--secondary" type="button" data-dt="import">Importar Excel</button><button class="btn btn--secondary" type="button" data-dt="export">Exportar Excel</button></div>
     </div>
     <div class="ds">
       <h4>${DRIVE_ICON}Google Drive (opcional) ${st.connected ? `<span class="badge2 ${st.error ? "warn" : "ok"}">${st.error ? "Revisar" : "Conectado"}</span>` : ""}</h4>
       ${!st.configured || S.editCfg ? `<p>Para usar la misma base de datos que el PC, configura una vez el acceso a Google (gratis). Sigue la guía del archivo <b>LEEME.txt</b> y pega aquí los datos:</p>
         <label class="fld">ID de cliente OAuth<input id="gcClient" placeholder="xxxxxxxx.apps.googleusercontent.com" value="${esc(cfg.clientId || "")}"></label>
         <div class="f2"><label class="fld">Clave de API<input id="gcKey" value="${esc(cfg.apiKey || "")}"></label><label class="fld">Número de proyecto<input id="gcApp" inputmode="numeric" value="${esc(cfg.appId || "")}"></label></div>
-        <div class="row-b"><button class="btn primary" type="button" data-dt="cfg">Guardar configuración</button></div>`
+        <div class="row-b"><button class="btn btn--primary" type="button" data-dt="cfg">Guardar configuración</button></div>`
       : !st.connected ? `<p>Elige el <b>Base_Datos_Finanzas.xlsx</b> que el PC guarda en Drive (carpeta «Mi unidad»), o sube a Drive los datos de este dispositivo.</p>
-        <div class="row-b"><button class="btn primary" type="button" data-dt="pick">Elegir mi Excel en Drive</button><button class="btn" type="button" data-dt="new">Subir los datos de este dispositivo</button><button class="btn" type="button" data-dt="cfgEdit">Cambiar configuración</button></div>`
+        <div class="row-b"><button class="btn btn--primary" type="button" data-dt="pick">Elegir mi Excel en Drive</button><button class="btn btn--secondary" type="button" data-dt="new">Subir los datos de este dispositivo</button><button class="btn btn--secondary" type="button" data-dt="cfgEdit">Cambiar configuración</button></div>`
       : `<p>Archivo: <b>${esc(st.name || "—")}</b><br>${st.syncing ? "Sincronizando…" : st.lastSync ? `Última sincronización: ${fmtTime(st.lastSync)}` : ""}${st.pending ? ` · ${st.pending} cambio${st.pending === 1 ? "" : "s"} pendiente${st.pending === 1 ? "" : "s"}` : ""}</p>
         ${st.error ? `<p style="color:var(--critical)">${esc(st.error)}</p>` : ""}
-        <div class="row-b"><button class="btn primary" type="button" data-dt="sync">Sincronizar ahora</button><button class="btn" type="button" data-dt="off">Desconectar</button></div>`}
+        <div class="row-b"><button class="btn btn--primary" type="button" data-dt="sync">Sincronizar ahora</button><button class="btn btn--secondary" type="button" data-dt="off">Desconectar</button></div>`}
     </div>`;
   body.querySelectorAll("[data-dt]").forEach(b => b.onclick = async () => {
     const a = b.dataset.dt;
