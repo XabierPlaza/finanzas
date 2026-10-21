@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RM2VMDo0zOMqmkfVXmEjEFjlaVvenhDUmoPy0Sknrrg=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IMeMt7HiSU+n5V3nBt0DOaQ2tKKkcI9VNsc7kh02C0U=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -537,7 +537,8 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
    Variante (una): --primary (acción principal, una por grupo) · --secondary (por defecto) · --ghost (terciaria, sin borde)
                    · --danger (destructiva, texto rojo) · --danger-solid (confirmación destructiva).
    Tamaño: --sm 28 px (acciones en filas o tablas) · md 34 px por defecto (tarjetas, cabeceras) · --lg 40 px (pie de ventanas).
-   Modificadores: --block (todo el ancho) · --icon (solo icono, cuadrado: necesita aria-label).
+   Modificadores: --block (todo el ancho) · --icon (solo icono, cuadrado: necesita aria-label)
+                  · --icon-m (solo icono en el móvil, con texto en tablet y ordenador: necesita aria-label).
    Estados: hover, :active, :focus-visible, :disabled o [aria-disabled="true"], [aria-busy="true"] (cargando).
    La jerarquía la da la variante, nunca el tamaño de letra. No son .btn: .switch (selector u opciones, p. ej. % / € o el estado de las deudas), .dd-btn
    (desplegable), .pages (paginación), .link (enlace dentro de un texto), la barra superior, .dlg-x y #fab. */
@@ -565,6 +566,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
 .btn--icon { width: var(--btn-h-md); padding: 0; }
 .btn--icon.btn--sm { width: var(--btn-h-sm); }
 .btn--icon.btn--lg { width: var(--btn-h-lg); }
+@media (max-width: 760px) { .btn--icon-m { width: var(--btn-h-md); padding: 0; flex: none; } .btn--icon-m .btn-lbl { display: none; } }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
 .btn[aria-busy="true"] { color: transparent !important; pointer-events: none; }
 .btn[aria-busy="true"] > * { visibility: hidden; }
@@ -922,11 +924,14 @@ const BTN_ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   upload: '<path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/>',
 };
-function btn({ label = "", variant = "secondary", size = "md", icon = "", block = false, iconOnly = false, cls = "", attrs = "" } = {}) {
-  const c = ["btn", `btn--${variant}`, size !== "md" && `btn--${size}`, block && "btn--block", iconOnly && "btn--icon", cls].filter(Boolean).join(" ");
+// iconOnly: siempre solo icono · iconMobile: solo icono en el móvil (≤ 760 px) y con texto en tablet y ordenador
+// aria: nombre accesible y pista al pasar el ratón (obligatorio si el texto puede no verse)
+function btn({ label = "", variant = "secondary", size = "md", icon = "", block = false, iconOnly = false, iconMobile = false, aria = "", cls = "", attrs = "" } = {}) {
+  const c = ["btn", `btn--${variant}`, size !== "md" && `btn--${size}`, block && "btn--block", iconOnly && "btn--icon", iconMobile && "btn--icon-m", cls].filter(Boolean).join(" ");
   const svg = icon ? `<svg viewBox="0 0 24 24" aria-hidden="true">${BTN_ICONS[icon] || icon}</svg>` : "";
-  const aria = iconOnly ? ` aria-label="${esc(label)}" title="${esc(label)}"` : "";
-  return `<button type="button" class="${c}"${aria} ${attrs}>${svg}${iconOnly ? "" : esc(label)}</button>`;
+  const name = aria || ((iconOnly || iconMobile) ? label : "");
+  const a11y = name ? ` aria-label="${esc(name)}" title="${esc(name)}"` : "";
+  return `<button type="button" class="${c}"${a11y} ${attrs}>${svg}${iconOnly ? "" : `<span class="btn-lbl">${esc(label)}</span>`}</button>`;
 }
 const addBtn = (cat, label) => btn({ label, variant: "primary", icon: "plus", cls: "add-btn", attrs: `data-open="mov" data-cat="${esc(cat)}"` });
 function catList(m, cat, { sort, empty, add, side = "" }) {
@@ -1018,7 +1023,7 @@ function renderVar(m) {
     <div class="hero-bar" title="${pct(ratio)} del presupuesto consumido"><div style="width:${Math.min(1, ratio) * 100}%;background:${barColor(ratio)}"></div></div>
     <div class="hero-stats"><div>Presupuesto<b class="num">${eur(m.variable)}</b></div><div>Gastado<b class="num">${eur(m.gastado)}</b></div><div>Consumido<b class="num">${pct(ratio)}</b></div></div>
     <div class="var-list">${catList(m, "Gastos Variables", { sort: byNewest, empty: "Aún no hay gastos variables este mes.", add: "Añadir gasto variable",
-      side: btn({ label: "Importar", icon: "upload", attrs: 'data-csv title="Importar gastos variables desde un archivo CSV"' }) })}</div>`;
+      side: btn({ label: "Importar CSV", icon: "upload", iconMobile: true, aria: "Importar gastos variables desde CSV", attrs: "data-csv" }) })}</div>`;
 }
 
 
