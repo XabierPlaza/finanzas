@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-8k30YZwzu4IzBVMYrQk5ZiLaiI6CSjEJAy/fZAKoEVU=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-RM2VMDo0zOMqmkfVXmEjEFjlaVvenhDUmoPy0Sknrrg=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -720,7 +720,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
   <h3 data-t-new="Nuevo mes" data-t-edit="Editar mes"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="f2">
     <label class="fld">Mes<input name="Periodo" type="month" required></label>
-    <label class="fld">Nómina (€)<input name="Nómina" required inputmode="decimal"></label>
+    <label class="fld">Nómina (€)<input name="Nómina" required inputmode="decimal" placeholder="0,00"></label>
   </div>
   <div class="f2" data-edit-only>
     <label class="fld">Ahorro objetivo<select name="Modo_Ahorro"><option value="Porcentaje">Porcentaje (%)</option><option value="Importe">Cantidad fija (€)</option></select></label>
@@ -1329,7 +1329,6 @@ function prepareNewPeriod(f, mes) {
   f.elements["Modo_Ahorro"].value = "Porcentaje"; f.elements["Pct_Ahorro"].value = "0"; f.elements["Importe_Ahorro"].value = "";
   const ref = cfgOf(last);
   if (ref) {
-    f.elements["Nómina"].value = dec(ref["Nómina"]);
     f.elements["Modo_Ahorro"].value = ref.Modo_Ahorro === "Importe" ? "Importe" : "Porcentaje";
     f.elements["Pct_Ahorro"].value = ref.Pct_Ahorro != null ? dec(n(ref.Pct_Ahorro) * 100) : "";
     f.elements["Importe_Ahorro"].value = dec(ref.Importe_Ahorro);
