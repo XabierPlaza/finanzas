@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-B9TE67vvYx/9ZlzjOCvCoMZMdXmUPMd8S0tu0bR7C/E=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bxgP3E1DuyjcNO9da2LWIGlvKLMKlywffr4qNKY1OF0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -112,7 +112,8 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .ds h4 { margin: 0; font-size: 14px; display: flex; align-items: center; gap: 8px; }
 .ds p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
 .ds .path { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--soft); border-radius: 6px; padding: 6px 8px; word-break: break-all; color: var(--ink); }
-.ds .row-b { display: flex; gap: 8px; flex-wrap: wrap; }
+.ds .row-b { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+.ds .link-sub { justify-self: start; padding: 0; font-size: 13px; font-weight: 500; color: var(--ink-2); }
 .badge2 { font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--accent); }
 .badge2.ok { background: color-mix(in srgb, var(--good) 16%, var(--surface)); color: var(--good); }
 .badge2.warn { background: color-mix(in srgb, var(--warning) 22%, var(--surface)); color: var(--ink); }
@@ -789,7 +790,7 @@ body.priv :is(.legend tr.hd td, table.data th) { filter: none; }  /* cabeceras d
   <div class="actions"><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button></div>
 </form></dialog>
 <dialog id="dlg-datos" tabindex="-1"><form method="dialog" class="plain">
-  <h3>Datos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <h3 id="datosTitle">Datos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div id="datosBody" style="display:grid;gap:14px"></div>
   <div class="err" id="datosErr"></div>
   <div class="actions"><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cerrar</button></div>
@@ -1767,6 +1768,7 @@ async function datosAction(fn, okMsg) {
 }
 async function renderDatos() {
   const body = $("datosBody");
+  $("datosTitle").textContent = $("btnDatosLbl").textContent;
   if (!LOCAL) {
     const c = await api("/api/config");
     body.innerHTML = `<div class="ds">
@@ -1798,7 +1800,7 @@ async function renderDatos() {
   const st = FinanzasDrive.status(), cfg = FinanzasDrive.getConfig(), d = S.data;
   const nMov = d?.movimientos.length || 0, nMes = d?.periodos.length || 0;
   body.innerHTML = `<div class="ds">
-      <h4>${DB_ICON}En este dispositivo <span class="badge2">${nMes} meses · ${nMov} movimientos</span></h4>
+      <h4>${DB_ICON}En este dispositivo <span class="badge2">${nMes || nMov ? `${nMes} meses · ${nMov} movimientos` : "Sin datos"}</span></h4>
       <p>La app funciona siempre en local, también sin conexión. Puedes traer el Excel del PC o guardar una copia.</p>
       <div class="row-b"><button class="btn btn--secondary" type="button" data-dt="import">Importar Excel</button><button class="btn btn--secondary" type="button" data-dt="export">Exportar Excel</button></div>
     </div>
@@ -1808,8 +1810,9 @@ async function renderDatos() {
         <label class="fld">ID de cliente OAuth<input id="gcClient" placeholder="xxxxxxxx.apps.googleusercontent.com" value="${esc(cfg.clientId || "")}"></label>
         <div class="f2"><label class="fld">Clave de API<input id="gcKey" value="${esc(cfg.apiKey || "")}"></label><label class="fld">Número de proyecto<input id="gcApp" inputmode="numeric" value="${esc(cfg.appId || "")}"></label></div>
         <div class="row-b"><button class="btn btn--primary" type="button" data-dt="cfg">Guardar configuración</button></div>`
-      : !st.connected ? `<p>Elige el <b>Base_Datos_Finanzas.xlsx</b> que el PC guarda en Drive (carpeta «Mi unidad»), o sube a Drive los datos de este dispositivo.</p>
-        <div class="row-b"><button class="btn btn--primary" type="button" data-dt="pick">Elegir mi Excel en Drive</button><button class="btn btn--secondary" type="button" data-dt="new">Subir los datos de este dispositivo</button><button class="btn btn--secondary" type="button" data-dt="cfgEdit">Cambiar configuración</button></div>`
+      : !st.connected ? `<p>Conecta tu Google Drive para tener los mismos datos en todos tus dispositivos. Si ya tienes un <b>Base_Datos_Finanzas.xlsx</b> en Drive, elígelo; si no, sube los datos de este dispositivo.</p>
+        <div class="row-b"><button class="btn btn--primary" type="button" data-dt="pick" title="Elegir mi Excel en Drive">Elegir Excel de Drive</button><button class="btn btn--secondary" type="button" data-dt="new" title="Subir a Drive los datos de este dispositivo">Subir este dispositivo</button></div>
+        <button class="link link-sub" type="button" data-dt="cfgEdit">Configuración avanzada</button>`
       : `<p>Archivo: <b>${esc(st.name || "—")}</b><br>${st.syncing ? "Sincronizando…" : st.lastSync ? `Última sincronización: ${fmtTime(st.lastSync)}` : ""}${st.pending ? ` · ${st.pending} cambio${st.pending === 1 ? "" : "s"} pendiente${st.pending === 1 ? "" : "s"}` : ""}</p>
         ${st.error ? `<p style="color:var(--critical)">${esc(st.error)}</p>` : ""}
         <div class="row-b"><button class="btn btn--primary" type="button" data-dt="sync">Sincronizar ahora</button><button class="btn btn--secondary" type="button" data-dt="off">Desconectar</button></div>`}
