@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OokTHaALZBEy0ruwq9duPTKeOt2EchbQYsqyTWEjJO8=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7ATxfJmrIl5N6yf99VUhP4nPcDk1RyycEwHCf+pr0xg=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -486,6 +486,8 @@ dialog form > .actions .btn--danger { margin-left: calc(-1 * var(--btn-px-lg)); 
 .imp-row select { height: 28px; font-size: 12.5px; padding: 0 6px; max-width: 160px; border: 1px solid var(--border); border-radius: var(--r-in); background: var(--dlg-fld); color: var(--ink); }
 .imp-row.off .imp-c, .imp-row.off .num { color: var(--muted); }
 .imp-row.bad .imp-m { color: var(--critical); }
+.dlg-confirm { width: min(420px, calc(100% - 32px)); }
+.cfm-msg { font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
 .debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
 .debt-hist:empty { display: none; }
 .debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
@@ -580,7 +582,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
 .btn--ghost { background: none; border-color: transparent; color: var(--ink-2); }
 .btn--ghost:hover { background: var(--soft); color: var(--ink); }
 .btn--danger { background: none; border-color: transparent; color: var(--critical); }
-.btn--danger:hover { background: color-mix(in srgb, var(--critical) 10%, transparent); }
+.btn--danger:hover { background: none; text-decoration: underline; }
 .btn--danger-solid { background: var(--critical); border-color: var(--critical); color: #fff; }
 .btn--danger-solid:hover { background: color-mix(in srgb, var(--critical) 85%, #000); border-color: color-mix(in srgb, var(--critical) 85%, #000); }
 .btn--sm { height: var(--btn-h-sm); padding: 0 var(--btn-px-sm); font-size: var(--btn-fs-sm); }
@@ -730,6 +732,13 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
   <div class="actions"><button class="btn btn--danger btn--lg" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button><button class="btn btn--primary btn--lg" type="button" data-reopen hidden>Reabrir deuda</button><button class="btn btn--primary btn--lg" value="ok">Guardar</button></div>
 </form></dialog>
 
+<dialog id="dlg-confirm" class="dlg-confirm" tabindex="-1"><form method="dialog" class="plain">
+  <h3 id="cfmTitle">¿Seguro?</h3>
+  <p id="cfmMsg" class="cfm-msg"></p>
+  <div class="actions"><span class="sp"></span>
+    <button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button>
+    <button class="btn btn--danger-solid btn--lg" value="ok" id="cfmOk">Eliminar</button></div>
+</form></dialog>
 <dialog id="dlg-csv" tabindex="-1"><form method="dialog" class="plain">
   <h3>Importar movimientos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="imp-step" id="impPrep">
@@ -1457,10 +1466,21 @@ async function copyRecurrentes(per) {
     await load(); return true;
   } catch (e) { toast(e.message, "err"); return false; }
 }
+// confirmación con el diseño de la app; devuelve true si se acepta. ok: texto del botón; danger: botón rojo
+function askConfirm(msg, { title = "¿Seguro?", ok = "Eliminar", danger = true } = {}) {
+  const d = $("dlg-confirm"), b = $("cfmOk");
+  $("cfmTitle").textContent = title; $("cfmMsg").textContent = msg;
+  b.textContent = ok; b.className = `btn btn--lg ${danger ? "btn--danger-solid" : "btn--primary"}`;
+  d.returnValue = "";
+  return new Promise(res => {
+    d.addEventListener("close", () => res(d.returnValue === "ok"), { once: true });
+    d.showModal(); b.focus();
+  });
+}
 async function deleteRecord(tabla, id, name) {
   const msg = tabla === "periodos" ? `¿Eliminar ${perName(id)} con todos sus movimientos e ingresos extra? No se puede deshacer (salvo desde una copia del Excel).`
     : `¿Eliminar «${name || id}» del Excel?`;
-  if (!confirm(msg)) return false;
+  if (!(await askConfirm(msg, { title: tabla === "periodos" ? "Eliminar el mes" : "Eliminar" }))) return false;
   try { const r = await api("/api/borrar", { tabla, id }); toast(r.registro.borrados > 1 ? `Eliminados ${r.registro.borrados} registros` : "Eliminado"); await load(); return true; }
   catch (e) { toast(e.message, "err"); return false; }
 }
@@ -1830,12 +1850,12 @@ async function renderDatos() {
     if (a === "cfg") { S.editCfg = false; return datosAction(() => FinanzasDrive.setConfig({ clientId: $("gcClient").value, apiKey: $("gcKey").value, appId: $("gcApp").value }), "Configuración guardada"); }
     if (a === "cfgEdit") { S.editCfg = true; return renderDatos(); }
     if (a === "pick") {
-      if ((S.data?.movimientos.length || 0) && !confirm("Se usarán los datos del Excel de Drive y se sustituirán los de este dispositivo. ¿Continuar?")) return;
+      if ((S.data?.movimientos.length || 0) && !(await askConfirm("Se usarán los datos del Excel de Drive y se sustituirán los de este dispositivo.", { title: "Usar el Excel de Drive", ok: "Continuar", danger: false }))) return;
       return datosAction(() => FinanzasDrive.connectExisting(), r => r ? "Conectado a Google Drive" : null);
     }
     if (a === "new") return datosAction(() => FinanzasDrive.connectNew(), "Datos subidos a Google Drive (carpeta «Finanzas»)");
     if (a === "sync") return datosAction(() => FinanzasDrive.sync(), r => r.error ? null : "Sincronizado con Google Drive");
-    if (a === "off") { if (!confirm("Se desconectará Google Drive. Los datos seguirán en este dispositivo. ¿Continuar?")) return; return datosAction(() => FinanzasDrive.disconnect(), "Google Drive desconectado"); }
+    if (a === "off") { if (!(await askConfirm("Se desconectará Google Drive. Los datos seguirán en este dispositivo.", { title: "Desconectar Google Drive", ok: "Desconectar", danger: false }))) return; return datosAction(() => FinanzasDrive.disconnect(), "Google Drive desconectado"); }
   });
 }
 async function openDatos() { $("datosErr").textContent = ""; $("datosBody").innerHTML = '<p class="muted">Cargando…</p>'; $("dlg-datos").showModal(); $("dlg-datos").focus(); $("dlg-datos").querySelector("form").scrollTop = 0; await renderDatos(); }
@@ -1843,7 +1863,7 @@ $("btnDatos").onclick = openDatos;
 $("fileImport").onchange = async e => {
   const f = e.target.files[0]; e.target.value = "";
   if (!f) return;
-  if ((S.data?.movimientos.length || 0) && !confirm(`Se sustituirán los datos de este dispositivo por los de «${f.name}». ¿Continuar?`)) return;
+  if ((S.data?.movimientos.length || 0) && !(await askConfirm(`Se sustituirán los datos de este dispositivo por los de «${f.name}».`, { title: "Importar Excel", ok: "Sustituir datos" }))) return;
   try { const r = await Finanzas.importExcel(f); toast(`Importado: ${r.periodos} meses y ${r.movimientos} movimientos`); S.period = null; await load(); if ($("dlg-datos").open) renderDatos(); }
   catch (err) { toast(err.message, "err"); }
 };
