@@ -604,7 +604,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
 @media (pointer: coarse) {
   .btn::after { content: ""; position: absolute; left: 0; right: 0; top: min(0px, calc((100% - 44px) / 2)); bottom: min(0px, calc((100% - 44px) / 2)); }
 }
-/* Privacidad («Ocultar cifras» en el menú ⋯): difumina las cifras (importes, porcentajes, gráficos). Los formularios no se difuminan. */
+/* Modo privacidad (menú ⋯): difumina las cifras (importes, porcentajes, gráficos). Los formularios no se difuminan. */
 :is(.num, #savNote, #debtTitle, .news-item p, #donut svg text, #trend svg text, #savInp, #tip) { transition: filter .2s; }
 body.priv :is(.num, #savNote, #debtTitle, .news-item p, #donut svg text, #trend svg text, #savInp, #tip) { filter: blur(7px); }
 /* las cifras grandes necesitan más difuminado para que no se lean */
@@ -632,8 +632,8 @@ body.priv #savInp:focus, body.priv dialog :is(.num, #savNote) { filter: none; }
         <div class="tm-sep" role="separator"></div>
         <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>Tema</span>
           <span class="switch" role="group" aria-label="Tema" id="themeSeg"><button type="button" data-tema="auto" title="Según el móvil o el navegador">Auto</button><button type="button" data-tema="light">Claro</button><button type="button" data-tema="dark">Oscuro</button></span></div>
-        <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.7 3.6M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></svg>Ocultar cifras</span>
-          <span class="switch" role="group" aria-label="Ocultar cifras" id="privSeg"><button type="button" data-priv="0">No</button><button type="button" data-priv="1">Sí</button></span></div>
+        <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.7 3.6M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></svg>Modo privacidad</span>
+          <span class="switch" role="group" aria-label="Modo privacidad" id="privSeg"><button type="button" data-priv="0">No</button><button type="button" data-priv="1">Sí</button></span></div>
         <div class="tm-theme tm-fab"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg>Botón «+» único</span>
           <span class="switch" role="group" aria-label="Botón flotante" id="fabSeg"><button type="button" data-fab="No">No</button><button type="button" data-fab="Sí">Sí</button></span></div>
         <p class="tm-status" id="tmStatus"></p>
