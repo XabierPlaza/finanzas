@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7ATxfJmrIl5N6yf99VUhP4nPcDk1RyycEwHCf+pr0xg=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Ll2bU3muSQTrrwHj92NOiCVwg/p7gTLGyqshbnx79V0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -383,7 +383,7 @@ tbody tr:hover .prog { background: var(--surface); }
 /* tooltip, toast */
 #tip { position: fixed; pointer-events: none; z-index: 70; background: var(--ink); color: var(--surface); padding: 8px 11px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; max-width: 280px; opacity: 0; transition: opacity .08s; }
 /* aviso breve: arriba, bajo la cabecera; tono suave del color del estado (verde si salió bien, rojo si hubo error) */
-#toast { position: fixed; left: 50%; top: calc(72px + env(safe-area-inset-top)); transform: translate(-50%, -14px); z-index: 60; pointer-events: none;
+#toast { position: fixed; inset: auto; margin: 0; overflow: visible; height: auto; left: 50%; top: calc(72px + env(safe-area-inset-top)); transform: translate(-50%, -14px); z-index: 60; pointer-events: none;
          display: flex; align-items: center; gap: 10px; width: max-content; max-width: calc(100vw - 32px); padding: 10px 16px 10px 10px; border-radius: 12px;
          background: color-mix(in srgb, var(--good) 9%, var(--surface)); border: 1px solid color-mix(in srgb, var(--good) 30%, var(--surface));
          color: var(--ink); font-size: 14px; font-weight: 500; line-height: 1.35; box-shadow: 0 8px 24px rgba(15, 30, 60, .12);
@@ -703,7 +703,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
 </div>
 
 <div id="tip" role="tooltip"></div>
-<div id="toast" role="status" aria-live="polite"></div>
+<div id="toast" role="status" aria-live="polite" popover="manual"></div>
 
 <dialog id="dlg-mov" tabindex="-1"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
   <h3 data-t-new="Nuevo movimiento" data-t-edit="Editar movimiento"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
@@ -854,8 +854,11 @@ function toast(msg, kind = "ok") {
   const icon = err ? '<path d="M6 3v3.6M6 9h.01"/>' : kind === "info" ? '<path d="M6 5.4v3.4M6 3.2h.01"/>' : '<path d="m2.6 6.2 2.2 2.2 4.6-4.8"/>';
   t.innerHTML = `<span class="ti" aria-hidden="true"><svg viewBox="0 0 12 12">${icon}</svg></span><span></span>`;
   t.lastChild.textContent = msg;
+  // capa superior del navegador (popover): se ve por encima de cualquier ventana abierta, también si se cierra después
+  if (t.showPopover) { try { if (t.matches(":popover-open")) t.hidePopover(); t.showPopover(); } catch {} }
   void t.offsetWidth; t.classList.add("show");
-  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), err ? 4500 : 2800);
+  clearTimeout(toast.t); clearTimeout(toast.h);
+  toast.t = setTimeout(() => { t.classList.remove("show"); toast.h = setTimeout(() => { try { t.hidePopover?.(); } catch {} }, 250); }, err ? 4500 : 2800);
 }
 const ICON = {
   ok: `<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--good)"/><path d="M4.6 8.2l2.2 2.2 4.6-4.8" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
