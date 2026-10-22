@@ -109,12 +109,12 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .g-ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 /* diálogo «Datos» */
 .ds { border: 1px solid var(--border); border-radius: var(--r-in); padding: 14px 16px; display: grid; gap: 10px; }
-.ds h4 { margin: 0; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.ds h4 { margin: 0; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
 .ds p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
 .ds .path { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--soft); border-radius: 6px; padding: 6px 8px; word-break: break-all; color: var(--ink); }
 .ds .row-b { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
 .ds .link-sub { justify-self: start; padding: 0; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--ink-2); }
-.badge2 { font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--accent); }
+.badge2 { white-space: nowrap; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--accent); }
 .badge2.ok { background: color-mix(in srgb, var(--good) 16%, var(--surface)); color: var(--good); }
 .badge2.warn { background: color-mix(in srgb, var(--warning) 22%, var(--surface)); color: var(--ink); }
 .ds ol { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-2); line-height: 1.55; }
