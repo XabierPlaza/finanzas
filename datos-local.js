@@ -181,6 +181,20 @@
       Object.assign(m[tabla][i], changes);
       return { [SHEETS[tabla].key]: String(p.id), ...changes };
     },
+    // importación en lote (CSV): primero se validan todas las filas y solo después se añaden (todo o nada)
+    "/api/importar": (m, p) => {
+      const movs = (p.movimientos || []).map(x => ({
+        ID: null, Periodo: periodo(x.Periodo), "Categoría": categoria(txt(x["Categoría"], "Categoría", true)),
+        Concepto: txt(x.Concepto, "Concepto", true), Acreedor: txt(x.Acreedor, "Acreedor"), ID_Deuda: txt(x.ID_Deuda, "ID_Deuda"),
+        Importe: num(x.Importe, "Importe"), Notas: txt(x.Notas, "Notas") }));
+      const ings = (p.ingresos || []).map(x => ({
+        ID: null, Periodo: periodo(x.Periodo), Concepto: txt(x.Concepto, "Concepto", true), Importe: num(x.Importe, "Importe"), Notas: txt(x.Notas, "Notas") }));
+      if (!movs.length && !ings.length) throw new UserError("No hay movimientos que importar.");
+      if (movs.length + ings.length > 1000) throw new UserError("Como máximo 1000 filas por importación.");
+      movs.forEach(r => add(m, "movimientos", r));
+      ings.forEach(r => add(m, "ingresos", r));
+      return { "añadidos": movs.length + ings.length };
+    },
     "/api/ajuste": (m, p) => {
       const { clave, valor } = p;
       if (!AJUSTES[clave]?.includes(valor)) throw new UserError("Ajuste no válido.");

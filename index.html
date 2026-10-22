@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-IMeMt7HiSU+n5V3nBt0DOaQ2tKKkcI9VNsc7kh02C0U=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-OokTHaALZBEy0ruwq9duPTKeOt2EchbQYsqyTWEjJO8=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -461,6 +461,31 @@ dialog form > .actions .btn--danger { margin-left: calc(-1 * var(--btn-px-lg)); 
 /* botón con icono en la cabecera de una tarjeta (p. ej. «Importar CSV» en Gastos variables) */
 .add-actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
 .add-actions .btn.add-btn { margin-top: 0; }
+/* importar movimientos (CSV generado con una IA) */
+.imp-how { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; color: var(--ink-2); line-height: 1.45; }
+.imp-how b { color: var(--ink); font-weight: 650; }
+.imp-acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.imp-file { font-size: 13px; overflow-wrap: anywhere; }
+.imp-step { display: grid; gap: var(--dlg-gap); }
+.imp-step[hidden] { display: none; }
+.imp-priv { margin-top: -8px !important; }  /* pegado a sus botones, como una nota de ellos */
+#impText { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+.imp-sum { display: grid; gap: 6px; font-size: 13.5px; color: var(--ink-2); }
+.imp-sum b { color: var(--ink); }
+.imp-sum .imp-warn { color: var(--critical); font-weight: 600; }
+.imp-sum .imp-note { color: var(--warning); }
+.imp-list { display: grid; border-top: 1px solid var(--line); }
+.imp-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.imp-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+.imp-row .imp-c { font-size: 14px; color: var(--ink); overflow-wrap: anywhere; }
+.imp-row .imp-m { font-size: 12px; color: var(--muted); }
+.imp-row .imp-m .tag { color: var(--warning); font-weight: 600; }
+.imp-row .imp-m .lnk { color: var(--accent); }
+.imp-row .imp-r { display: grid; justify-items: end; gap: 4px; }
+.imp-row .imp-r .num { font-size: 14px; font-weight: 600; color: var(--ink); }
+.imp-row select { height: 28px; font-size: 12.5px; padding: 0 6px; max-width: 160px; border: 1px solid var(--border); border-radius: var(--r-in); background: var(--dlg-fld); color: var(--ink); }
+.imp-row.off .imp-c, .imp-row.off .num { color: var(--muted); }
+.imp-row.bad .imp-m { color: var(--critical); }
 .debt-hist { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r-in); font-size: 13.5px; color: var(--ink-2); }
 .debt-hist:empty { display: none; }
 .debt-hist .dh-h, .debt-hist .dh-r { display: flex; justify-content: space-between; gap: 12px; }
@@ -705,6 +730,37 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
   <div class="actions"><button class="btn btn--danger btn--lg" type="button" data-del>Eliminar</button><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button><button class="btn btn--primary btn--lg" type="button" data-reopen hidden>Reabrir deuda</button><button class="btn btn--primary btn--lg" value="ok">Guardar</button></div>
 </form></dialog>
 
+<dialog id="dlg-csv" tabindex="-1"><form method="dialog" class="plain">
+  <h3>Importar movimientos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="imp-step" id="impPrep">
+    <ol class="imp-how">
+      <li><b>Copia el prompt</b> y pégalo en tu IA (ChatGPT, Gemini, Claude…) junto con la foto de los tickets o el extracto del banco.</li>
+      <li>Pídele el resultado <b>como archivo CSV</b>, o copia el texto que te dé.</li>
+      <li><b>Adjunta</b> ese archivo o <b>pega</b> el texto aquí abajo. Antes de guardar podrás revisarlo todo.</li>
+    </ol>
+    <div class="imp-acts">
+      <button type="button" class="btn btn--primary" id="impCopy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg><span class="btn-lbl">Copiar prompt</span></button>
+      <button type="button" class="btn btn--secondary" id="impTpl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 11l5 5 5-5M12 4v12"/></svg><span class="btn-lbl">Plantilla CSV</span></button>
+    </div>
+    <p class="hint imp-priv">Antes de pasar un extracto a una IA, tapa el IBAN y tus datos personales. Esta app no envía nada a ninguna IA.</p>
+    <div class="imp-acts">
+      <button type="button" class="btn btn--secondary" id="impFileBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2M7 9l5-5 5 5M12 4v12"/></svg><span class="btn-lbl">Adjuntar CSV</span></button>
+      <span class="muted imp-file" id="impFileName"></span>
+    </div>
+    <input type="file" id="impFile" accept=".csv,text/csv,text/plain" hidden>
+    <label class="fld">O pega aquí el resultado<textarea id="impText" rows="5" placeholder="Fecha;Concepto;Importe;Categoría;Notas&#10;2026-10-03;Supermercado;45,20;Gasto variable;"></textarea></label>
+  </div>
+  <div class="imp-step" id="impRev" hidden>
+    <div class="imp-sum" id="impSum"></div>
+    <div class="imp-list" id="impList"></div>
+  </div>
+  <div class="err" id="impErr"></div>
+  <div class="actions"><span class="sp"></span>
+    <button class="btn btn--secondary btn--lg" value="cancel" formnovalidate id="impCancel">Cancelar</button>
+    <button class="btn btn--secondary btn--lg" type="button" id="impBack" hidden>Atrás</button>
+    <button class="btn btn--primary btn--lg" type="button" id="impNext">Revisar</button>
+    <button class="btn btn--primary btn--lg" type="button" id="impGo" hidden>Importar</button></div>
+</form></dialog>
 <dialog id="dlg-tipo" tabindex="-1"><form method="dialog" class="plain">
   <h3>¿Qué quieres añadir?</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="tipo-list" id="tipoList"></div>
@@ -902,7 +958,7 @@ $("fab").addEventListener("click", () => {
 $("tipoList").addEventListener("click", e => {
   const b = e.target.closest("[data-tipo]"); if (!b) return;
   $("dlg-tipo").close();
-  if (b.dataset.tipo === "__csv") toast("La importación de CSV estará disponible pronto", "info");
+  if (b.dataset.tipo === "__csv") openImport();
   else openDialog("mov", { cat: b.dataset.tipo });
 });
 function renderPeriod() {
@@ -1477,9 +1533,215 @@ perForm.elements["Modo_Ahorro"].addEventListener("change", () => syncPerForm(per
 perForm.elements["Periodo"].addEventListener("change", () => updateFijosHint(perForm));
 $("btnRecur").addEventListener("click", async () => { if (await copyRecurrentes(perForm.dataset.id)) $("dlg-per").close(); });
 
+/* ---------- importar movimientos desde un CSV (preparado por el usuario con su IA) ---------- */
+// La app no llama a ninguna IA: genera el prompt, da la plantilla y lee el CSV resultante con código normal.
+const IMP_HEAD = ["Fecha", "Concepto", "Importe", "Categoría", "Notas"];
+// categoría del CSV → destino en la app ("__ing" = ingreso extra, "__skip" = no importar)
+const IMP_CATS = [["Gasto variable", "Gastos Variables"], ["Gasto fijo", "Gastos Fijos"], ["Pago de deuda", "Pago de Deudas"],
+  ["Ahorro e inversión", "Ahorro e Inversión"], ["Ingreso extra", "__ing"], ["Ignorar", "__skip"]];
+const impNorm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+function impCat(v) {
+  const s = impNorm(v);
+  if (!s) return "Gastos Variables";
+  if (s.startsWith("ignor") || s.startsWith("nomina") || s.startsWith("traspaso")) return "__skip";
+  if (s.includes("ingreso")) return "__ing";
+  if (s.includes("fijo")) return "Gastos Fijos";
+  if (s.includes("deuda")) return "Pago de Deudas";
+  if (s.includes("ahorro") || s.includes("inversion")) return "Ahorro e Inversión";
+  return "Gastos Variables";
+}
+const impCatLabel = c => (IMP_CATS.find(x => x[1] === c) || IMP_CATS[0])[0];
+const impCatColor = c => c === "__ing" ? "var(--accent)" : c === "__skip" ? "var(--muted)" : col(c);
+
+function buildImportPrompt() {
+  const d = S.data, per = S.period;
+  const uniq = (arr) => [...new Set(arr.filter(Boolean))];
+  const fijos = uniq(d.movimientos.filter(m => m["Categoría"] === "Gastos Fijos").map(m => m.Concepto)).slice(0, 30);
+  const aho = uniq(d.movimientos.filter(m => m["Categoría"] === "Ahorro e Inversión").map(m => m.Concepto)).slice(0, 30);
+  const acre = uniq([...d.deudas.map(x => x.Acreedor), ...d.movimientos.map(m => m.Acreedor)]);
+  return [
+    "Eres un asistente que convierte movimientos bancarios en una tabla CSV.",
+    "Extrae TODOS los movimientos (gastos e ingresos) de la imagen, PDF o texto que te adjunto y devuélvelos como un archivo CSV para descargar. Si no puedes crear archivos, escribe solo el CSV dentro de un bloque de código, sin ningún texto antes ni después.",
+    "",
+    "Formato obligatorio:",
+    "- Separador: punto y coma (;).",
+    `- Primera fila (cabecera), exactamente: ${IMP_HEAD.join(";")}`,
+    "- Fecha: AAAA-MM-DD. Si el documento no indica el año, usa " + per.slice(0, 4) + ".",
+    "- Importe: número positivo con coma decimal y sin símbolo de moneda (por ejemplo 12,50), tanto para gastos como para ingresos.",
+    "- Concepto: descripción corta y clara (comercio o motivo), sin códigos de operación.",
+    "- Notas: vacío, salvo que haya algo que revisar.",
+    "- Una fila por movimiento. No inventes movimientos ni agrupes varios en uno.",
+    "",
+    "Categoría (usa exactamente uno de estos valores):",
+    "- Gasto variable: gastos del día a día que cambian cada mes (supermercado, restaurantes, ocio, compras, gasolina, Bizum enviados por gastos…).",
+    "- Gasto fijo: recibos y suscripciones que se repiten cada mes" + (fijos.length ? ` (los míos son: ${fijos.join(", ")})` : "") + ".",
+    "- Ahorro e inversión: aportaciones a ahorro, fondos o inversiones" + (aho.length ? ` (las mías: ${aho.join(", ")})` : "") + ".",
+    "- Pago de deuda: dinero que devuelvo a alguien que me prestó" + (acre.length ? ` (mis acreedores: ${acre.join(", ")}; pon su nombre en el concepto)` : "") + ".",
+    "- Ingreso extra: dinero que recibo aparte de la nómina (Bizum recibidos, devoluciones de Hacienda, ventas…).",
+    "- Ignorar: la nómina, traspasos entre mis propias cuentas y devoluciones que anulan un cargo.",
+    "Si dudas entre varias, usa «Gasto variable» y escribe «revisar» en Notas.",
+    "",
+    "Ejemplo:",
+    IMP_HEAD.join(";"),
+    `${per}-03;Supermercado;45,20;Gasto variable;`,
+    `${per}-05;Bizum de Ana (cena);15,00;Ingreso extra;`,
+  ].join("\n");
+}
+function downloadImportTemplate() {
+  const per = S.period || new Date().toISOString().slice(0, 7);
+  const csv = "﻿" + [IMP_HEAD.join(";"), `${per}-03;Supermercado;45,20;Gasto variable;`, `${per}-05;Gimnasio;27,00;Gasto fijo;`, `${per}-08;Bizum de Ana;15,00;Ingreso extra;`].join("\r\n") + "\r\n";
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" }), a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "plantilla_movimientos.csv";
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+// lee el CSV aunque venga dentro de un bloque de código, con texto alrededor, con «;», «,» o tabuladores
+function parseImport(text) {
+  let s = String(text || "").replace(/^﻿/, "").replace(/\r\n?/g, "\n");
+  const fence = s.match(/```[a-z]*\n([\s\S]*?)```/i); if (fence) s = fence[1];
+  const lines = s.split("\n");
+  const hi = lines.findIndex(l => { const n = impNorm(l); return n.includes("concepto") && n.includes("importe"); });
+  if (hi < 0) throw new Error("No encuentro la cabecera «Fecha;Concepto;Importe;Categoría;Notas». Revisa que hayas pegado el CSV.");
+  const head = lines[hi], sep = [";", "\t", ","].map(c => [c, head.split(c).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const split = line => {  // campos entre comillas (pueden llevar el separador dentro)
+    const out = []; let cur = "", q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (q) { if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
+      else if (ch === '"') q = true; else if (ch === sep) { out.push(cur); cur = ""; } else cur += ch;
+    }
+    out.push(cur); return out.map(x => x.trim());
+  };
+  const cols = split(head).map(impNorm), at = k => cols.findIndex(c => c.startsWith(k));
+  const iF = at("fecha"), iC = at("concepto"), iI = at("importe"), iK = at("categ"), iN = at("nota");
+  const rows = [];
+  for (const line of lines.slice(hi + 1)) {
+    if (!line.trim() || line.trim().startsWith("```")) continue;
+    const f = split(line), r = { concepto: (f[iC] || "").trim(), notas: iN >= 0 ? (f[iN] || "").trim() : "", errs: [] };
+    if (f.every(x => !x)) continue;
+    // fecha → periodo AAAA-MM (sin fecha, el mes que se está viendo)
+    const fe = (iF >= 0 ? f[iF] : "") || "";
+    let m;
+    if ((m = fe.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?/))) { r.per = `${m[1]}-${m[2].padStart(2, "0")}`; r.dia = m[3] ? +m[3] : null; }
+    else if ((m = fe.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/))) { const y = m[3].length === 2 ? "20" + m[3] : m[3]; r.per = `${y}-${m[2].padStart(2, "0")}`; r.dia = +m[1]; }
+    else if (!fe) r.per = S.period;
+    else r.errs.push(`fecha no válida («${fe}»)`);
+    if (r.per && !/^\d{4}-(0[1-9]|1[0-2])$/.test(r.per)) { r.errs.push(`fecha no válida («${fe}»)`); r.per = null; }
+    const imp = parseNum(iI >= 0 ? f[iI] : "");
+    if (imp === null || imp === 0) r.errs.push("sin importe"); else r.importe = Math.round(Math.abs(imp) * 100) / 100;
+    if (!r.concepto) r.errs.push("sin concepto");
+    r.cat = impCat(iK >= 0 ? f[iK] : "");
+    rows.push(r);
+  }
+  if (!rows.length) throw new Error("El CSV no tiene filas debajo de la cabecera.");
+  return rows;
+}
+
+// ¿ya existe algo igual ese mes? (mismo concepto, o misma categoría e importe)
+function impDup(r) {
+  if (!r.per || r.cat === "__skip") return false;
+  const c = impNorm(r.concepto), same = x => x.Periodo === r.per && (impNorm(x.Concepto) === c || Math.abs(n(x.Importe) - r.importe) < 0.005);
+  return r.cat === "__ing" ? S.data.ingresos.some(same) : S.data.movimientos.some(x => x["Categoría"] === r.cat && same(x));
+}
+// pago de deuda: si en el concepto aparece un acreedor con una sola deuda pendiente, se vincula a ella
+function impDebt(r) {
+  if (r.cat !== "Pago de Deudas") return null;
+  const c = impNorm(r.concepto + " " + r.notas);
+  const pend = debts().filter(x => !x.paid && x.Acreedor && c.includes(impNorm(x.Acreedor)));
+  const accs = [...new Set(pend.map(x => x.Acreedor))];
+  return accs.length === 1 && pend.length === 1 ? pend[0] : null;
+}
+const IMP = { rows: [] };
+function impDefaults() {
+  IMP.rows.forEach(r => {
+    r.dup = impDup(r); r.debt = impDebt(r);
+    r.on = !r.errs.length && r.cat !== "__skip" && !r.dup;
+  });
+}
+function renderImpReview() {
+  const rows = IMP.rows, on = rows.filter(r => r.on);
+  // control del tope de ahorro por mes (igual que al añadir una aportación a mano)
+  const avisos = [], porMes = {};
+  on.filter(r => r.cat === "Ahorro e Inversión").forEach(r => porMes[r.per] = (porMes[r.per] || 0) + r.importe);
+  for (const [per, sum] of Object.entries(porMes)) {
+    const mm = month(per);
+    if (mm.cfg && mm.ahorroReal + sum > mm.ahorro + 0.005) avisos.push(`Las aportaciones de ${perName(per)} superarían el objetivo de ahorro (${eur(mm.ahorro)}): quedan ${eur(Math.max(0, mm.ahorro - mm.ahorroReal))}. Desmarca alguna o sube antes el objetivo.`);
+  }
+  const sinMes = [...new Set(on.map(r => r.per))].filter(per => !cfgOf(per));
+  const tot = {}; on.forEach(r => tot[r.cat] = (tot[r.cat] || 0) + r.importe);
+  const meses = [...new Set(on.map(r => r.per))].map(perName).join(", ");
+  $("impSum").innerHTML = `<div>Se añadirán <b>${on.length}</b> de ${rows.length} movimientos${meses ? ` · ${esc(meses)}` : ""}</div>`
+    + (Object.keys(tot).length ? `<div>${Object.entries(tot).map(([c, v]) => `${esc(impCatLabel(c))}: <b class="num">${eur(v)}</b>`).join(" · ")}</div>` : "")
+    + sinMes.map(per => `<div class="imp-note">${esc(perName(per))} aún no está creado: se guardarán igualmente y podrás crearlo después.</div>`).join("")
+    + avisos.map(a => `<div class="imp-warn">${esc(a)}</div>`).join("");
+  $("impList").innerHTML = rows.map((r, i) => {
+    const meta = r.errs.length ? `No se puede importar: ${r.errs.join(", ")}`
+      : [r.dia ? `${r.dia} ${perName(r.per).toLowerCase()}` : perName(r.per), r.dup ? '<span class="tag">Ya existe</span>' : "",
+         r.debt ? `<span class="lnk">→ ${esc(r.debt.Descripción)}</span>` : "", r.notas ? esc(r.notas) : ""].filter(Boolean).join(" · ");
+    return `<div class="imp-row${r.on ? "" : " off"}${r.errs.length ? " bad" : ""}" data-i="${i}">
+      <input type="checkbox" aria-label="Importar ${esc(r.concepto)}" ${r.on ? "checked" : ""} ${r.errs.length ? "disabled" : ""}>
+      <div><div class="imp-c">${esc(r.concepto || "—")}</div><div class="imp-m">${meta}</div></div>
+      <div class="imp-r"><span class="num">${r.importe != null ? eur(r.importe) : "—"}</span>
+        <select aria-label="Categoría de ${esc(r.concepto)}" ${r.errs.length ? "disabled" : ""} style="border-left:4px solid ${impCatColor(r.cat)}">${IMP_CATS.map(([l, v]) => `<option value="${v}" ${v === r.cat ? "selected" : ""}>${l}</option>`).join("")}</select></div></div>`;
+  }).join("");
+  const go = $("impGo");
+  go.querySelector(".btn-lbl") ? go.querySelector(".btn-lbl").textContent = `Importar ${on.length}` : go.textContent = `Importar ${on.length}`;
+  go.disabled = !on.length || avisos.length > 0;
+}
+function impShow(step) {
+  const rev = step === "rev";
+  $("impPrep").hidden = rev; $("impRev").hidden = !rev;
+  $("impBack").hidden = !rev; $("impGo").hidden = !rev; $("impNext").hidden = rev; $("impCancel").hidden = rev;
+  $("impErr").textContent = "";
+  $("dlg-csv").querySelector("form").scrollTop = 0;
+}
+function openImport() {
+  if (!S.data) return;
+  $("impText").value = ""; $("impFile").value = ""; $("impFileName").textContent = ""; IMP.rows = [];
+  impShow("prep");
+  const d = $("dlg-csv"); d.showModal(); d.focus();
+}
+$("impCopy").addEventListener("click", async () => {
+  const text = buildImportPrompt();
+  try { await navigator.clipboard.writeText(text); toast("Prompt copiado: pégalo en tu IA", "info"); }
+  catch { $("impText").value = text; $("impText").select(); toast("No se pudo copiar solo: está seleccionado abajo, cópialo", "info"); }
+});
+$("impTpl").addEventListener("click", downloadImportTemplate);
+$("impFileBtn").addEventListener("click", () => $("impFile").click());
+$("impFile").addEventListener("change", async e => {
+  const f = e.target.files?.[0]; if (!f) return;
+  $("impText").value = await f.text(); $("impFileName").textContent = f.name;
+});
+$("impNext").addEventListener("click", () => {
+  try { IMP.rows = parseImport($("impText").value); impDefaults(); renderImpReview(); impShow("rev"); }
+  catch (err) { $("impErr").textContent = err.message; }
+});
+$("impBack").addEventListener("click", () => impShow("prep"));
+$("impList").addEventListener("change", e => {
+  const row = e.target.closest(".imp-row"); if (!row) return;
+  const r = IMP.rows[+row.dataset.i];
+  if (e.target.type === "checkbox") r.on = e.target.checked;
+  else if (e.target.tagName === "SELECT") { r.cat = e.target.value; r.dup = impDup(r); r.debt = impDebt(r); r.on = r.cat !== "__skip"; }
+  renderImpReview();
+});
+$("impGo").addEventListener("click", async () => {
+  const on = IMP.rows.filter(r => r.on), go = $("impGo");
+  const movimientos = on.filter(r => r.cat !== "__ing").map(r => ({ Periodo: r.per, "Categoría": r.cat, Concepto: r.concepto, Importe: r.importe,
+    Notas: r.notas || null, Acreedor: r.debt?.Acreedor || null, ID_Deuda: r.debt?.ID_Deuda || null }));
+  const ingresos = on.filter(r => r.cat === "__ing").map(r => ({ Periodo: r.per, Concepto: r.concepto, Importe: r.importe, Notas: r.notas || null }));
+  go.setAttribute("aria-busy", "true");
+  try {
+    const res = await api("/api/importar", { movimientos, ingresos });
+    const cuenta = {}; on.forEach(r => cuenta[r.per] = (cuenta[r.per] || 0) + 1);
+    S.period = Object.entries(cuenta).sort((a, b) => b[1] - a[1])[0][0];  // al mes con más movimientos importados
+    $("dlg-csv").close(); toast(`${res.añadidos ?? on.length} movimientos importados`); await load();
+  } catch (err) { $("impErr").textContent = err.message; }
+  finally { go.removeAttribute("aria-busy"); }
+});
+
 /* ---------- eventos ---------- */
 // «Importar CSV» (Gastos variables): de momento solo el botón; la importación llegará más adelante
-document.addEventListener("click", e => { if (e.target.closest("[data-csv]")) toast("La importación de CSV estará disponible pronto", "info"); });
+document.addEventListener("click", e => { if (e.target.closest("[data-csv]")) openImport(); });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches?.("li.clk")) e.target.click(); });
 const DLG = { movimientos: "mov", ingresos: "mov", deudas: "mov", periodos: "per" };
 document.addEventListener("click", e => {
