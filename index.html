@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-L8PVJWR+wRZhTR4xy9dcIYlsZIGJ+e8i33TljSFdFRM=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-AdtSIfWn52XXyCHH3MjkQOEfD1AQaO1OmEztjPyVPg0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -84,7 +84,7 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .period > button:hover:not(:disabled) { background: var(--surface); }
 .period > button:disabled { opacity: .25; cursor: default; }
 .period select { border: 0; background: none; font-weight: 650; font-size: 14.5px; padding: 4px 8px; border-radius: var(--r-in2); text-align: center; appearance: none; cursor: pointer; color: var(--accent); }
-.nav-right { justify-self: end; display: flex; align-items: center; gap: 4px; position: relative; }
+.nav-right { justify-self: end; display: flex; align-items: center; position: relative; }
 .menu-btn { position: relative; width: var(--nav-h); height: var(--nav-h); border: 0; border-radius: var(--r-nav); background: none; color: var(--ink-2); display: grid; place-items: center; cursor: pointer; }
 .menu-btn:hover, .menu-btn[aria-expanded="true"] { background: var(--soft); color: var(--ink); }
 .menu-btn svg { width: 20px; height: 20px; fill: currentColor; }
@@ -121,8 +121,6 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 main > .welcome:nth-child(2) { margin-top: 0; }
 .welcome .row-b { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 @media (max-width: 680px) { .logo span { display: none; } .nav-in { grid-template-columns: auto 1fr auto; } .period { justify-self: center; } }
-/* con sitio suficiente, el selector de mes queda centrado en la pantalla aunque la derecha tenga dos botones */
-@media (min-width: 380px) and (max-width: 680px) { .nav-in { grid-template-columns: 1fr auto 1fr; } }
 
 .shell { max-width: 1360px; margin: 0 auto; padding: 20px 20px 60px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; align-items: start; }
 main { min-width: 0; }
@@ -606,11 +604,7 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
 @media (pointer: coarse) {
   .btn::after { content: ""; position: absolute; left: 0; right: 0; top: min(0px, calc((100% - 44px) / 2)); bottom: min(0px, calc((100% - 44px) / 2)); }
 }
-/* Privacidad: el ojo de la barra difumina las cifras (importes, porcentajes, gráficos). Los formularios no se difuminan. */
-.priv-btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.priv-btn .eye-off, .priv-btn[aria-pressed="true"] .eye-on { display: none; }
-.priv-btn[aria-pressed="true"] .eye-off { display: block; }
-.priv-btn[aria-pressed="true"] { color: var(--accent); }
+/* Privacidad («Ocultar cifras» en el menú ⋯): difumina las cifras (importes, porcentajes, gráficos). Los formularios no se difuminan. */
 :is(.num, #savNote, #debtTitle, .news-item p, #donut svg text, #trend svg text, #savInp, #tip) { transition: filter .2s; }
 body.priv :is(.num, #savNote, #debtTitle, .news-item p, #donut svg text, #trend svg text, #savInp, #tip) { filter: blur(7px); }
 /* las cifras grandes necesitan más difuminado para que no se lean */
@@ -628,9 +622,6 @@ body.priv #savInp:focus, body.priv dialog :is(.num, #savNote) { filter: none; }
       <button id="next" type="button" aria-label="Mes siguiente">›</button>
     </div>
     <div class="nav-right">
-      <button class="menu-btn priv-btn" id="btnPriv" type="button" aria-pressed="false" aria-label="Ocultar cifras" title="Ocultar cifras">
-        <svg class="eye-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-        <svg class="eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.7 3.6M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></svg></button>
       <button class="menu-btn" id="btnMenu" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="topMenu" aria-label="Menú y ajustes" title="Menú y ajustes">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span class="dot" id="syncDot"></span></button>
       <div class="top-menu" id="topMenu" role="menu" hidden>
@@ -641,6 +632,8 @@ body.priv #savInp:focus, body.priv dialog :is(.num, #savNote) { filter: none; }
         <div class="tm-sep" role="separator"></div>
         <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>Tema</span>
           <span class="switch" role="group" aria-label="Tema" id="themeSeg"><button type="button" data-tema="auto" title="Según el móvil o el navegador">Auto</button><button type="button" data-tema="light">Claro</button><button type="button" data-tema="dark">Oscuro</button></span></div>
+        <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-2.7 3.6M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2M3 3l18 18"/></svg>Ocultar cifras</span>
+          <span class="switch" role="group" aria-label="Ocultar cifras" id="privSeg"><button type="button" data-priv="0">No</button><button type="button" data-priv="1">Sí</button></span></div>
         <div class="tm-theme tm-fab"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg>Botón «+» único</span>
           <span class="switch" role="group" aria-label="Botón flotante" id="fabSeg"><button type="button" data-fab="No">No</button><button type="button" data-fab="Sí">Sí</button></span></div>
         <p class="tm-status" id="tmStatus"></p>
@@ -1856,7 +1849,7 @@ function setMenu(open) {
   }
 }
 btnMenu.onclick = e => { e.stopPropagation(); setMenu(topMenu.hidden); };
-topMenu.addEventListener("click", e => { if (e.target.closest("button") && !e.target.closest("[data-tema], [data-fab]")) setMenu(false); });
+topMenu.addEventListener("click", e => { if (e.target.closest("button") && !e.target.closest("[data-tema], [data-fab], [data-priv]")) setMenu(false); });
 document.addEventListener("click", e => { if (!topMenu.hidden && !e.target.closest(".nav-right")) setMenu(false); });
 document.addEventListener("keydown", e => {
   if (topMenu.hidden) return;
@@ -1879,10 +1872,9 @@ applyTheme(store.get("tema") || "auto");
 // privacidad: lo activa o desactiva el usuario con el ojo; cada dispositivo recuerda la última elección
 function applyPriv(on) {
   document.body.classList.toggle("priv", on);
-  const b = $("btnPriv"), l = on ? "Mostrar cifras" : "Ocultar cifras";
-  b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", l); b.title = l;
+  $("privSeg").querySelectorAll("[data-priv]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.priv === "1") === on)));
 }
-$("btnPriv").addEventListener("click", () => { const on = !document.body.classList.contains("priv"); store.set("privacidad", on ? "1" : "0"); applyPriv(on); });
+$("privSeg").addEventListener("click", e => { const b = e.target.closest("[data-priv]"); if (!b) return; const on = b.dataset.priv === "1"; store.set("privacidad", on ? "1" : "0"); applyPriv(on); });
 applyPriv(store.get("privacidad") === "1");
 // .switch con opciones: la pastilla azul se desliza hasta la opción elegida. Si la tarjeta se vuelve a dibujar
 // (p. ej. % ↔ €), el switch nuevo arranca donde estaba el anterior (recordado por su id o aria-label) y se desliza.
