@@ -606,10 +606,14 @@ dialog .actions .btn--secondary:hover { background: var(--soft); }
 }
 /* Modo privacidad (menú ⋯): difumina las cifras (importes, porcentajes, gráficos). Los formularios no se difuminan. */
 :is(.num, #savNote, #debtTitle, .news-item p, #donut svg text, #trend svg text, #savInp, #tip) { transition: filter .2s; }
-body.priv :is(.num, #savNote, #debtTitle, .news-item p, #donut svg text, #trend svg text, #savInp, #tip) { filter: blur(7px); }
+body.priv :where(.num, #savNote, #debtTitle, .news-item p, #savInp, #tip) { filter: blur(7px); }
 /* las cifras grandes necesitan más difuminado para que no se lean */
-body.priv :is(.p-val, .big, .hero-stats b, #donut svg text, #savInp, #debtTitle) { filter: blur(12px); }
+body.priv :where(.p-val, .big, .hero-stats b, #savInp, #debtTitle) { filter: blur(12px); }
+/* texto dentro de los gráficos (SVG): Safari no aplica blur() de CSS ahí; se usa un filtro SVG, que sí admite */
+body.priv #trend svg text { filter: url(#privBlur); }
+body.priv #donut svg text { filter: url(#privBlurL); }
 body.priv #savInp:focus, body.priv dialog :is(.num, #savNote) { filter: none; }
+body.priv :is(.legend tr.hd td, table.data th) { filter: none; }  /* cabeceras de tabla: son títulos, no cifras */
 </style>
 </head>
 <body>
@@ -708,6 +712,10 @@ body.priv #savInp:focus, body.priv dialog :is(.num, #savNote) { filter: none; }
 </div>
 
 <div id="tip" role="tooltip"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <filter id="privBlur" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="3.5"/></filter>
+  <filter id="privBlurL" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="6"/></filter>
+</defs></svg>
 <div id="toast" role="status" aria-live="polite" popover="manual"></div>
 
 <dialog id="dlg-mov" tabindex="-1"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
