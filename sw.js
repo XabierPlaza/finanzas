@@ -3,11 +3,12 @@
  * Estrategia: responde desde la caché al instante y actualiza en segundo plano.
  * VERSION y APP los rellena scripts/publicar.mjs en cada publicación (versión con fecha y lista real de archivos).
  * Las llamadas a Google no se tocan. */
-const VERSION = "finanzas-20261023-1156";
+const VERSION = "finanzas-20261023-1158";
 const APP = ["./","assets/index-Cp--wJNX.js","assets/index-DVQUXRH1.css","iconos/apple-touch-icon.png","iconos/icon-192.png","iconos/icon-512.png","iconos/icon-maskable-512.png","index.html","manifest.webmanifest","vendor/exceljs.min.js","vendor/xlsx.full.min.js"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(APP)).then(() => self.skipWaiting()));
+  // cache: "reload": baja los archivos del servidor, no de la caché HTTP del navegador (podría tener un index.html antiguo)
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(APP.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -17,7 +18,9 @@ self.addEventListener("fetch", e => {
   if (e.request.method !== "GET" || url.origin !== location.origin) return;  // Google y el resto, directos a la red
   e.respondWith(caches.open(VERSION).then(async cache => {
     const cached = await cache.match(e.request, { ignoreSearch: true });
-    const net = fetch(e.request).then(r => { if (r.ok) cache.put(e.request, r.clone()); return r; }).catch(() => null);
+    // los archivos de assets/ llevan huella en el nombre y no cambian nunca; el resto (index.html…) se revalida siempre
+    const req = url.pathname.includes("/assets/") ? e.request : new Request(e.request.url, { cache: "no-cache" });
+    const net = fetch(req).then(r => { if (r.ok) cache.put(e.request, r.clone()); return r; }).catch(() => null);
     return cached || (await net) || (e.request.mode === "navigate" ? cache.match("index.html") : Response.error());
   }));
 });
