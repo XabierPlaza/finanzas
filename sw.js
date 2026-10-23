@@ -3,8 +3,8 @@
  * Estrategia: responde desde la caché al instante y actualiza en segundo plano.
  * VERSION y APP los rellena scripts/publicar.mjs en cada publicación (versión con fecha y lista real de archivos).
  * Las llamadas a Google no se tocan. */
-const VERSION = "finanzas-20261023-1151";
-const APP = ["./","assets/index-CcUsm2sN.js","assets/index-DVQUXRH1.css","datos-local.js","drive.js","iconos/apple-touch-icon.png","iconos/icon-192.png","iconos/icon-512.png","iconos/icon-maskable-512.png","index.html","manifest.webmanifest","vendor/exceljs.min.js","vendor/xlsx.full.min.js"];
+const VERSION = "finanzas-20261023-1156";
+const APP = ["./","assets/index-Cp--wJNX.js","assets/index-DVQUXRH1.css","iconos/apple-touch-icon.png","iconos/icon-192.png","iconos/icon-512.png","iconos/icon-maskable-512.png","index.html","manifest.webmanifest","vendor/exceljs.min.js","vendor/xlsx.full.min.js"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(APP)).then(() => self.skipWaiting()));
