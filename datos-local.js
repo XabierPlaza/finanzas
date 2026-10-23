@@ -1,9 +1,8 @@
 /* Motor de datos local de «Control de finanzas».
  *
- * Reproduce en el navegador las operaciones del servidor del PC (src/app.py) para que la app funcione
- * en el móvil sin PC: mismas rutas (/api/...), mismas validaciones y mismas respuestas.
- * Los datos se guardan en el propio dispositivo (IndexedDB) y se pueden importar/exportar como el mismo
- * Excel que usa el PC. La sincronización opcional con Google Drive vive en drive.js y usa los ganchos
+ * Atiende en el navegador las operaciones de la app (rutas /api/...), con sus validaciones.
+ * Los datos se guardan en el propio dispositivo (IndexedDB) y se pueden importar/exportar como
+ * Base_Datos_Finanzas.xlsx. La sincronización opcional con Google Drive vive en drive.js y usa los ganchos
  * `Finanzas.onChange` / `Finanzas.replaceModel` / `Finanzas.pending`.
  */
 (function (global) {
@@ -34,12 +33,12 @@
     ajustes: { sheet: "Ajustes", table: "tAjustes", key: "Clave",
       headers: ["Clave", "Valor"], widths: [22, 12], formats: {} },
   };
-  // opciones de la app guardadas en el Excel (valen para todos los dispositivos); igual que AJUSTES en app.py
+  // opciones de la app guardadas en el Excel (valen para todos los dispositivos)
   const AJUSTES = { boton_flotante: ["Sí", "No"] };
   const NUMERIC = new Set(["Nómina", "Pct_Ahorro", "Importe_Ahorro", "Importe", "Importe_Total", "Pagado_Previo", "Año"]);
   const INSTRUCCIONES = [
     "",
-    "Este libro es la fuente de datos del Dashboard (Dashboard_Finanzas.exe y la app del móvil).",
+    "Este libro es la fuente de datos de la app web «Control de finanzas».",
     "Cada hoja contiene una tabla de Excel. Añade filas al final de la tabla y se ampliará sola.",
     "",
     "Periodos     → una fila por mes: nómina y objetivo de ahorro (Modo_Ahorro = Porcentaje o Importe).",
@@ -61,7 +60,7 @@
 
   class UserError extends Error {}
 
-  /* ------------------------------------------------------------ validación (igual que app.py) */
+  /* ------------------------------------------------------------ validación */
   const isEmpty = v => v === null || v === undefined || v === "";
   function num(v, field, required = true) {
     if (isEmpty(v)) { if (required) throw new UserError(`Falta el campo ${field}.`); return null; }
@@ -247,7 +246,7 @@
     })();
   }
 
-  /* ------------------------------------------------------------ API compatible con el servidor del PC */
+  /* ------------------------------------------------------------ API (rutas /api/...) */
   const clone = o => JSON.parse(JSON.stringify(o));
   const fmtDate = ts => { const d = new Date(ts || Date.now()), z = n => String(n).padStart(2, "0");
     return `${z(d.getDate())}/${z(d.getMonth() + 1)}/${d.getFullYear()} ${z(d.getHours())}:${z(d.getMinutes())}`; };
@@ -263,7 +262,6 @@
       if (path === "/api/data") return { meta: meta(), ...clone({ periodos: model.periodos, ingresos: model.ingresos, movimientos: model.movimientos, deudas: model.deudas, ajustes: model.ajustes || [] }) };
       throw new Error("No encontrado");
     }
-    if (path === "/api/abrir-excel") { await downloadExcel(); return { ok: true }; }
     const op = OPS[path];
     if (!op) throw new Error("No encontrado");
     const work = clone(model);
@@ -293,14 +291,14 @@
         if (key && o.result?.[key] && r[key] !== o.result[key]) remap[o.result[key]] = r[key];
         kept.push({ ...o, body, result: r });
       } catch (e) {
-        console.warn("Operación descartada al sincronizar:", o.path, e.message);  // p. ej. se borró ese registro desde el PC
+        console.warn("Operación descartada al sincronizar:", o.path, e.message);  // p. ej. se borró ese registro desde otro dispositivo
       }
     }
     return { model: m, ops: kept };
   }
 
   /* ------------------------------------------------------------ Excel
-     Lectura con SheetJS (robusta con cualquier .xlsx, también el que escribe el PC) y escritura con ExcelJS
+     Lectura con SheetJS (robusta con cualquier .xlsx, también uno editado en Excel) y escritura con ExcelJS
      (genera tablas, formatos y desplegables). Ambas se cargan solo cuando hacen falta. */
   const libs = {};
   function loadLib(globalName, src) {

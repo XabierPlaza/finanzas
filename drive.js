@@ -1,11 +1,11 @@
-/* Sincronización opcional de la base de datos con Google Drive (app del móvil).
+/* Sincronización opcional de la base de datos con Google Drive.
  *
  * - La app sigue funcionando siempre en local (datos-local.js); Drive solo es un sitio donde guardar
- *   el mismo Excel que usa el PC (Google Drive para escritorio lo mantiene sincronizado allí).
+ *   el Excel y compartirlo entre dispositivos (móvil, ordenador…).
  * - Permiso mínimo: drive.file → la app solo ve el archivo que el usuario elige con el selector de Drive
  *   o el que la propia app crea. No puede ver el resto de tu Drive.
- * - Antes de subir se compara la versión del archivo en Drive. Si cambió (p. ej. desde el PC), se baja,
- *   se reaplican encima los cambios pendientes del móvil y después se sube: no se pisa nada.
+ * - Antes de subir se compara la versión del archivo en Drive. Si cambió (p. ej. desde otro dispositivo), se baja,
+ *   se reaplican encima los cambios pendientes de este dispositivo y después se sube: no se pisa nada.
  */
 (function (global) {
   "use strict";
@@ -73,7 +73,7 @@
     method: "PATCH", headers: { "Content-Type": XLSX_MIME }, body: new Blob([buf], { type: XLSX_MIME }) }, i)).json();
 
   async function createFile(buf, name, i) {
-    // carpeta «Finanzas» en Mi unidad (en el PC, Google Drive para escritorio la muestra como G:\Mi unidad\Finanzas)
+    // carpeta «Finanzas» en Mi unidad
     const q = encodeURIComponent("name='Finanzas' and mimeType='application/vnd.google-apps.folder' and trashed=false");
     const found = await (await gfetch(`${API}?q=${q}&fields=files(id)`, {}, i)).json();
     let folderId = found.files?.[0]?.id;
@@ -119,7 +119,7 @@
           const m = await meta(state.fileId, interactive);
           if (m.trashed) throw new Error("El archivo de Drive está en la papelera.");
           if (String(m.version) !== String(state.version)) {
-            // cambió en Drive (p. ej. desde el PC): bajar y reaplicar encima los cambios pendientes del móvil
+            // cambió en Drive (p. ej. desde otro dispositivo): bajar y reaplicar encima los cambios pendientes
             const remote = await F.parseExcel(await download(state.fileId, interactive), m.name);
             const rp = F.replay(remote, F.pending);
             await F.replaceModel(rp.model, { keepPending: true, ops: rp.ops });

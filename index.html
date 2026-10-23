@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Hm+5qV1wgNUpSYpojGprwtvM1oaVk+mvOArsRcor5NY=' 'sha256-nB9HGlN/348vTHf5cxxM6BMVIV/8VDAyM/FfeE2Ugpk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Hm+5qV1wgNUpSYpojGprwtvM1oaVk+mvOArsRcor5NY=' 'sha256-g+J/BZohIfDZMQ7gXm/0dUm5Fij6je2YffXQ7OFBHmQ=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>
@@ -116,7 +116,6 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .ds { border: 1px solid var(--border); border-radius: var(--r-in); padding: 14px 16px; display: grid; gap: 10px; }
 .ds h4 { margin: 0; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
 .ds p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.5; }
-.ds .path { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--soft); border-radius: 6px; padding: 6px 8px; word-break: break-all; color: var(--ink); }
 .ds .row-b { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
 .ds .link-sub { justify-self: start; padding: 0; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--ink-2); }
 .badge2 { white-space: nowrap; font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--accent); }
@@ -638,8 +637,7 @@ body.priv :is(.legend tr.hd td, table.data th) { filter: none; }  /* cabeceras d
       <div class="top-menu" id="topMenu" role="menu" hidden>
         <button type="button" role="menuitem" data-open="per"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/></svg>Crear mes nuevo</button>
         <button type="button" role="menuitem" id="btnEditMes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>Editar el mes</button>
-        <button type="button" role="menuitem" id="btnExcel"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>Abrir el Excel</button>
-        <button type="button" role="menuitem" id="btnDatos"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span id="btnDatosLbl">Ubicación de los datos</span></button>
+        <button type="button" role="menuitem" id="btnDatos"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><span id="btnDatosLbl">Datos y Google Drive</span></button>
         <div class="tm-sep" role="separator"></div>
         <div class="tm-theme"><span class="tm-theme-l"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg>Tema</span>
           <span class="switch" role="group" aria-label="Tema" id="themeSeg"><button type="button" data-tema="auto" title="Según el móvil o el navegador">Auto</button><button type="button" data-tema="light">Claro</button><button type="button" data-tema="dark">Oscuro</button></span></div>
@@ -669,7 +667,7 @@ body.priv :is(.legend tr.hd td, table.data th) { filter: none; }  /* cabeceras d
   <div class="card welcome" id="welcome" hidden>
     <p class="eyebrow">Bienvenido</p>
     <h2>Empieza con tus datos</h2>
-    <p class="lead">Todo se guarda en este dispositivo y funciona sin conexión. Puedes traer tu Excel del PC o conectar Google Drive para usar la misma base de datos en ambos.</p>
+    <p class="lead">Todo se guarda en este dispositivo y funciona sin conexión. Puedes importar un Excel o conectar Google Drive para tener los mismos datos en todos tus dispositivos.</p>
     <div class="row-b">
       <button class="btn btn--primary" type="button" data-act="import">Importar mi Excel</button>
       <button class="btn btn--secondary" type="button" data-act="datos">Conectar Google Drive</button>
@@ -885,23 +883,15 @@ const ICON = {
   pend: `<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="var(--warning)"/><path d="M8 4.5V8.3l2.4 1.5" stroke="#0b0b0b" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>`,
 };
 
-// en el PC la app la sirve el .exe (127.0.0.1); en cualquier otra dirección (GitHub Pages en el móvil) funciona en local.
-// «?local» fuerza el modo móvil también en el PC, para probarlo.
-const LOCAL = !["127.0.0.1", "localhost"].includes(location.hostname) || new URLSearchParams(location.search).has("local");
-async function api(path, body) {
-  if (LOCAL) return Finanzas.api(path, body);
-  const r = await fetch(path, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.error || `Error ${r.status}`);
-  return j;
-}
+// los datos viven en el navegador (datos-local.js, mismas rutas /api/...) y, si se conecta, en Google Drive (drive.js)
+const api = (path, body) => Finanzas.api(path, body);
 
 /* ---------- datos ---------- */
 async function load() {
   try {
     const d = await api("/api/data");
     S.data = d; S.mtime = d.meta.mtime;
-    $("welcome").hidden = !(LOCAL && !d.periodos.length && !d.movimientos.length && !d.deudas.length);
+    $("welcome").hidden = !(!d.periodos.length && !d.movimientos.length && !d.deudas.length);
     $("errorBox").style.display = "none"; $("syncDot").classList.remove("off");
     const ps = periods();
     if (!ps.includes(S.period)) {
@@ -919,7 +909,6 @@ async function load() {
 async function poll() {
   try {
     const m = await api("/api/version");
-    if (!LOCAL) $("syncDot").classList.remove("off");
     if (S.mtime !== null && m.mtime !== S.mtime && !document.querySelector("dialog[open]") && !S.editing) await load();
     else if (S.data) { S.data.meta = m; renderFooter(); }
   } catch { $("syncDot").classList.add("off"); }
@@ -1308,14 +1297,10 @@ function renderDebts() {
 
 function renderFooter() {
   const m = S.data.meta;
-  if (LOCAL) {
-    const d = m.drive;
-    $("footer").innerHTML = d?.connected
-      ? `Google Drive · <b>${esc(d.name || m.file)}</b><br>${d.syncing ? "sincronizando…" : d.error ? esc(d.error) : `sincronizado ${d.lastSync ? fmtTime(d.lastSync) : "—"}`}${m.pending ? `<br>${m.pending} cambio${m.pending === 1 ? "" : "s"} pendiente${m.pending === 1 ? "" : "s"} de subir` : ""}`
-      : `Datos en este dispositivo<br>guardado ${esc(m.modified)}`;
-    return;
-  }
-  $("footer").innerHTML = `Sincronizado con <b>${esc(m.file)}</b><br>guardado ${esc(m.modified)}${m.locked ? "<br>El Excel está abierto: ciérralo para guardar desde aquí" : ""}`;
+  const d = m.drive;
+  $("footer").innerHTML = d?.connected
+    ? `Google Drive · <b>${esc(d.name || m.file)}</b><br>${d.syncing ? "sincronizando…" : d.error ? esc(d.error) : `sincronizado ${d.lastSync ? fmtTime(d.lastSync) : "—"}`}${m.pending ? `<br>${m.pending} cambio${m.pending === 1 ? "" : "s"} pendiente${m.pending === 1 ? "" : "s"} de subir` : ""}`
+    : `Datos en este dispositivo<br>guardado ${esc(m.modified)}`;
 }
 // avisos del mes (menú lateral)
 const NI = {
@@ -1792,44 +1777,16 @@ async function datosAction(fn, okMsg) {
 async function renderDatos() {
   const body = $("datosBody");
   $("datosTitle").textContent = $("btnDatosLbl").textContent;
-  if (!LOCAL) {
-    const c = await api("/api/config");
-    body.innerHTML = `<div class="ds">
-        <h4>${DB_ICON}Base de datos en uso ${c.in_drive ? '<span class="badge2 ok">Google Drive</span>' : c.is_default ? '<span class="badge2">Carpeta del programa</span>' : '<span class="badge2">Otra carpeta</span>'}</h4>
-        <div class="path">${esc(c.path)}</div>
-        <div class="row-b"><button class="btn btn--secondary" type="button" data-db="abrir">Abrir carpeta</button></div>
-      </div>
-      <div class="ds">
-        <h4>${DRIVE_ICON}Guardar en Google Drive</h4>
-        <p>Con <b>Google Drive para escritorio</b> instalado, elige una carpeta de «Mi unidad». El Excel se sincroniza solo y puedes usar la misma base de datos en el móvil.</p>
-        ${c.drive.length ? `<div class="row-b">${c.drive.map(f => `<button class="btn btn--primary" type="button" data-db="usar" data-folder="${esc(f)}">Usar ${esc(f)}</button>`).join("")}</div>`
-          : `<p class="muted">No se ha encontrado Google Drive para escritorio en este PC. Instálalo desde google.com/drive/download y vuelve a abrir este diálogo.</p>`}
-      </div>
-      <div class="ds">
-        <h4>Otra ubicación</h4>
-        <p>Si la carpeta elegida ya tiene un <b>Base_Datos_Finanzas.xlsx</b>, se usará ese. Si no, se copiará allí el actual (el original no se borra).</p>
-        <div class="row-b"><button class="btn btn--secondary" type="button" data-db="elegir">Elegir carpeta…</button>${c.is_default ? "" : '<button class="btn btn--secondary" type="button" data-db="defecto">Volver a la carpeta del programa</button>'}</div>
-        ${c.env ? '<p class="muted">Aviso: la ubicación está fijada por la variable FINANZAS_DB; se aplicará solo en esta sesión.</p>' : ""}
-      </div>`;
-    body.querySelectorAll("[data-db]").forEach(b => b.onclick = async () => {
-      const a = b.dataset.db, defaultFolder = c.default.replace(/[\\/][^\\/]+$/, "");
-      if (a === "abrir") return api("/api/config/abrir-carpeta", {});
-      let folder = a === "usar" ? b.dataset.folder : a === "defecto" ? defaultFolder : null;
-      if (a === "elegir") { const r = await api("/api/config/elegir", {}); folder = r.folder; if (!folder) return; }
-      await datosAction(() => api("/api/config", { folder }), r => ({ usada: "Usando la base de datos que ya había en esa carpeta", copiada: "Base de datos copiada y en uso", creada: "Base de datos nueva creada", "sin cambios": "Ya estaba en esa carpeta" }[r.accion]));
-    });
-    return;
-  }
   const st = FinanzasDrive.status(), cfg = FinanzasDrive.getConfig(), d = S.data;
   const nMov = d?.movimientos.length || 0, nMes = d?.periodos.length || 0;
   body.innerHTML = `<div class="ds">
       <h4>${DB_ICON}En este dispositivo <span class="badge2">${nMes || nMov ? `${nMes} meses · ${nMov} movimientos` : "Sin datos"}</span></h4>
-      <p>La app funciona siempre en local, también sin conexión. Puedes traer el Excel del PC o guardar una copia.</p>
+      <p>La app funciona siempre en local, también sin conexión. Puedes importar un Excel o guardar una copia.</p>
       <div class="row-b"><button class="btn btn--secondary" type="button" data-dt="import">Importar Excel</button><button class="btn btn--secondary" type="button" data-dt="export">Exportar Excel</button></div>
     </div>
     <div class="ds">
       <h4>${DRIVE_ICON}Google Drive (opcional) ${st.connected ? `<span class="badge2 ${st.error ? "warn" : "ok"}">${st.error ? "Revisar" : "Conectado"}</span>` : ""}</h4>
-      ${!st.configured || S.editCfg ? `<p>Para usar la misma base de datos que el PC, configura una vez el acceso a Google (gratis). Sigue la guía del archivo <b>LEEME.txt</b> y pega aquí los datos:</p>
+      ${!st.configured || S.editCfg ? `<p>Para sincronizar con Google Drive, configura una vez el acceso a Google (gratis) y pega aquí los datos de tu proyecto:</p>
         <label class="fld">ID de cliente OAuth<input id="gcClient" placeholder="xxxxxxxx.apps.googleusercontent.com" value="${esc(cfg.clientId || "")}"></label>
         <div class="f2"><label class="fld">Clave de API<input id="gcKey" value="${esc(cfg.apiKey || "")}"></label><label class="fld">Número de proyecto<input id="gcApp" inputmode="numeric" value="${esc(cfg.appId || "")}"></label></div>
         <div class="row-b"><button class="btn btn--primary" type="button" data-dt="cfg">Guardar configuración</button></div>`
@@ -1870,15 +1827,13 @@ document.addEventListener("click", e => {
   if (w.dataset.act === "import") $("fileImport").click();
   if (w.dataset.act === "datos") openDatos();
 });
-$("btnExcel").onclick = async () => {
-  if (LOCAL) return openDatos(); try { await api("/api/abrir-excel", {}); toast("Abriendo el Excel… al guardar, esta página se actualiza sola"); } catch (e) { toast(e.message, "err"); } };
 /* menú de ajustes de la cabecera */
 const topMenu = $("topMenu"), btnMenu = $("btnMenu");
 function setMenu(open) {
   topMenu.hidden = !open; btnMenu.setAttribute("aria-expanded", open);
   if (open) {
     const off = $("syncDot").classList.contains("off"), wait = $("syncDot").classList.contains("wait");
-    $("tmStatus").textContent = off ? "Sin conexión con los datos" : wait ? "Sincronizando cambios…" : LOCAL ? "Datos guardados en este dispositivo" : "Conectado al Excel";
+    $("tmStatus").textContent = off ? "Sin conexión con los datos" : wait ? "Sincronizando cambios…" : "Datos guardados en este dispositivo";
     topMenu.querySelector("button:not([hidden])")?.focus();
   }
 }
@@ -2058,20 +2013,17 @@ function loadScript(src) {
   return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error(`No se pudo cargar ${src}`)); document.head.appendChild(s); });
 }
 (async function start() {
-  if (LOCAL) {
-    // modo móvil: motor local + sincronización opcional con Drive; la app funciona sin conexión
-    $("btnExcel").hidden = true; $("btnDatosLbl").textContent = "Datos y Google Drive";
-    await loadScript("datos-local.js"); await loadScript("drive.js");
-    FinanzasDrive.onStatus(st => {
-      $("syncDot").classList.toggle("off", !!st.error); $("syncDot").classList.toggle("wait", st.syncing || (st.connected && st.pending > 0));
-      if (S.data) { S.data.meta = { ...S.data.meta, drive: st, pending: st.pending }; renderFooter(); }
-      if ($("dlg-datos").open) renderDatos();
-    });
-    await FinanzasDrive.init();
-    if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(e => console.warn("Sin modo sin conexión:", e));
-  }
+  // motor local + sincronización opcional con Drive; la app funciona sin conexión
+  await loadScript("datos-local.js"); await loadScript("drive.js");
+  FinanzasDrive.onStatus(st => {
+    $("syncDot").classList.toggle("off", !!st.error); $("syncDot").classList.toggle("wait", st.syncing || (st.connected && st.pending > 0));
+    if (S.data) { S.data.meta = { ...S.data.meta, drive: st, pending: st.pending }; renderFooter(); }
+    if ($("dlg-datos").open) renderDatos();
+  });
+  await FinanzasDrive.init();
+  if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(e => console.warn("Sin modo sin conexión:", e));
   await load();
-  setInterval(poll, LOCAL ? 1500 : 3000);
+  setInterval(poll, 1500);
 })();
 </script>
 </body>

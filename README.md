@@ -1,8 +1,6 @@
-# Control de finanzas · app del móvil
+# Control de finanzas
 
-Esta carpeta es la versión del dashboard para iPhone y Android. Funciona en local en el teléfono
-(también sin conexión) y, opcionalmente, guarda la base de datos en tu Google Drive.
+App web para móvil y ordenador. Funciona en local en cada dispositivo (también sin conexión) y,
+opcionalmente, guarda la base de datos en tu Google Drive para compartirla entre dispositivos.
 
-**No contiene datos personales**: solo el código. Tus datos quedan en el teléfono y, si lo eliges, en tu Drive.
-
-Las instrucciones completas están en `LEEME.txt` (carpeta del programa en el PC).
+**No contiene datos personales**: solo el código. Tus datos quedan en tu dispositivo y, si lo eliges, en tu Drive.
