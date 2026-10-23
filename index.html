@@ -536,7 +536,7 @@ dialog form > .actions .btn--danger { margin-left: calc(-1 * var(--btn-px-lg)); 
 /* Pantallas táctiles: con letra < 16 px en un campo, iOS amplía la página al escribir (y no la devuelve al cerrar).
    Va al final para que ninguna regla posterior la pise. */
 @media (pointer: coarse), (max-width: 560px) {
-  .fld input, .fld select, .fld textarea, .edit-num, .inp, .sel, .dd-fld .dd-btn, #impText { font-size: 16px; }
+  .fld input, .fld select, .fld textarea, .edit-num, .inp, .sel, .dd-fld .dd-btn { font-size: 16px; }
 }
 /* fondos dentro de las ventanas (en claro coinciden con los de siempre; en oscuro, capas para separar cabecera, cuerpo y pie) */
 dialog .fld :is(input, select, textarea), dialog .dd-fld .dd-btn, dialog .ds, dialog .debt-hist { background: var(--dlg-fld); }
