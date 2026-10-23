@@ -1,9 +1,15 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-nB9HGlN/348vTHf5cxxM6BMVIV/8VDAyM/FfeE2Ugpk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Hm+5qV1wgNUpSYpojGprwtvM1oaVk+mvOArsRcor5NY=' 'sha256-nB9HGlN/348vTHf5cxxM6BMVIV/8VDAyM/FfeE2Ugpk=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+// iPhone/iPad amplían la página al tocar un campo de texto; con maximum-scale=1 no lo hacen y el pellizco para ampliar sigue funcionando
+if (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) {
+  const vp = document.querySelector('meta[name="viewport"]'); vp.content += ", maximum-scale=1";
+}
+</script>
 <title>Control de finanzas</title>
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" data-auto="#ffffff">
 <meta name="theme-color" content="#18191f" media="(prefers-color-scheme: dark)" data-auto="#18191f">
@@ -530,7 +536,7 @@ dialog form > .actions .btn--danger { margin-left: calc(-1 * var(--btn-px-lg)); 
 /* Pantallas táctiles: con letra < 16 px en un campo, iOS amplía la página al escribir (y no la devuelve al cerrar).
    Va al final para que ninguna regla posterior la pise. */
 @media (pointer: coarse), (max-width: 560px) {
-  .fld input, .fld select, .fld textarea, .edit-num, .inp, .sel, .dd-fld .dd-btn { font-size: 16px; }
+  .fld input, .fld select, .fld textarea, .edit-num, .inp, .sel, .dd-fld .dd-btn, #impText { font-size: 16px; }
 }
 /* fondos dentro de las ventanas (en claro coinciden con los de siempre; en oscuro, capas para separar cabecera, cuerpo y pie) */
 dialog .fld :is(input, select, textarea), dialog .dd-fld .dd-btn, dialog .ds, dialog .debt-hist { background: var(--dlg-fld); }
