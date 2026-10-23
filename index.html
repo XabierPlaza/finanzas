@@ -13,8 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3.5' fill='%231f4e8c'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 13.5h11'/><path d='M4.5 11.5v-2.5M8 11.5V7.5M11.5 11.5V6'/><path d='M3 6.5 6.5 4l2.5 1.5L13 2.5'/><path d='M10.5 2.5H13V5'/></g></svg>">
-  <script type="module" crossorigin src="./assets/index-CG41xSGU.js"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3.5' fill='%231f4e8c'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 13.5h11'/><path d='M4.5 11.5v-2.5M8 11.5V7.5M11.5 11.5V6'/><path d='M3 6.5 6.5 4l2.5 1.5L13 2.5'/><path d='M10.5 2.5H13V5'/></g></svg>">
+  <script type="module" crossorigin src="./assets/index-Twuxe8hA.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CkRzStIK.css">
 </head>
 <body>
@@ -134,6 +134,8 @@
     <label class="fld"><span id="lblConcepto">Concepto</span><input name="Concepto" required></label>
     <label class="fld"><span id="lblImporte">Importe (€)</span><input name="Importe" required inputmode="decimal" placeholder="0,00"></label>
   </div>
+  <!-- tipo de gasto variable: opciones desde TIPOS_GASTO (formularios.ts); se propone solo según el concepto -->
+  <label class="fld" data-show="Gastos Variables">Tipo<select name="Tipo"><option value="">Sin tipo</option></select></label>
   <label class="fld pay-hide" data-show="Pago de Deudas">Deuda (opcional)<select name="ID_Deuda"></select></label>
   <!-- el mes no se pregunta: los apuntes nuevos van al mes que se está viendo (al editar se conserva el suyo) -->
   <input type="hidden" name="Periodo">
@@ -170,7 +172,7 @@
       <span class="muted imp-file" id="impFileName"></span>
     </div>
     <input type="file" id="impFile" accept=".csv,text/csv,text/plain" hidden>
-    <label class="fld">O pega aquí el resultado<textarea id="impText" rows="5" placeholder="Fecha;Concepto;Importe;Notas&#10;2026-10-03;Supermercado;45,20;"></textarea></label>
+    <label class="fld">O pega aquí el resultado<textarea id="impText" rows="5" placeholder="Fecha;Concepto;Importe;Tipo;Notas&#10;2026-10-03;Mercadona;45,20;Supermercado;"></textarea></label>
   </div>
   <div class="imp-step" id="impRev" hidden>
     <div class="imp-sum" id="impSum"></div>
@@ -217,6 +219,6 @@
   <div class="err"></div>
   <div class="actions"><button class="btn btn--danger btn--lg" type="button" data-del>Eliminar mes</button><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button><button class="btn btn--primary btn--lg" value="ok">Guardar</button></div>
 </form></dialog>
-
+
 </body>
 </html>
