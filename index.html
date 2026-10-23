@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-bxgP3E1DuyjcNO9da2LWIGlvKLMKlywffr4qNKY1OF0=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rq4YM9oyCqbJZO3Zth96SxENylmi2qq9qNeJ5729DGQ=' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://ssl.gstatic.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: blob: https://*.googleusercontent.com https://www.gstatic.com https://ssl.gstatic.com; connect-src 'self' https://www.googleapis.com https://content.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://content.googleapis.com; font-src 'self' data:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Control de finanzas</title>
@@ -100,7 +100,6 @@ body > nav { position: sticky; top: 0; z-index: 20; background: var(--bar); bord
 .tm-sep { height: 1px; background: var(--line); margin: 5px 4px; }
 .tm-theme { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 6px 6px 10px; font-size: 14px; color: var(--ink); }
 .tm-theme-l { display: flex; align-items: center; gap: 10px; }
-.tm-fab { display: none; }  /* el ajuste del botón «+» solo tiene sentido en el móvil */
 .tm-status { margin: 4px 10px 4px; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
 .tm-status:empty { display: none; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); display: inline-block; }
@@ -538,24 +537,25 @@ dialog .fld :is(input, select, textarea), dialog .dd-fld .dd-btn, dialog .ds, di
 dialog .fld :is(input, textarea)[readonly] { background: var(--dlg-ro); }
 dialog .actions .btn--secondary { background: var(--dlg-body); }
 dialog .actions .btn--secondary:hover { background: var(--soft); }
-/* Botón «+» único (ajuste del Excel): solo en el móvil; oculta los «+ Añadir…» de las secciones */
+/* Botón «+» único (ajuste del Excel, vale para todos los dispositivos): oculta los «+ Añadir…» de las secciones */
 #fab { display: none; }
 #fab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
-@media (max-width: 760px) {
-  .tm-fab { display: flex; }
-  body.fab-on #fab { display: grid; place-items: center; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 50;
-                     width: 56px; height: 56px; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
-                     box-shadow: 0 6px 18px rgba(15, 30, 60, .3); cursor: pointer; transition: background-color .18s, transform .15s; }
-  body.fab-on #fab:hover { background: var(--accent-2); }
-  body.fab-on #fab:active { transform: scale(.94); }
-  body.fab-on .add-btn, body.fab-on .add-actions { display: none !important; }
-  body.fab-on main { padding-bottom: 88px; }
-}
-.tipo-list { display: grid; gap: 8px; }
+body.fab-on #fab { display: grid; place-items: center; position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 50;
+                   width: 56px; height: 56px; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+                   box-shadow: 0 6px 18px rgba(15, 30, 60, .3); cursor: pointer; transition: background-color .18s, transform .15s; }
+body.fab-on #fab:hover { background: var(--accent-2); }
+body.fab-on #fab:active { transform: scale(.94); }
+body.fab-on .add-btn, body.fab-on .add-actions { display: none !important; }
+body.fab-on main { padding-bottom: 88px; }
+@media (min-width: 761px) { body.fab-on #fab { right: 24px; bottom: 24px; } }
+.dlg-tipo { width: min(480px, calc(100% - 24px)); }
+.tipo-list { display: grid; gap: 18px; }
+.tipo-grp { display: grid; gap: 8px; }
+.tipo-grp .eyebrow { display: flex; align-items: center; margin: 0; }
+.tipo-grp .eyebrow::before { content: ""; width: 3px; height: 14px; border-radius: 2px; background: var(--c); margin-right: 8px; }
 .tipo-list button { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 12px 0 14px; border: 1px solid var(--border); border-radius: var(--r-in);
                     background: var(--dlg-fld); color: var(--ink); font-size: 15px; font-weight: 500; text-align: left; }
 .tipo-list button:hover { background: var(--soft); }
-.tipo-list .sw { width: 12px; height: 12px; border-radius: 3px; flex: none; }
 .tipo-list .chev { width: 18px; height: 18px; margin-left: auto; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 /* ---------- Componente .btn ----------
    Uso: <button class="btn btn--primary">Texto</button> · con icono: <button class="btn btn--secondary"><svg …/>Texto</button>
@@ -784,7 +784,7 @@ body.priv :is(.legend tr.hd td, table.data th) { filter: none; }  /* cabeceras d
     <button class="btn btn--primary btn--lg" type="button" id="impNext">Revisar</button>
     <button class="btn btn--primary btn--lg" type="button" id="impGo" hidden>Importar</button></div>
 </form></dialog>
-<dialog id="dlg-tipo" tabindex="-1"><form method="dialog" class="plain">
+<dialog id="dlg-tipo" class="dlg-tipo" tabindex="-1"><form method="dialog" class="plain">
   <h3>¿Qué quieres añadir?</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="tipo-list" id="tipoList"></div>
   <div class="actions"><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button></div>
@@ -971,14 +971,21 @@ $("fabSeg").addEventListener("click", async e => {
   catch (err) { toast(err.message, "err"); }
 });
 // el «+» abre una ventana para elegir el tipo y luego el formulario de siempre
-const TIPOS = [["Ingreso extra", "Ingreso extra", "var(--accent)"], ["Gastos Fijos", "Gasto fijo", "var(--cat-fij)"],
-  ["Pago de Deudas", "Pago de deuda", "var(--cat-deb)"], ["Ahorro e Inversión", "Aportación de ahorro o inversión", "var(--cat-aho)"],
-  ["Gastos Variables", "Gasto variable", "var(--cat-var)"], ["__csv", "Importar gastos variables (CSV)", "var(--cat-var)"], ["Deuda", "Nueva deuda", "var(--cat-deb)"]];
+// agrupados por sección, en el orden y con los números y colores de la app: [sección, color, número, [[categoría, texto]…]]
+const tipoGrupos = hayDeudas => {
+  const st = S.steps || { aho: 3, var: 4 }, withDebts = st.aho === 4;
+  return [["Ingresos", "var(--accent)", 1, [["Ingreso extra", "Ingreso extra"]]],
+    ["Gastos fijos", "var(--cat-fij)", 2, [["Gastos Fijos", "Gasto fijo"]]],
+    ["Deudas", "var(--cat-deb)", withDebts ? 3 : 0, [...hayDeudas ? [["Pago de Deudas", "Pago de deuda"]] : [], ["Deuda", "Nueva deuda"]]],
+    ["Ahorro e inversión", "var(--cat-aho)", st.aho, [["Ahorro e Inversión", "Aportación"]]],
+    ["Gastos variables", "var(--cat-var)", st.var, [["Gastos Variables", "Gasto variable"], ["__csv", "Importar CSV"]]]];
+};
 $("fab").addEventListener("click", () => {
   if (!S.data) return;
   const hayDeudas = debts().some(x => !x.paid);
-  $("tipoList").innerHTML = TIPOS.filter(([cat]) => cat !== "Pago de Deudas" || hayDeudas)
-    .map(([cat, label, color]) => `<button type="button" data-tipo="${esc(cat)}"><span class="sw" style="background:${color}"></span>${esc(label)}<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>`).join("");
+  $("tipoList").innerHTML = tipoGrupos(hayDeudas).map(([sec, color, num, items]) => `<div class="tipo-grp" role="group" aria-label="${sec}" style="--c:${color}">
+      <p class="eyebrow">${num ? `<span class="step-n">${num}</span>` : ""}${sec}</p>
+      ${items.map(([cat, label]) => `<button type="button" data-tipo="${esc(cat)}">${esc(label)}<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>`).join("")}</div>`).join("");
   const d = $("dlg-tipo"); d.showModal(); d.focus();
 });
 $("tipoList").addEventListener("click", e => {
