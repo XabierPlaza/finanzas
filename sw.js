@@ -3,7 +3,7 @@
  * Estrategia: responde desde la caché al instante y actualiza en segundo plano.
  * VERSION y APP los rellena scripts/publicar.mjs en cada publicación (versión con fecha y lista real de archivos).
  * Las llamadas a Google no se tocan. */
-const VERSION = "finanzas-20261023-1213";
+const VERSION = "finanzas-20261023-1215";
 const APP = ["./","assets/index-CG41xSGU.js","assets/index-CkRzStIK.css","iconos/apple-touch-icon.png","iconos/icon-192.png","iconos/icon-512.png","iconos/icon-maskable-512.png","index.html","manifest.webmanifest","vendor/exceljs.min.js","vendor/xlsx.full.min.js"];
 
 self.addEventListener("install", e => {
