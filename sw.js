@@ -1,10 +1,10 @@
-/* Funcionamiento sin conexión de la app del móvil.
+/* Funcionamiento sin conexión de la app.
  * Guarda en caché los archivos de la app (no los datos: esos están en IndexedDB y, si se elige, en Drive).
- * Estrategia: responde desde la caché al instante y actualiza en segundo plano; al publicar una versión
- * nueva basta con cambiar VERSION. Las llamadas a Google no se tocan. */
-const VERSION = "finanzas-v116";
-const APP = ["./", "index.html", "datos-local.js", "drive.js", "xlsx.full.min.js", "exceljs.min.js", "manifest.webmanifest",
-  "iconos/icon-192.png", "iconos/icon-512.png", "iconos/apple-touch-icon.png", "iconos/icon-maskable-512.png"];
+ * Estrategia: responde desde la caché al instante y actualiza en segundo plano.
+ * VERSION y APP los rellena scripts/publicar.mjs en cada publicación (versión con fecha y lista real de archivos).
+ * Las llamadas a Google no se tocan. */
+const VERSION = "finanzas-20261023-1148";
+const APP = ["./","assets/index-B0JmAQB1.js","datos-local.js","drive.js","iconos/apple-touch-icon.png","iconos/icon-192.png","iconos/icon-512.png","iconos/icon-maskable-512.png","index.html","manifest.webmanifest","vendor/exceljs.min.js","vendor/xlsx.full.min.js"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(APP)).then(() => self.skipWaiting()));

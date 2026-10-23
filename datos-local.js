@@ -309,8 +309,8 @@
       document.head.appendChild(s);
     });
   }
-  const loadExcelJS = () => loadLib("ExcelJS", "exceljs.min.js");
-  const loadSheetJS = () => loadLib("XLSX", "xlsx.full.min.js");
+  const loadExcelJS = () => loadLib("ExcelJS", "vendor/exceljs.min.js");
+  const loadSheetJS = () => loadLib("XLSX", "vendor/xlsx.full.min.js");
   function cellValue(v) {
     if (v === null || v === undefined) return null;
     if (v instanceof Date) return `${v.getFullYear()}-${String(v.getMonth() + 1).padStart(2, "0")}`;
