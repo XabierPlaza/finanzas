@@ -13,9 +13,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3.5' fill='%231f4e8c'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 13.5h11'/><path d='M4.5 11.5v-2.5M8 11.5V7.5M11.5 11.5V6'/><path d='M3 6.5 6.5 4l2.5 1.5L13 2.5'/><path d='M10.5 2.5H13V5'/></g></svg>">
-  <script type="module" crossorigin src="./assets/index-Twuxe8hA.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CkRzStIK.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3.5' fill='%231f4e8c'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 13.5h11'/><path d='M4.5 11.5v-2.5M8 11.5V7.5M11.5 11.5V6'/><path d='M3 6.5 6.5 4l2.5 1.5L13 2.5'/><path d='M10.5 2.5H13V5'/></g></svg>">
+  <script type="module" crossorigin src="./assets/index-Cm4rPvTC.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BqVAKjKs.css">
 </head>
 <body>
 <nav>
@@ -190,6 +190,15 @@
   <div class="tipo-list" id="tipoList"></div>
   <div class="actions"><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button></div>
 </form></dialog>
+<dialog id="dlg-comparar" class="dlg-cmp" tabindex="-1"><form method="dialog" class="plain">
+  <h3>Comparar gastos variables</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="f2 cmp-sel">
+    <label class="fld">Mes<select id="cmpB"></select></label>
+    <label class="fld">Comparado con<select id="cmpA"></select></label>
+  </div>
+  <div id="cmpBody"></div>
+  <div class="actions"><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cerrar</button></div>
+</form></dialog>
 <dialog id="dlg-datos" tabindex="-1"><form method="dialog" class="plain">
   <h3 id="datosTitle">Datos</h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div id="datosBody" style="display:grid;gap:14px"></div>
@@ -219,6 +228,6 @@
   <div class="err"></div>
   <div class="actions"><button class="btn btn--danger btn--lg" type="button" data-del>Eliminar mes</button><span class="sp"></span><button class="btn btn--secondary btn--lg" value="cancel" formnovalidate>Cancelar</button><button class="btn btn--primary btn--lg" value="ok">Guardar</button></div>
 </form></dialog>
-
+
 </body>
 </html>
