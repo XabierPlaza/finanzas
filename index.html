@@ -14,8 +14,8 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3.5' fill='%231f4e8c'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 13.5h11'/><path d='M4.5 11.5v-2.5M8 11.5V7.5M11.5 11.5V6'/><path d='M3 6.5 6.5 4l2.5 1.5L13 2.5'/><path d='M10.5 2.5H13V5'/></g></svg>">
-  <script type="module" crossorigin src="./assets/index-D3TaRS8p.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BiP8g-ac.css">
+  <script type="module" crossorigin src="./assets/index-CGNcaXuh.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Dh-TlJfM.css">
 </head>
 <body>
 <nav>
@@ -89,8 +89,8 @@
   </section>
 
   <section class="card" id="sec-evolucion">
-    <!-- cabecera en rejilla, como en Deudas: en el ordenador, flechas (o filtros) y vista a la derecha del título;
-         si los filtros no caben, bajan a su fila. En el móvil, la vista arriba y las flechas junto al subtítulo -->
+    <!-- cabecera en rejilla: como en toda la app, los controles van arriba a la derecha, en la fila del nombre («Análisis»).
+         Lo que no cabe baja bajo el título: los filtros de Comparar en pantallas estrechas y las flechas en el móvil -->
     <div class="ana-head" id="anaHead"><p class="eyebrow ana-eye">Análisis</p>
       <div class="switch ana-arr" role="group" aria-label="Desplazar meses" id="trendArrows"><button type="button" id="trendPrev" aria-label="Meses anteriores"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button><button type="button" id="trendNext" aria-label="Meses siguientes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button></div>
       <span class="switch ana-seg" role="group" aria-label="Vista de análisis" id="anaSeg"><button type="button" data-ana="evo" aria-pressed="true">Evolución</button><button type="button" data-ana="cmp" aria-pressed="false">Comparar</button></span>
@@ -102,10 +102,11 @@
   </section>
 
   <section class="card" id="sec-deudas">
-    <p class="eyebrow">Deudas</p>
-    <div class="sec-head">
-      <div><h2 id="debtTitle"></h2></div>
+    <!-- como en Ahorro y Análisis: los controles, arriba a la derecha en la fila del nombre; el título debajo -->
+    <div class="ctl-head">
+      <p class="eyebrow">Deudas</p>
       <div class="filters"><select class="sel" id="debtCred" aria-label="Acreedor"></select><span class="switch" role="group" aria-label="Estado de las deudas" id="debtState"></span></div>
+      <h2 id="debtTitle"></h2>
     </div>
     <div class="tbl-wrap"><table class="data" id="debtTbl"></table></div>
     <button class="btn btn--primary add-btn" type="button" data-open="mov" data-cat="Deuda"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>Añadir deuda</button>
