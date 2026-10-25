@@ -3,8 +3,8 @@
  * Estrategia: responde desde la caché al instante y actualiza en segundo plano.
  * VERSION y APP los rellena scripts/publicar.mjs en cada publicación (versión con fecha y lista real de archivos).
  * Las llamadas a Google no se tocan. */
-const VERSION = "finanzas-20261025-1203";
-const APP = ["./","assets/index-BUmv9j5V.css","assets/index-CzA8NUzA.js","iconos/apple-touch-icon.png","iconos/icon-192.png","iconos/icon-512.png","iconos/icon-maskable-512.png","index.html","manifest.webmanifest","vendor/exceljs.min.js","vendor/xlsx.full.min.js"];
+const VERSION = "finanzas-20261025-1206";
+const APP = ["./","assets/index-CiVCTFAp.js","assets/index-DdPiJCWV.css","iconos/apple-touch-icon.png","iconos/icon-192.png","iconos/icon-512.png","iconos/icon-maskable-512.png","index.html","manifest.webmanifest","vendor/exceljs.min.js","vendor/xlsx.full.min.js"];
 
 self.addEventListener("install", e => {
   // cache: "reload": baja los archivos del servidor, no de la caché HTTP del navegador (podría tener un index.html antiguo)
