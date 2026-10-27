@@ -14,8 +14,8 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3.5' fill='%231f4e8c'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 13.5h11'/><path d='M4.5 11.5v-2.5M8 11.5V7.5M11.5 11.5V6'/><path d='M3 6.5 6.5 4l2.5 1.5L13 2.5'/><path d='M10.5 2.5H13V5'/></g></svg>">
-  <script type="module" crossorigin src="./assets/index-CVJcus41.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BorK10mW.css">
+  <script type="module" crossorigin src="./assets/index-CkVj02dF.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CQHs_hmw.css">
 </head>
 <body>
 <nav>
@@ -136,7 +136,7 @@
 </defs></svg>
 <div id="toast" role="status" aria-live="polite" popover="manual"></div>
 
-<dialog id="dlg-mov" tabindex="-1"><form method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
+<dialog id="dlg-mov" tabindex="-1"><form novalidate method="dialog" data-tabla="movimientos" data-new="/api/movimiento">
   <h3 data-t-new="Nuevo movimiento" data-t-edit="Editar movimiento"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <!-- el tipo lo fija el botón que abre el formulario (o el apunte que se edita): no se muestra ni se cambia aquí -->
   <label class="fld" hidden>Tipo<select id="movType">
@@ -149,19 +149,19 @@
   </select></label>
   <input type="hidden" name="Categoría">
   <div class="f2">
-    <label class="fld"><span id="lblConcepto">Concepto</span><input name="Concepto" required></label>
-    <label class="fld"><span id="lblImporte">Importe (€)</span><input name="Importe" required inputmode="decimal" placeholder="0,00"></label>
+    <label class="fld"><span class="fl" id="lblConcepto">Concepto</span><input name="Concepto" required></label>
+    <label class="fld"><span class="fl" id="lblImporte">Importe (€)</span><input name="Importe" required inputmode="decimal" placeholder="0,00"></label>
   </div>
   <!-- tipo de gasto variable: opciones desde TIPOS_GASTO (formularios.ts); se propone solo según el concepto -->
-  <!-- fecha (opcional): sale con la de hoy, o el día 1 si se está viendo otro mes -->
+  <!-- tipo y fecha, obligatorios: la fecha sale con la de hoy, o el día 1 si se está viendo otro mes -->
   <div class="f2" data-show="Gastos Variables">
-    <label class="fld">Tipo<select name="Tipo"><option value="" data-placeholder>Seleccionar…</option></select></label>
-    <label class="fld">Fecha<input type="date" name="Fecha"></label>
+    <label class="fld"><span class="fl">Tipo</span><select name="Tipo"><option value="" data-placeholder>Seleccionar…</option></select></label>
+    <label class="fld"><span class="fl">Fecha</span><input type="date" name="Fecha"></label>
   </div>
   <label class="fld pay-hide" data-show="Pago de Deudas">Deuda (opcional)<select name="ID_Deuda"></select></label>
   <!-- el mes no se pregunta: los apuntes nuevos van al mes que se está viendo (al editar se conserva el suyo) -->
   <input type="hidden" name="Periodo">
-  <label class="fld" data-show="Pago de Deudas|Deuda">Acreedor<select id="credSel" aria-label="Acreedor"></select><input name="Acreedor" placeholder="Nombre del nuevo acreedor" hidden></label>
+  <label class="fld" data-show="Pago de Deudas|Deuda"><span class="fl">Acreedor</span><select id="credSel" aria-label="Acreedor"></select><input name="Acreedor" placeholder="Nombre del nuevo acreedor" hidden></label>
   <div class="debt-hist" id="debtHist" data-show="Deuda"></div>
   <label class="fld pay-hide">Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <p class="hint cj-auto-hint">Se calcula solo con tu aportación a la cuenta conjunta. <button class="link" type="button" data-ir-conj style="padding:0">Ir a la cuenta conjunta</button></p>
@@ -227,16 +227,16 @@
 </form></dialog>
 <input type="file" id="fileImport" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
 
-<dialog id="dlg-per" tabindex="-1"><form method="dialog" data-tabla="periodos" data-new="/api/periodo">
+<dialog id="dlg-per" tabindex="-1"><form novalidate method="dialog" data-tabla="periodos" data-new="/api/periodo">
   <h3 data-t-new="Nuevo mes" data-t-edit="Editar mes"></h3><button class="dlg-x" value="cancel" formnovalidate aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
   <div class="f2">
-    <label class="fld">Mes<input name="Periodo" type="month" required></label>
-    <label class="fld" data-yo-only>Nómina (€)<input name="Nómina" required inputmode="decimal" placeholder="0,00"></label>
+    <label class="fld"><span class="fl">Mes</span><input name="Periodo" type="month" required></label>
+    <label class="fld" data-yo-only><span class="fl">Nómina (€)</span><input name="Nómina" required inputmode="decimal" placeholder="0,00"></label>
   </div>
   <div class="f2" data-edit-only data-yo-only>
     <label class="fld">Ahorro objetivo<select name="Modo_Ahorro"><option value="Porcentaje">Porcentaje (%)</option><option value="Importe">Cantidad fija (€)</option></select></label>
-    <label class="fld" data-modo="Porcentaje">% de lo que queda tras fijos y deudas<input name="Pct_Ahorro" inputmode="decimal"></label>
-    <label class="fld" data-modo="Importe">Cantidad (€)<input name="Importe_Ahorro" inputmode="decimal"></label>
+    <label class="fld" data-modo="Porcentaje"><span class="fl">% de lo que queda tras fijos y deudas</span><input name="Pct_Ahorro" inputmode="decimal"></label>
+    <label class="fld" data-modo="Importe"><span class="fl">Cantidad (€)</span><input name="Importe_Ahorro" inputmode="decimal"></label>
   </div>
   <label class="fld" data-edit-only>Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
   <div class="checks" data-new-only>
