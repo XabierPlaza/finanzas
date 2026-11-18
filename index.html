@@ -14,8 +14,8 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='3.5' fill='%231f4e8c'/><g fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 13.5h11'/><path d='M4.5 11.5v-2.5M8 11.5V7.5M11.5 11.5V6'/><path d='M3 6.5 6.5 4l2.5 1.5L13 2.5'/><path d='M10.5 2.5H13V5'/></g></svg>">
-  <script type="module" crossorigin src="./assets/index-DbDnHQ_W.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CsbfEB5R.css">
+  <script type="module" crossorigin src="./assets/index-CP7uS4o7.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DI6GWvrL.css">
 </head>
 <body>
 <nav>
@@ -239,10 +239,12 @@
     <label class="fld" data-modo="Importe"><span class="fl">Cantidad (€)</span><input name="Importe_Ahorro" inputmode="decimal"></label>
   </div>
   <label class="fld" data-edit-only>Notas<textarea name="Notas" rows="2" placeholder="Opcional"></textarea></label>
-  <div class="checks" data-new-only>
-    <label class="check"><input type="checkbox" name="copiar_fijos" checked><span>Copiar los gastos fijos del último mes <span class="muted" id="hintFijos"></span></span></label>
-    <label class="check" data-yo-only><input type="checkbox" name="copiar_ahorro" checked><span>Copiar el ahorro e inversión del último mes <span class="muted" id="hintAhorro"></span></span></label>
-  </div>
+  <fieldset class="checks" data-new-only>
+    <legend>Copiar del último mes</legend>
+    <label class="check" data-yo-only><input type="checkbox" name="copiar_ingresos" checked><span>Ingresos</span></label>
+    <label class="check"><input type="checkbox" name="copiar_fijos" checked><span>Gastos fijos</span></label>
+    <label class="check" data-yo-only><input type="checkbox" name="copiar_ahorro" checked><span>Ahorro e inversión</span></label>
+  </fieldset>
   <div class="recur" data-edit-only><span id="recurHint" class="muted"></span><button class="link" type="button" id="btnRecur" style="padding:0">Copiar del mes anterior</button></div>
   <p class="hint" data-edit-only>Eliminar el mes borra también sus movimientos e ingresos extra.</p>
   <div class="err"></div>
